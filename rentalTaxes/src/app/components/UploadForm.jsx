@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { importCSV } from "../lib/importCSV";
+import { importCSV } from "../../lib/importCSV";
 
 export default function UploadForm() {
   const [status, setStatus] = useState("");

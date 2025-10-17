@@ -27,7 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/app/lib/importCSV.js"
+    "src/lib/importCSV.js"
   ],
   "exclude": ["node_modules"]
 }

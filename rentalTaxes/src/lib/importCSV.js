@@ -1,5 +1,5 @@
 import Papa from "papaparse";
-import { db } from "./db";
+import { db } from "./db/db";
 
 export async function importCSV(file) {
   return new Promise((resolve, reject) => {
