@@ -27,7 +27,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/lib/importCSV.js"
+    "src/lib/importCSV.js",
+    "next.config.ts",
+    "src/lib/db/pglite.js"
   ],
   "exclude": ["node_modules"]
 }
