@@ -2,11 +2,11 @@
 import { useState } from "react";
 import { importCSV } from "../../lib/importCSV";
 
-export default function UploadForm() {
+export default function UploadForm({ onUploadComplete }) {
   const [status, setStatus] = useState("");
 
   const handleUpload = async (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
     setStatus("Importing");

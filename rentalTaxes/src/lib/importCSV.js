@@ -1,5 +1,5 @@
 import Papa from "papaparse";
-import { db } from "./db/db";
+import { getDb } from "@/lib/db/pglite";
 
 export async function importCSV(file) {
   return new Promise((resolve, reject) => {
@@ -13,7 +13,7 @@ export async function importCSV(file) {
             // Dates
             date: row.date || "",
             bookingDate: row.bookingDate || "",
-            arrivalDate: row.arrivalDate || "",
+            payArriveByDate: row.payArriveByDate || "",
             startDate: row.startDate || "",
             endDate: row.endDate || "",
 
