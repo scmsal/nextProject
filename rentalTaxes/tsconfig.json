@@ -27,7 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/lib/importCSV.js",
+    "src/lib/importCSV.ts",
     "next.config.ts",
     "src/lib/db/pglite.js",
     "src/lib/auth.js"

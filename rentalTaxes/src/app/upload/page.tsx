@@ -1,3 +1,5 @@
+"use client";
+
 import UploadForm from "../components/UploadForm";
 import { useState } from "react";
 

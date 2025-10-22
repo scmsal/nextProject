@@ -4,39 +4,42 @@ import { transactions, properties } from "@/lib/db/schema";
 
 // Define a type for a single CSV row
 //TODO: CONVERT STRINGS TO NUMERIC/BOOLEAN WHERE APPLICABLE?
-interface CsvRow {
-  date?: string;
-  bookingDate?: string;
-  payArriveByDate?: string;
-  startDate?: string;
-  endDate?: string;
-  type?: string;
-  confirmationCode?: string;
-  guest?: string;
-  listing?: string;
-  details?: string;
-  nights?: string;
-  shortTerm?: string; //TODO: this will be a calculated field, if nights <= 30; convert to boolean?
-  amount?: string;
-  paidOut?: string;
-  grossEarnings?: string;
-  earningsYear?: string;
-  serviceFee?: string;
-  fastPayFee?: string;
-  cleaningFee?: string; //TODO:ADD LOGIC FOR who gets the cleaning fee
-  totalOccupancyTaxes?: string;
-  countyTax?: string; //TODO DO: THIS WILL BE A CALCULATED FIELD
-  stateTax?: string; //TODO DO: THIS WILL BE A CALCULATED FIELD
+interface RawCsvRow {
+  Date?: string;
+  "Arriving by date"?: string;
+  Type?: string;
+  "Confirmation code"?: string;
+  "Booking date"?: string;
+  "Start date"?: string;
+  "End date"?: string;
+  Nights?: string;
+  "Short Term"?: string;
+  Guest?: string;
+  Listing?: string;
+  Details?: string;
+  "Reference code"?: string;
+  Amount?: string;
+  "Paid out"?: string;
+  "Service fee"?: string;
+  "Cleaning fee"?: string;
+  "Gross earnings"?: string;
+  "Occupancy taxes"?: string;
+  "Earnings year"?: string;
+  countyTax?: null; //TODO DO: THIS WILL BE A CALCULATED FIELD
+  stateTax?: null; //TODO DO: THIS WILL BE A CALCULATED FIELD
 }
 
 // The main import function
 export async function importCsv(file: File): Promise<number> {
-  const db = getDb();
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database client is not initialized");
+  }
 
   // Parse CSV asynchronously
-  const results = await new Promise<{ data: CsvRow[]; errors: any[] }>(
+  const results = await new Promise<{ data: RawCsvRow[]; errors: any[] }>(
     (resolve, reject) => {
-      Papa.parse<CsvRow>(file, {
+      Papa.parse<RawCsvRow>(file, {
         header: true,
         skipEmptyLines: true,
         complete: resolve,
@@ -46,29 +49,29 @@ export async function importCsv(file: File): Promise<number> {
   );
 
   // Normalize & clean data
+
   const cleaned = results.data.map((row) => ({
-    date: row.date ?? "",
-    bookingDate: row.bookingDate ?? "",
-    payArriveByDate: row.payArriveByDate ?? "",
-    startDate: row.startDate ?? "",
-    endDate: row.endDate ?? "",
-    type: row.type ?? "",
-    confirmationCode: row.confirmationCode ?? "",
-    guest: row.guest ?? "",
-    listing: row.listing ?? "",
-    details: row.details ?? "",
-    nights: parseInt(row.nights || "0"),
-    shortTerm: parseInt(row.nights || "0") <= 30 ? true : false,
-    amount: parseFloat(row.amount || "0"),
-    paidOut: parseFloat(row.paidOut || "0"),
-    grossEarnings: parseFloat(row.grossEarnings || "0"),
-    earningsYear: parseInt(row.earningsYear || "0"),
-    serviceFee: parseFloat(row.serviceFee || "0"),
-    fastPayFee: parseFloat(row.fastPayFee || "0"),
-    cleaningFee: parseFloat(row.cleaningFee || "0"),
-    totalOccupancyTaxes: parseFloat(row.totalOccupancyTaxes || "0"),
-    countyTax: parseFloat(row.countyTax || "0"), //todo: this will be a calculated field. Set up county tax %
-    stateTax: parseFloat(row.stateTax || "0"), //todo: this will be a calculated field; Set up state tax %
+    date: row["Date"] ?? "",
+    arrivalDate: row["Arriving by date"] ?? "",
+    type: row["Type"] ?? "",
+    confirmationCode: row["Confirmation code"] ?? "",
+    bookingDate: row["Booking date"] ?? "",
+    startDate: row["Start date"] ?? "",
+    endDate: row["End date"] ?? "",
+    shortTerm: row["Short Term"] ?? "",
+    nights: parseInt(row["Nights"] || "0"),
+    guest: row["Guest"] ?? "",
+    listing: row["Listing"] ?? "",
+    details: row["Details"] ?? "",
+    amount: parseFloat(row["Amount"] || "0"),
+    paidOut: parseFloat(row["Paid out"] || "0"),
+    serviceFee: parseFloat(row["Service fee"] || "0"),
+    cleaningFee: parseFloat(row["Cleaning fee"] || "0"),
+    grossEarnings: parseFloat(row["Gross earnings"] || "0"),
+    totalOccupancyTaxes: parseFloat(row["Occupancy taxes"] || "0"),
+    earningsYear: parseInt(row["Earnings year"] || "0"),
+    countyTax: null,
+    stateTax: null,
   }));
 
   // Insert into Drizzle / pglite
