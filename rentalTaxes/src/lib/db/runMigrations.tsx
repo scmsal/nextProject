@@ -3,29 +3,8 @@
 
 import { PGlite } from "@electric-sql/pglite";
 
-declare global {
-  var __PGLITE_CLIENT__: import("@electric-sql/pglite").PGlite | undefined;
-}
-
-let client: PGlite | null = null;
-
-export async function initDb() {
-  if (typeof window === "undefined") {
-    throw new Error("PGlite (idb://) must be initialized in the browser.");
-  }
-
-  if (globalThis.__PGLITE_CLIENT__) {
-    return globalThis.__PGLITE_CLIENT__;
-  }
-  // Use PGlite.create to get a client instance and ensure the same IndexedDB storage name is reused
-
-  if (client) return client;
-
-  console.log("Initializing PGlite...");
-
-  client = await PGlite.create("idb://rentalTaxesDB");
-
-  await client.exec(`
+export async function runMigrations(db: PGlite) {
+  await db.exec(`
      CREATE TABLE IF NOT EXISTS transactions(
       id SERIAL PRIMARY KEY,
         date VARCHAR(50),
@@ -53,8 +32,4 @@ export async function initDb() {
       );
   `);
   console.log("✅ transactions table ready");
-
-  globalThis.__PGLITE_CLIENT__ = client;
-
-  return client;
 }
