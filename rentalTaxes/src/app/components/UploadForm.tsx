@@ -1,44 +1,40 @@
 "use client";
+
+import { useDrizzle } from "@/lib/db/client";
+import { transactions } from "@/lib/db/schema";
+import { parseCsvFile } from "@/lib/importCsv";
 import { useCallback, useState } from "react";
-import { importCsv } from "../../lib/importCSV";
-import { initDb } from "@/lib/db/initDb";
 
 export default function UploadForm() {
   const [status, setStatus] = useState("");
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
+  const { drizzle } = useDrizzle();
 
   const handleUpload = useCallback(
-    async (e) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       if (!file) {
         setStatus("No file selected");
         return;
       }
-      // Prevent re-entrancy (especially in dev mode / hot reload)
-
-      // if (typeof window !== "undefined") {
-      //   //TO DO - look up explanation
-      //   if (window.__UPLOAD_RUNNING__) return;
-      //   window.__UPLOAD_RUNNING__ = true;
-      // }
 
       try {
         setStatus(`Importing CSV file:, ${file.name}...`);
-        const count = await importCsv(file);
-        setStatus(`Imported ${count} transactions.`);
+
+        //parse and clean csv data
+        const cleaned = await parseCsvFile(file);
+
+        //bulk insert into PGlite via Drizzle
+        await drizzle.insert(transactions).values(cleaned);
+
+        setStatus(`Imported ${cleaned.length} transactions.`);
       } catch (err) {
         console.error(err);
         setStatus("Error importing file.");
       }
-      // finally {
-      //   if (typeof window !== "undefined") {
-      //     //allow subsequent uploads
-      //     window.__UPLOAD_RUNNING__ = false;
-      //   }
-      // }
     },
-    [file]
+    [file, drizzle]
   );
 
   return (
@@ -50,7 +46,7 @@ export default function UploadForm() {
           type="file"
           accept=".csv"
           className="text-gray-700 text-sm file:bg-gray-400 hover:file:bg-gray-600 file:text-white file:py-2 file:px-4 file:rounded-lg file:cursor-pointer"
-          onChange={(e) => setFile(e.target.files[0])}
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
         />
         <button
           type="submit"
@@ -59,7 +55,7 @@ export default function UploadForm() {
           Upload
         </button>
       </form>
-      <p>{status}</p>
+      <p className="mt-3 text-sm text-gray-700">{status}</p>
     </div>
   );
 }
