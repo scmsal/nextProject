@@ -1,6 +1,6 @@
 import Papa from "papaparse";
 import { getDb } from "@/lib/db/client";
-import { transactions, properties } from "@/lib/db/schema";
+import { transactions } from "@/lib/db/schema";
 
 // Define a type for a single CSV row
 //TODO: CONVERT STRINGS TO NUMERIC/BOOLEAN WHERE APPLICABLE?
@@ -25,8 +25,8 @@ interface RawCsvRow {
   "Gross earnings"?: string;
   "Occupancy taxes"?: string;
   "Earnings year"?: string;
-  countyTax?: null; //TODO DO: THIS WILL BE A CALCULATED FIELD
-  stateTax?: null; //TODO DO: THIS WILL BE A CALCULATED FIELD
+  // countyTax?: null; //TODO DO: THIS WILL BE A CALCULATED FIELD
+  // stateTax?: null; //TODO DO: THIS WILL BE A CALCULATED FIELD
 }
 
 // The main import function
@@ -74,8 +74,13 @@ export async function importCsv(file: File): Promise<number> {
     stateTax: null,
   }));
 
+  // Optional: prevent re-import of same dataset
+  // const existing = await db.select().from(transactions);
+  // if (existing.length && cleaned.length === existing.length) {
+  //   console.log("Skipping dupulicate import - same record count.");
+  //   return 0;
+  // }
   // Insert into Drizzle / pglite
-
   await db.insert(transactions).values(cleaned);
 
   return cleaned.length;

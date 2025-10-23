@@ -2,39 +2,11 @@ import {
   pgTable,
   serial,
   varchar,
-  real,
+  numeric,
   integer,
   boolean,
-  numeric,
   date,
 } from "drizzle-orm/pg-core";
-
-// export const reservations = pgTable("reservations", {
-//   id: serial("id").primaryKey(),
-//   confirmationCode: varchar("confirmation_code"),
-//   type: varchar("type"),
-//   guest: varchar("guest"),
-//   listing: varchar("listing"),
-//   amount: real("amount"),
-//   serviceFee: real("service_fee"),
-//   cleaningFee: real("cleaning_fee"),
-//   totalOccupancyTaxes: real("total_occupancy_taxes"),
-//   startDate: varchar("start_date"),
-//   endDate: varchar("end_date"),
-//   nights: integer("nights"),
-//   bookingDate: varchar("booking_date"),
-//   arrivalDate: varchar("arrival_date"),
-// });
-
-// export const payouts = pgTable("payouts", {
-//   id: serial("id").primaryKey(),
-//   referenceCode: varchar("reference_code"),
-//   date: varchar("date"),
-//   totalAmount: real("total_amount"),
-//   details: varchar("details"),
-//   relatedReservations: varchar("related_reservations"), // could be a CSV string of confirmation codes
-//   type: varchar("type"), // e.g. payout, reimbursement, refund
-// });
 
 // ----------------------
 // Transactions Table
@@ -67,18 +39,18 @@ export const transactions = pgTable("transactions", {
   details: varchar("details", { length: 255 })
     .$type<string | null>()
     .default(null),
-  amount: real("amount").$type<number | null>().default(null),
-  paidOut: real("paid_out").$type<number | null>().default(null),
-  serviceFee: real("service_fee").$type<number | null>().default(null),
-  fastPayFee: real("fast_pay_fee").$type<number | null>().default(null),
-  cleaningFee: real("cleaning_fee").$type<number | null>().default(null),
-  grossEarnings: real("gross_earnings").$type<number | null>().default(null),
-  totalOccupancyTaxes: real("total_occupancy_taxes")
+  amount: numeric("amount").$type<number | null>().default(null),
+  paidOut: numeric("paid_out").$type<number | null>().default(null),
+  serviceFee: numeric("service_fee").$type<number | null>().default(null),
+  fastPayFee: numeric("fast_pay_fee").$type<number | null>().default(null),
+  cleaningFee: numeric("cleaning_fee").$type<number | null>().default(null),
+  grossEarnings: numeric("gross_earnings").$type<number | null>().default(null),
+  totalOccupancyTaxes: numeric("total_occupancy_taxes")
     .$type<number | null>()
     .default(null),
   earningsYear: integer("earnings_year").$type<number | null>().default(null),
-  countyTax: real("county_tax").$type<number | null>().default(null),
-  stateTax: real("state_tax").$type<number | null>().default(null),
+  countyTax: numeric("county_tax").$type<number | null>().default(null),
+  stateTax: numeric("state_tax").$type<number | null>().default(null),
 });
 
 // ----------------------
@@ -98,16 +70,16 @@ export const properties = pgTable("properties", {
 // export const quarterly = pgTable("quarterly", {
 //   id: serial("id").primaryKey(),
 //   monthYear: varchar("month_year", { length: 20 }),
-//   qIncome: real("q_income"),
-//   qCleaningExternal: real("q_cleaning_external"),
-//   qCleaningInternal: real("q_cleaning_internal"),
-//   qRefund: real("q_refund"),
-//   qReimburse: real("q_reimburse"),
-//   qStateTaxes: real("q_state_taxes"),
-//   qCountyTaxes: real("q_county_taxes"),
-//   qServiceFees: real("q_service_fees"),
-//   qFastPayFees: real("q_fast_pay_fees"),
-//   qNetIncome: real("q_net_income"),
+//   qIncome: numeric("q_income"),
+//   qCleaningExternal: numeric("q_cleaning_external"),
+//   qCleaningInternal: numeric("q_cleaning_internal"),
+//   qRefund: numeric("q_refund"),
+//   qReimburse: numeric("q_reimburse"),
+//   qStateTaxes: numeric("q_state_taxes"),
+//   qCountyTaxes: numeric("q_county_taxes"),
+//   qServiceFees: numeric("q_service_fees"),
+//   qFastPayFees: numeric("q_fast_pay_fees"),
+//   qNetIncome: numeric("q_net_income"),
 // });
 
 // // ----------------------
@@ -115,12 +87,12 @@ export const properties = pgTable("properties", {
 // // ----------------------
 // export const yearly = pgTable("yearly", {
 //   id: serial("id").primaryKey(),
-//   yearlyIncome: real("yearly_income"),
-//   yearlyCleaningExternal: real("yearly_cleaning_external"),
-//   yearlyCleaningInternal: real("yearly_cleaning_internal"),
-//   yearlyTaxes: real("yearly_taxes"),
-//   yearlyServiceFees: real("yearly_service_fees"),
-//   yearlyFastPayFees: real("yearly_fast_pay_fees"),
-//   yearlyNetIncome: real("yearly_net_income"),
-//   yearNetIncome: real("year_net_income"),
+//   yearlyIncome: numeric("yearly_income"),
+//   yearlyCleaningExternal: numeric("yearly_cleaning_external"),
+//   yearlyCleaningInternal: numeric("yearly_cleaning_internal"),
+//   yearlyTaxes: numeric("yearly_taxes"),
+//   yearlyServiceFees: numeric("yearly_service_fees"),
+//   yearlyFastPayFees: numeric("yearly_fast_pay_fees"),
+//   yearlyNetIncome: numeric("yearly_net_income"),
+//   yearNetIncome: numeric("year_net_income"),
 // });
