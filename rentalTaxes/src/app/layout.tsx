@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./styles/globals.css";
-import { Providers } from "./providers";
+import { Providers } from "@/lib/db/providers";
 //Added with installation of Roboto font for Material UI
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
