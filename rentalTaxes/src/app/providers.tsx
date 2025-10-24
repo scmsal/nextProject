@@ -4,7 +4,7 @@ import { PGliteProvider } from "@electric-sql/pglite-react";
 import { PGlite } from "@electric-sql/pglite";
 import { live } from "@electric-sql/pglite/live";
 import { useEffect, useState, type ReactNode } from "react";
-import { runMigrations } from "@/lib/db/runMigrations";
+import { runMigrations } from "@/lib/db/createTransactionsTable";
 import { drizzle } from "drizzle-orm/pglite";
 import * as schema from "../lib/db/schema";
 
