@@ -1,10 +1,8 @@
-//TODO: CHECK AND EDIT THIS ONCE SCHEMA IS COMPLETE
 //TODO: enums for the "type" property (e.g reservation, refund)
 
 import { PGlite } from "@electric-sql/pglite";
 
-export async function runMigrations(db: PGlite) {
-  await db.exec(`
+export const CREATE_TRANSACTIONS_TABLE = `
      CREATE TABLE IF NOT EXISTS transactions(
       id SERIAL PRIMARY KEY,
         date VARCHAR(50),
@@ -30,6 +28,4 @@ export async function runMigrations(db: PGlite) {
         county_tax NUMERIC,
         state_tax NUMERIC
       );
-  `);
-  console.log("✅ transactions table ready");
-}
+  `;
