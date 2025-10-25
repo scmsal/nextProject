@@ -4,8 +4,6 @@ import {
   varchar,
   numeric,
   integer,
-  boolean,
-  date,
 } from "drizzle-orm/pg-core";
 
 // ----------------------
