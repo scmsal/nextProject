@@ -8,6 +8,7 @@ import { drizzle, PgliteDatabase } from "drizzle-orm/pglite";
 import {
   CREATE_TRANSACTIONS_TABLE,
   CREATE_PROPERTIES_TABLE,
+  CREATE_QUARTERLY_TABLE,
 } from "./createTables";
 import { Repl } from "@electric-sql/pglite-repl";
 import { properties, transactions } from "./schema";
@@ -29,6 +30,10 @@ export function Providers({ children }: { children: ReactNode }) {
 
       await pgLite.exec(CREATE_PROPERTIES_TABLE);
       console.log("Properties table created.");
+
+      await pgLite.exec(CREATE_QUARTERLY_TABLE);
+      console.log("Quarterly table created.");
+
       //this part is very important
       const db = drizzle(pgLite);
       setPgLite(pgLite);

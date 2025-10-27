@@ -22,6 +22,8 @@ export default function UploadForm() {
       try {
         setStatus(`Importing CSV file:, ${file.name}...`);
 
+        //get filename to include as source in the table
+
         //parse and clean csv data
         const cleaned = await parseCsvFile(file);
 

@@ -5,6 +5,7 @@ import {
   numeric,
   integer,
   jsonb,
+  text,
 } from "drizzle-orm/pg-core";
 
 // ----------------------
@@ -50,6 +51,7 @@ export const transactions = pgTable("transactions", {
   earningsYear: integer("earnings_year").$type<number | null>().default(null),
   countyTax: numeric("county_tax").$type<number | null>().default(null),
   stateTax: numeric("state_tax").$type<number | null>().default(null),
+  sourceFile: text("source_file").$type<string | null>().default(null),
 });
 
 // ----------------------
@@ -62,23 +64,23 @@ export const properties = pgTable("properties", {
   listings: jsonb("listings").$type<string[]>(),
 });
 
-// // ----------------------
-// // Quarterly Table
-// // ----------------------
-// export const quarterly = pgTable("quarterly", {
-//   id: serial("id").primaryKey(),
-//   monthYear: varchar("month_year", { length: 20 }),
-//   qIncome: numeric("q_income"),
-//   qCleaningExternal: numeric("q_cleaning_external"),
-//   qCleaningInternal: numeric("q_cleaning_internal"),
-//   qRefund: numeric("q_refund"),
-//   qReimburse: numeric("q_reimburse"),
-//   qStateTaxes: numeric("q_state_taxes"),
-//   qCountyTaxes: numeric("q_county_taxes"),
-//   qServiceFees: numeric("q_service_fees"),
-//   qFastPayFees: numeric("q_fast_pay_fees"),
-//   qNetIncome: numeric("q_net_income"),
-// });
+// ----------------------
+// Quarterly Table
+// ----------------------
+export const quarterly = pgTable("quarterly", {
+  id: serial("id").primaryKey(),
+  monthYear: varchar("month_year", { length: 20 }),
+  qIncome: numeric("q_income"),
+  qCleaningExternal: numeric("q_cleaning_external"),
+  qCleaningInternal: numeric("q_cleaning_internal"),
+  qRefund: numeric("q_refund"),
+  qReimburse: numeric("q_reimburse"),
+  qStateTaxes: numeric("q_state_taxes"),
+  qCountyTaxes: numeric("q_county_taxes"),
+  qServiceFees: numeric("q_service_fees"),
+  qFastPayFees: numeric("q_fast_pay_fees"),
+  qNetIncome: numeric("q_net_income"),
+});
 
 // // ----------------------
 // // Yearly Table
