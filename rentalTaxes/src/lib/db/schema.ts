@@ -4,6 +4,7 @@ import {
   varchar,
   numeric,
   integer,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 // ----------------------
@@ -58,8 +59,7 @@ export const properties = pgTable("properties", {
   id: serial("id").primaryKey(),
   address: varchar("address", { length: 255 }),
   town: varchar("town", { length: 100 }),
-  listingId: varchar("listing_id", { length: 100 }),
-  listingNames: varchar("listing_names", { length: 255 }),
+  listings: jsonb("listings").$type<string[]>(),
 });
 
 // // ----------------------
