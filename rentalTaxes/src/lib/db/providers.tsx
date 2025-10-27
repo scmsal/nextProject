@@ -5,9 +5,12 @@ import { PGliteProvider } from "@electric-sql/pglite-react";
 import { live, PGliteWithLive } from "@electric-sql/pglite/live";
 import { ReactNode, useEffect, useState } from "react";
 import { drizzle, PgliteDatabase } from "drizzle-orm/pglite";
-import { CREATE_TRANSACTIONS_TABLE } from "./createTransactionsTable";
+import {
+  CREATE_TRANSACTIONS_TABLE,
+  CREATE_PROPERTIES_TABLE,
+} from "./createTables";
 import { Repl } from "@electric-sql/pglite-repl";
-import { transactions } from "./schema";
+import { properties, transactions } from "./schema";
 
 export function Providers({ children }: { children: ReactNode }) {
   const [pgLite, setPgLite] = useState<PGliteWithLive>();
@@ -22,7 +25,10 @@ export function Providers({ children }: { children: ReactNode }) {
       });
 
       await pgLite.exec(CREATE_TRANSACTIONS_TABLE);
+      console.log("Transactions table created.");
 
+      await pgLite.exec(CREATE_PROPERTIES_TABLE);
+      console.log("Properties table created.");
       //this part is very important
       const db = drizzle(pgLite);
       setPgLite(pgLite);
@@ -65,10 +71,21 @@ export function Providers({ children }: { children: ReactNode }) {
       stateTax: 5,
     });
   }
+  async function addProperties() {
+    await db?.insert(properties).values({
+      address: "101",
+      town: "Montauk",
+      listings: ["1st", "2nd", "rear"],
+    });
+  }
 
   async function handleLog() {
     const result = await db?.select().from(transactions);
-    console.log("result", result);
+    console.log("Transactions", result);
+  }
+  async function handlePropertyLog() {
+    const result = await db?.select().from(properties);
+    console.log("Properties", result || "0 properties");
   }
   return (
     <PGliteProvider db={pgLite}>
@@ -84,6 +101,18 @@ export function Providers({ children }: { children: ReactNode }) {
         onClick={handleLog}
       >
         Log Transactions
+      </button>
+      <button
+        className="ml-2 hover:bg-gray-50 cursor-pointer border"
+        onClick={handlePropertyLog}
+      >
+        Add Properties
+      </button>
+      <button
+        className="ml-2 hover:bg-gray-50 cursor-pointer border"
+        onClick={addProperties}
+      >
+        Log Properties
       </button>
       {children}
     </PGliteProvider>

@@ -29,3 +29,12 @@ export const CREATE_TRANSACTIONS_TABLE = `
         state_tax NUMERIC
       );
   `;
+
+export const CREATE_PROPERTIES_TABLE = `
+   CREATE TABLE IF NOT EXISTS properties(
+   id SERIAL PRIMARY KEY,
+     address varchar(255),
+     town varchar(100),
+     listings varchar(255)
+   );
+  `;
