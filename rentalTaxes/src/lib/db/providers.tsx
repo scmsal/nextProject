@@ -24,6 +24,7 @@ type DbContextType = {
   pgLite: PGliteWithLive | undefined;
   db: PgliteDatabase | undefined;
   transactionsData: any[]; //or Transactions type?
+  loadTransactions: () => Promise<void>;
 };
 
 const DbContext = createContext<DbContextType | null>(null);
@@ -39,6 +40,12 @@ export function Providers({ children }: { children: ReactNode }) {
   const [pgLite, setPgLite] = useState<PGliteWithLive>();
   const [db, setDb] = useState<PgliteDatabase>();
   const [transactionsData, setTransactionsData] = useState<any[]>([]);
+
+  async function loadTransactions() {
+    if (!db) return;
+    const result = await db.select().from(transactions);
+    setTransactionsData(result);
+  }
 
   useEffect(() => {
     const initDb = async () => {
@@ -61,6 +68,7 @@ export function Providers({ children }: { children: ReactNode }) {
       const db = drizzle(pgLite);
       setPgLite(pgLite);
       setDb(db);
+      await loadTransactions(); // initial load
     };
 
     initDb();
@@ -92,7 +100,9 @@ export function Providers({ children }: { children: ReactNode }) {
     //PGliteProvider shares the database instance
     //DbContext.Provider shares the Drizzle connection and transactionsData state
     <PGliteProvider db={pgLite}>
-      <DbContext.Provider value={{ pgLite, db, transactionsData }}>
+      <DbContext.Provider
+        value={{ pgLite, db, transactionsData, loadTransactions }}
+      >
         <ReplWithButtons />
         {children}
       </DbContext.Provider>

@@ -6,7 +6,7 @@ import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
 
 export default function UploadForm() {
-  const { db } = useDb();
+  const { db, loadTransactions } = useDb();
   const [status, setStatus] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
@@ -35,6 +35,7 @@ export default function UploadForm() {
         await db.insert(transactions).values(cleaned);
 
         setStatus(`Imported ${cleaned.length} transactions.`);
+        await loadTransactions();
       } catch (err) {
         console.error(err);
         setStatus("Error importing file.");

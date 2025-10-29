@@ -5,8 +5,9 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { useDb } from "@/lib/db/providers";
+
 import { sampleTransactions } from "@/lib/db/sampleData";
-// const rerender = useReducer(() => ({}), {})[1];
 
 export type Transaction = {
   date: string;
@@ -74,7 +75,7 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
     { accessorKey: "sourceFile", header: "Source File" },
   ];
 
-  const table = useReactTable({
+  const table = useReactTable<Transaction>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
