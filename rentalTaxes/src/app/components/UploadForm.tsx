@@ -1,14 +1,14 @@
 "use client";
 
-import { useDrizzle } from "@/lib/db/client";
 import { transactions } from "@/lib/db/schema";
 import { parseCsvFile } from "@/lib/importCsv";
 import { useCallback, useState } from "react";
+import { useDb } from "@/lib/db/providers";
 
 export default function UploadForm() {
+  const { db } = useDb();
   const [status, setStatus] = useState("");
   const [file, setFile] = useState<File | null>(null);
-  const { drizzle } = useDrizzle();
 
   const handleUpload = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,7 +28,11 @@ export default function UploadForm() {
         const cleaned = await parseCsvFile(file);
 
         //bulk insert into PGlite via Drizzle
-        await drizzle.insert(transactions).values(cleaned);
+        if (!db) {
+          setStatus("Database not initialized.");
+          return;
+        }
+        await db.insert(transactions).values(cleaned);
 
         setStatus(`Imported ${cleaned.length} transactions.`);
       } catch (err) {
@@ -36,7 +40,7 @@ export default function UploadForm() {
         setStatus("Error importing file.");
       }
     },
-    [file, drizzle]
+    [file, db]
   );
 
   return (
