@@ -24,10 +24,12 @@ export const CREATE_TRANSACTIONS_TABLE = `
         cleaning_fee NUMERIC,
         gross_earnings NUMERIC,
         total_occupancy_taxes NUMERIC,
+        quarter VARCHAR(10),
         earnings_year INTEGER,
         county_tax NUMERIC,
         state_tax NUMERIC,
-        source_file TEXT
+        source_file TEXT,
+        uploaded_at TIMESTAMP
       );
   `;
 
@@ -44,15 +46,12 @@ export const CREATE_QUARTERLY_TABLE = `
    CREATE TABLE IF NOT EXISTS quarterly(
    id SERIAL PRIMARY KEY,
        monthYear varchar(20),
-       qIncome numeric,
+       totalRevenue numeric,
        qCleaningExternal numeric,
        qCleaningInternal numeric,
        qRefund numeric,
        qReimburse numeric,
-       qStateTaxes numeric,
-       qCountyTaxes numeric,
-       qServiceFees numeric,
-       qFastPayFees numeric,
-       qNetIncome numeric
+       total30Plus numeric,
+       totalShortTerm numeric
    );
   `;

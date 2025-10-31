@@ -9,7 +9,7 @@ import {
 import { useDb } from "@/lib/db/providers";
 
 export default function ReplWithButtons() {
-  const { db, pgLite } = useDb();
+  const { db, pgLite, loadTransactions } = useDb();
 
   if (!pgLite || !db) {
     return <div>Loading database...</div>;
@@ -30,6 +30,7 @@ export default function ReplWithButtons() {
         className="ml-2 hover:bg-gray-50 cursor-pointer border"
         onClick={() => {
           handleLog(db);
+          loadTransactions();
         }}
       >
         Log Transactions

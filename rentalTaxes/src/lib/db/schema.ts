@@ -6,6 +6,7 @@ import {
   integer,
   jsonb,
   text,
+  timestamp,
 } from "drizzle-orm/pg-core";
 
 // ----------------------
@@ -48,10 +49,12 @@ export const transactions = pgTable("transactions", {
   totalOccupancyTaxes: numeric("total_occupancy_taxes")
     .$type<number | null>()
     .default(null),
+  quarter: varchar("quarter", { length: 10 }).notNull(),
   earningsYear: integer("earnings_year").$type<number | null>().default(null),
   countyTax: numeric("county_tax").$type<number | null>().default(null),
   stateTax: numeric("state_tax").$type<number | null>().default(null),
   sourceFile: text("source_file").$type<string | null>().default(null),
+  uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
 });
 
 // ----------------------
@@ -67,21 +70,41 @@ export const properties = pgTable("properties", {
 // ----------------------
 // Quarterly Table
 // ----------------------
-export const quarterly = pgTable("quarterly", {
+// export const quarterly = pgTable("quarterly", {
+//   id: serial("id").primaryKey(),
+//   monthYear: varchar("month_year", { length: 20 }),
+//   qIncome: numeric("q_income"),
+//   qCleaningExternal: numeric("q_cleaning_external"),
+//   qCleaningInternal: numeric("q_cleaning_internal"),
+//   qRefund: numeric("q_refund"),
+//   qReimburse: numeric("q_reimburse"),
+//   qStateTaxes: numeric("q_state_taxes"),
+//   qCountyTaxes: numeric("q_county_taxes"),
+//   qServiceFees: numeric("q_service_fees"),
+//   qFastPayFees: numeric("q_fast_pay_fees"),
+//   qNetIncome: numeric("q_net_income"),
+// });
+
+export const quarterlyFile = pgTable("quarterlyFile", {
   id: serial("id").primaryKey(),
   monthYear: varchar("month_year", { length: 20 }),
-  qIncome: numeric("q_income"),
+  totalRevenue: numeric("total_revenue"), //**Total revenue** (long term and short term) including all fees (all reservations earnings minus refunds, reimbursements, optionally minus cleaning)
   qCleaningExternal: numeric("q_cleaning_external"),
   qCleaningInternal: numeric("q_cleaning_internal"),
   qRefund: numeric("q_refund"),
   qReimburse: numeric("q_reimburse"),
-  qStateTaxes: numeric("q_state_taxes"),
-  qCountyTaxes: numeric("q_county_taxes"),
-  qServiceFees: numeric("q_service_fees"),
-  qFastPayFees: numeric("q_fast_pay_fees"),
-  qNetIncome: numeric("q_net_income"),
+  total30Plus: numeric("q_30_plus_revenue"), //total long term earnings (deductible),
+  totalShortTerm: numeric("q_short_term_revenue"), //total revenue minus total30Plus
 });
 
+/*
+
+- Allowable **deductions** (Federal government employees and 30+ day rentals)
+    - i.e. total long term earnings
+- **Taxable receipts (ie. net short term earnings)**
+- (automatically calculated, Suffolk County tax for hotel and motel occupancy is 5.5%) KEEP UPDATED
+
+*/
 // // ----------------------
 // // Yearly Table
 // // ----------------------

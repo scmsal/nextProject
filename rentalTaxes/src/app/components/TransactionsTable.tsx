@@ -5,8 +5,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { useDb } from "@/lib/db/providers";
-
 import { sampleTransactions } from "@/lib/db/sampleData";
 
 export type Transaction = {
@@ -33,6 +31,7 @@ export type Transaction = {
   countyTax: number;
   stateTax: number;
   sourceFile: string;
+  uploadedAt: Date;
 };
 
 export default function TransactionsTable({ data }: { data: Transaction[] }) {
@@ -69,10 +68,12 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
     { accessorKey: "cleaningFee", header: "Cleaning Fee" },
     { accessorKey: "grossEarnings", header: "Gross Earnings" },
     { accessorKey: "totalOccupancyTaxes", header: "Total Occupancy Taxes" },
+    { accessorKey: "quarter", header: "Quarter" },
     { accessorKey: "earningsYear", header: "Earnings Year" },
     { accessorKey: "countyTax", header: "County Tax" },
     { accessorKey: "stateTax", header: "State Tax" },
     { accessorKey: "sourceFile", header: "Source File" },
+    { accessorKey: "uploadedAt", header: "Timestamp" },
   ];
 
   const table = useReactTable<Transaction>({
@@ -83,12 +84,12 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
 
   return (
     <div className="p-2">
-      <table className="min-w-full divide-y divide-gray-300 text-sm">
+      <table className="min-w-full divide-y divide-gray-300 text-sm overflow-x-scroll">
         <thead className="bg-gray-100">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <th key={header.id} className="px-2">
                   {header.isPlaceholder
                     ? null
                     : flexRender(

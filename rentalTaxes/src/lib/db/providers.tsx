@@ -18,7 +18,7 @@ import {
 
 import ReplWithButtons from "@/app/components/ReplWithButtons";
 
-import { properties, transactions, quarterly } from "./schema";
+import { properties, transactions, quarterlyFile } from "./schema";
 
 type DbContextType = {
   pgLite: PGliteWithLive | undefined;
@@ -43,6 +43,7 @@ export function Providers({ children }: { children: ReactNode }) {
 
   async function loadTransactions() {
     if (!db) return;
+
     const result = await db.select().from(transactions);
     setTransactionsData(result);
   }
@@ -53,6 +54,7 @@ export function Providers({ children }: { children: ReactNode }) {
       const pgLite = await PGlite.create({
         dataDir: "idb://rentalTaxesDB",
         extensions: { live },
+        fresh: true,
       });
 
       await pgLite.exec(CREATE_TRANSACTIONS_TABLE);

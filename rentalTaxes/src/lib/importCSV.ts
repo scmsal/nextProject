@@ -28,7 +28,7 @@ export interface RawCsvRow {
 }
 
 // pure data parser, no DB access
-export async function parseCsvFile(file: File) {
+export async function parseCsvFile(file: File, quarter: string) {
   const results = await new Promise<{ data: RawCsvRow[]; errors: any[] }>(
     (resolve, reject) => {
       Papa.parse<RawCsvRow>(file, {
@@ -61,6 +61,7 @@ export async function parseCsvFile(file: File) {
     cleaningFee: parseFloat(row["Cleaning fee"] || "0"),
     grossEarnings: parseFloat(row["Gross earnings"] || "0"),
     totalOccupancyTaxes: parseFloat(row["Occupancy taxes"] || "0"),
+    quarter,
     earningsYear: parseInt(row["Earnings year"] || "0"),
     countyTax: null,
     stateTax: null,

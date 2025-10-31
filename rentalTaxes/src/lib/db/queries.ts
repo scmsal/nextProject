@@ -2,6 +2,7 @@ import type { PgliteDatabase } from "drizzle-orm/pglite";
 import { transactions, properties } from "./schema";
 
 //TO DO: review how to break circular imports
+
 export async function handleAdd(db: PgliteDatabase) {
   console.log("handleAdd ran");
   await db?.insert(transactions).values({
@@ -24,9 +25,11 @@ export async function handleAdd(db: PgliteDatabase) {
     cleaningFee: 5,
     grossEarnings: 100,
     totalOccupancyTaxes: 10,
+    quarter: "Q3-2025",
     earningsYear: 2022,
     countyTax: 5,
     stateTax: 5,
+    uploadedAt: new Date(),
   });
 }
 export async function addProperties(db: PgliteDatabase) {
@@ -47,3 +50,5 @@ export async function handlePropertyLog(db: PgliteDatabase) {
   const result = await db?.select().from(properties);
   console.log("Properties", result || "0 properties");
 }
+
+// export async function
