@@ -28,3 +28,5 @@ export const sampleTransactions = [
     sourceFile: "sample1.csv",
   },
 ];
+
+// Add sample data for properties and listings

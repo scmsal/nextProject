@@ -19,11 +19,12 @@ import {
 import ReplWithButtons from "@/app/components/ReplWithButtons";
 
 import { properties, transactions, quarterlyFile } from "./schema";
+import { Transaction } from "@/types";
 
 type DbContextType = {
   pgLite: PGliteWithLive | undefined;
   db: PgliteDatabase | undefined;
-  transactionsData: any[]; //or Transactions type?
+  transactionsData: Transaction[]; //or Transactions type? Yes!
   loadTransactions: () => Promise<void>;
 };
 
@@ -39,7 +40,7 @@ export function useDb() {
 export function Providers({ children }: { children: ReactNode }) {
   const [pgLite, setPgLite] = useState<PGliteWithLive>();
   const [db, setDb] = useState<PgliteDatabase>();
-  const [transactionsData, setTransactionsData] = useState<any[]>([]);
+  const [transactionsData, setTransactionsData] = useState<Transaction[]>([]);
 
   async function loadTransactions() {
     if (!db) return;

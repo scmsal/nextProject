@@ -28,6 +28,7 @@ export interface RawCsvRow {
 }
 
 // pure data parser, no DB access
+// this function needs the listing data so it can convert the listing name to a listingId for the transactions table
 export async function parseCsvFile(file: File, quarter: string) {
   const results = await new Promise<{ data: RawCsvRow[]; errors: any[] }>(
     (resolve, reject) => {
@@ -53,7 +54,7 @@ export async function parseCsvFile(file: File, quarter: string) {
     shortTerm: row["Short Term"] ?? "",
     nights: parseInt(row["Nights"] || "0"),
     guest: row["Guest"] ?? "",
-    listing: row["Listing"] ?? "",
+    listing: row["Listing"] ?? "", // This must be converted to "listingId" for the for the transactions table
     details: row["Details"] ?? "",
     amount: parseFloat(row["Amount"] || "0"),
     paidOut: parseFloat(row["Paid out"] || "0"),

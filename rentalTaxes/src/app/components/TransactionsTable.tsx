@@ -6,33 +6,35 @@ import {
 } from "@tanstack/react-table";
 
 import { sampleTransactions } from "@/lib/db/sampleData";
+import { Transaction } from "@/types";
 
-export type Transaction = {
-  date: string;
-  arrivalDate: string;
-  type: string; // e.g. payout, reimbursement, refund
-  confirmationCode: string;
-  bookingDate: string;
-  startDate: string;
-  endDate: string;
-  nights: number;
-  shortTerm: string;
-  guest: string;
-  listing: string;
-  details: string;
-  amount: number;
-  paidOut: number;
-  serviceFee: number;
-  fastPayFee: number;
-  cleaningFee: number;
-  grossEarnings: number;
-  totalOccupancyTaxes: number;
-  earningsYear: number;
-  countyTax: number;
-  stateTax: number;
-  sourceFile: string;
-  uploadedAt: Date;
-};
+// I removed this custom type, and replaced it with the inferred type from the types.ts file
+// export type Transaction = {
+//   date: string;
+//   arrivalDate: string;
+//   type: string; // e.g. payout, reimbursement, refund
+//   confirmationCode: string;
+//   bookingDate: string;
+//   startDate: string;
+//   endDate: string;
+//   nights: number;
+//   shortTerm: string;
+//   guest: string;
+//   listing: string;
+//   details: string;
+//   amount: number;
+//   paidOut: number;
+//   serviceFee: number;
+//   fastPayFee: number;
+//   cleaningFee: number;
+//   grossEarnings: number;
+//   totalOccupancyTaxes: number;
+//   earningsYear: number;
+//   countyTax: number;
+//   stateTax: number;
+//   sourceFile: string;
+//   uploadedAt: Date;
+// };
 
 export default function TransactionsTable({ data }: { data: Transaction[] }) {
   //   const data: Transaction[] = sampleTransactions;
@@ -68,7 +70,18 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
     { accessorKey: "cleaningFee", header: "Cleaning Fee" },
     { accessorKey: "grossEarnings", header: "Gross Earnings" },
     { accessorKey: "totalOccupancyTaxes", header: "Total Occupancy Taxes" },
-    { accessorKey: "quarter", header: "Quarter" },
+    // This is just an example of the type of thing you can do
+    {
+      accessorKey: "quarter",
+      header: "Quarter",
+      cell: ({ row }) => {
+        const date = new Date(row.original.date);
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+        const quarter = Math.ceil(month / 3);
+        return `Q${quarter}-${year}`;
+      }
+    },
     { accessorKey: "earningsYear", header: "Earnings Year" },
     { accessorKey: "countyTax", header: "County Tax" },
     { accessorKey: "stateTax", header: "State Tax" },
