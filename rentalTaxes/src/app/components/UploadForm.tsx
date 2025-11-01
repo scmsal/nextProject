@@ -31,6 +31,7 @@ export default function UploadForm() {
         //TO DO: get quarter by payout date
 
         //parse and clean csv data
+        // You need to pass the whole table of listing data so it can convert the listing name to a listingId
         const cleaned = await parseCsvFile(file, quarter);
 
         //bulk insert into PGlite via Drizzle

@@ -56,7 +56,7 @@ export async function parseCsvFile(file: File) {
     shortTerm: row["Short Term"] ?? "",
     nights: parseInt(row["Nights"] || "0"),
     guest: row["Guest"] ?? "",
-    listing: row["Listing"] ?? "",
+    listing: row["Listing"] ?? "", // This must be converted to "listingId" for the for the transactions table
     details: row["Details"] ?? "",
     amount: parseFloat(row["Amount"] || "0"),
     paidOut: parseFloat(row["Paid out"] || "0"),
