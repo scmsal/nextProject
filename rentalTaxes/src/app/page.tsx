@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 import { useDb } from "@/lib/db/providers";
 
 export default function Home() {
+  // You will also need listing and property data
   const { transactionsData } = useDb();
   const pathname = usePathname();
 

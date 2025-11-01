@@ -1,6 +1,8 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+// It will be simplest to make your own JWT auth
+// If you want to practice with a professional tool, use Better Auth
 export const authOptions = {
   // Configure one or more authentication providers
   providers: [

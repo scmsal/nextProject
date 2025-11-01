@@ -4,17 +4,17 @@ import {
   varchar,
   numeric,
   integer,
-  jsonb,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 // ----------------------
 // Transactions Table
 // ----------------------
 export const transactions = pgTable("transactions", {
   id: serial("id").primaryKey(),
-  date: varchar("date", { length: 50 }),
+  date: varchar("date", { length: 50 }).notNull(),
   arrivalDate: varchar("arrival_date", { length: 50 })
     .$type<string | null>()
     .default(null),
@@ -34,9 +34,10 @@ export const transactions = pgTable("transactions", {
   nights: integer("nights").$type<number | null>().default(null),
   shortTerm: varchar("short_term").default(""),
   guest: varchar("guest", { length: 100 }).$type<string | null>().default(null),
-  listing: varchar("listing", { length: 100 })
-    .$type<string | null>()
-    .default(null),
+  // listing: varchar("listing", { length: 100 })
+  //   .$type<string | null>()
+  //   .default(null),
+  listingId: integer("listing_id").notNull().references(() => listings.id),
   details: varchar("details", { length: 255 })
     .$type<string | null>()
     .default(null),
@@ -64,7 +65,16 @@ export const properties = pgTable("properties", {
   id: serial("id").primaryKey(),
   address: varchar("address", { length: 255 }),
   town: varchar("town", { length: 100 }),
-  listings: jsonb("listings").$type<string[]>(),
+  // listings: jsonb("listings").$type<string[]>(), <---- remove this property
+});
+
+// ----------------------
+// Properties Table
+// ----------------------
+export const listings = pgTable("listings", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }),
+  propertyId: integer("property_id").references(() => properties.id),
 });
 
 // ----------------------
@@ -118,4 +128,44 @@ export const quarterlyFile = pgTable("quarterlyFile", {
 //   yearlyFastPayFees: numeric("yearly_fast_pay_fees"),
 //   yearlyNetIncome: numeric("yearly_net_income"),
 //   yearNetIncome: numeric("year_net_income"),
-// });
+// })
+
+/*
+This means:
+"Each transaction is connected to one listing
+where the transaction's listingId
+corresponds to the listing's id"
+
+Example data:
+Transactions
+| id | date       | arrivalDate | type   | listingId | ... |
+| 1  | 2024-01-01 | 2024-01-05  | payout | *1*         | ... |
+| 2  | 2024-01-10 | 2024-01-15  | payout | *1*         | ... |
+| 3  | 2024-02-01 | 2024-02-05  | payout | *2*         | ... |
+
+Listings
+| id   | name           | propertyId |
+| *1*  | "Cozy Cottage" | 1          |
+| *2*  | "Beach House"  | 2          |
+
+This allows you to use drizzle's query syntax (https://orm.drizzle.team/docs/rqb)
+which is better than the select syntax
+*/
+export const transactionsRelations = relations(transactions, ({ one }) => ({
+  listing: one(listings, {
+    fields: [transactions.listingId],
+    references: [listings.id],
+  }),
+}));
+
+export const propertiesRelations = relations(properties, ({ many }) => ({
+  listings: many(listings),
+}));
+
+export const listingsRelations = relations(listings, ({ one, many }) => ({
+  property: one(properties, {
+    fields: [listings.propertyId],
+    references: [properties.id],
+  }),
+  transactions: many(transactions)
+}));
