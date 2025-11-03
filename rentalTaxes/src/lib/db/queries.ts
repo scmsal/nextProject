@@ -17,6 +17,7 @@ export async function handleAdd(db: PgliteDatabase) {
     nights: 1,
     guest: "Jane Doe",
     listing: "Hotel XYZ",
+    listingId: 0,
     details: "Test booking",
     amount: 100,
     paidOut: 90,
@@ -25,7 +26,6 @@ export async function handleAdd(db: PgliteDatabase) {
     cleaningFee: 5,
     grossEarnings: 100,
     totalOccupancyTaxes: 10,
-    quarter: "Q3-2025",
     earningsYear: 2022,
     countyTax: 5,
     stateTax: 5,
@@ -36,7 +36,6 @@ export async function addProperties(db: PgliteDatabase) {
   await db?.insert(properties).values({
     address: "101",
     town: "Montauk",
-    listings: ["1st", "2nd", "rear"],
   });
   console.log("ran addProperties");
 }

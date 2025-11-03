@@ -34,10 +34,12 @@ export const transactions = pgTable("transactions", {
   nights: integer("nights").$type<number | null>().default(null),
   shortTerm: varchar("short_term").default(""),
   guest: varchar("guest", { length: 100 }).$type<string | null>().default(null),
-  // listing: varchar("listing", { length: 100 })
-  //   .$type<string | null>()
-  //   .default(null),
-  listingId: integer("listing_id").notNull().references(() => listings.id),
+  listing: varchar("listing", { length: 100 })
+    .$type<string | null>()
+    .default(null),
+  listingId: integer("listing_id")
+    // .notNull()
+    .references(() => listings.id),
   details: varchar("details", { length: 255 })
     .$type<string | null>()
     .default(null),
@@ -50,7 +52,6 @@ export const transactions = pgTable("transactions", {
   totalOccupancyTaxes: numeric("total_occupancy_taxes")
     .$type<number | null>()
     .default(null),
-  quarter: varchar("quarter", { length: 10 }).notNull(),
   earningsYear: integer("earnings_year").$type<number | null>().default(null),
   countyTax: numeric("county_tax").$type<number | null>().default(null),
   stateTax: numeric("state_tax").$type<number | null>().default(null),
@@ -151,21 +152,21 @@ Listings
 This allows you to use drizzle's query syntax (https://orm.drizzle.team/docs/rqb)
 which is better than the select syntax
 */
-export const transactionsRelations = relations(transactions, ({ one }) => ({
-  listing: one(listings, {
-    fields: [transactions.listingId],
-    references: [listings.id],
-  }),
-}));
+// export const transactionsRelations = relations(transactions, ({ one }) => ({
+//   listing: one(listings, {
+//     fields: [transactions.listingId],
+//     references: [listings.id],
+//   }),
+// }));
 
-export const propertiesRelations = relations(properties, ({ many }) => ({
-  listings: many(listings),
-}));
+// export const propertiesRelations = relations(properties, ({ many }) => ({
+//   listings: many(listings),
+// }));
 
-export const listingsRelations = relations(listings, ({ one, many }) => ({
-  property: one(properties, {
-    fields: [listings.propertyId],
-    references: [properties.id],
-  }),
-  transactions: many(transactions)
-}));
+// export const listingsRelations = relations(listings, ({ one, many }) => ({
+//   property: one(properties, {
+//     fields: [listings.propertyId],
+//     references: [properties.id],
+//   }),
+//   transactions: many(transactions),
+// }));
