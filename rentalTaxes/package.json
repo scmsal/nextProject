@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.8",
     "@mui/material": "^7.3.4",
+    "@tanstack/react-table": "^8.21.3",
     "drizzle-orm": "^0.44.6",
     "next": "^16.0.0",
     "papaparse": "^5.5.3",

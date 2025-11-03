@@ -1,14 +1,14 @@
 "use client";
 
-import { useDrizzle } from "@/lib/db/client";
-import { transactions } from "@/lib/db/schema";
-import { parseCsvFile } from "@/lib/importCsv";
+import { quarterlyFile, transactions } from "@/lib/db/schema";
+import { parseCsvFile } from "@/lib/importCSV";
 import { useCallback, useState } from "react";
+import { useDb } from "@/lib/db/providers";
 
 export default function UploadForm() {
+  const { db, loadTransactions } = useDb();
   const [status, setStatus] = useState("");
   const [file, setFile] = useState<File | null>(null);
-  const { drizzle } = useDrizzle();
 
   const handleUpload = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,19 +22,28 @@ export default function UploadForm() {
       try {
         setStatus(`Importing CSV file:, ${file.name}...`);
 
+        //TO DO: get filename to include as source in the table
+        //TO DO: get quarter by payout date
+
         //parse and clean csv data
+        // You need to pass the whole table of listing data so it can convert the listing name to a listingId
         const cleaned = await parseCsvFile(file);
 
         //bulk insert into PGlite via Drizzle
-        await drizzle.insert(transactions).values(cleaned);
+        if (!db) {
+          setStatus("Database not initialized.");
+          return;
+        }
+        await db.insert(transactions).values(cleaned);
 
         setStatus(`Imported ${cleaned.length} transactions.`);
+        await loadTransactions();
       } catch (err) {
         console.error(err);
         setStatus("Error importing file.");
       }
     },
-    [file, drizzle]
+    [file, db]
   );
 
   return (

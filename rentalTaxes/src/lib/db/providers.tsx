@@ -1,27 +1,61 @@
 "use client";
-
 import { PGlite } from "@electric-sql/pglite";
 import { PGliteProvider } from "@electric-sql/pglite-react";
 import { live, PGliteWithLive } from "@electric-sql/pglite/live";
-import { ReactNode, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import { drizzle, PgliteDatabase } from "drizzle-orm/pglite";
 import {
   CREATE_TRANSACTIONS_TABLE,
   CREATE_PROPERTIES_TABLE,
+  CREATE_QUARTERLY_TABLE,
 } from "./createTables";
-import { Repl } from "@electric-sql/pglite-repl";
-import { properties, transactions } from "./schema";
+
+import ReplWithButtons from "@/app/components/ReplWithButtons";
+
+import { properties, transactions, quarterlyFile } from "./schema";
+import { Transaction } from "@/types";
+
+type DbContextType = {
+  pgLite: PGliteWithLive | undefined;
+  db: PgliteDatabase | undefined;
+  transactionsData: Transaction[]; //or Transactions type? Yes!
+  loadTransactions: () => Promise<void>;
+};
+
+const DbContext = createContext<DbContextType | null>(null);
+
+//This will be called inside the components
+export function useDb() {
+  const context = useContext(DbContext);
+  if (!context) throw new Error("useDb must be used within <Providers>");
+  return context;
+}
 
 export function Providers({ children }: { children: ReactNode }) {
   const [pgLite, setPgLite] = useState<PGliteWithLive>();
   const [db, setDb] = useState<PgliteDatabase>();
+  const [transactionsData, setTransactionsData] = useState<Transaction[]>([]);
+
+  async function loadTransactions() {
+    if (!db) return;
+
+    const result = await db.select().from(transactions);
+    setTransactionsData(result);
+  }
 
   useEffect(() => {
     const initDb = async () => {
-      //create database
+      //**create database**
       const pgLite = await PGlite.create({
         dataDir: "idb://rentalTaxesDB",
         extensions: { live },
+        fresh: true,
       });
 
       await pgLite.exec(CREATE_TRANSACTIONS_TABLE);
@@ -29,92 +63,52 @@ export function Providers({ children }: { children: ReactNode }) {
 
       await pgLite.exec(CREATE_PROPERTIES_TABLE);
       console.log("Properties table created.");
+
+      await pgLite.exec(CREATE_QUARTERLY_TABLE);
+      console.log("Quarterly table created.");
+
       //this part is very important
       const db = drizzle(pgLite);
       setPgLite(pgLite);
       setDb(db);
+      await loadTransactions(); // initial load
     };
 
     initDb();
   }, []);
 
-  if (!db) {
-    return <div>Loading database...</div>;
-  } else {
-    console.log("Database loaded.");
+  if (!pgLite || !db) {
+    return <div>Initializing database...</div>;
   }
 
-  async function handleAdd() {
-    console.log("handleAdd ran");
-    await db?.insert(transactions).values({
-      date: "2022-01-01",
-      arrivalDate: "2022-01-02",
-      type: "hotel",
-      confirmationCode: "CONF123",
-      bookingDate: "2022-01-01",
-      startDate: "2022-01-01",
-      endDate: "2022-01-02",
-      shortTerm: "yes",
-      nights: 1,
-      guest: "Jane Doe",
-      listing: "Hotel XYZ",
-      details: "Test booking",
-      amount: 100,
-      paidOut: 90,
-      serviceFee: 10,
-      fastPayFee: 5,
-      cleaningFee: 5,
-      grossEarnings: 100,
-      totalOccupancyTaxes: 10,
-      earningsYear: 2022,
-      countyTax: 5,
-      stateTax: 5,
-    });
-  }
-  async function addProperties() {
-    await db?.insert(properties).values({
-      address: "101",
-      town: "Montauk",
-      listings: ["1st", "2nd", "rear"],
-    });
-  }
+  //TO DO: STUDY THIS FUNCTION, CONCEPT OF SUBSCRIPTIONS, AND HOW PGLITE LIVE WORKS because the following useEffect doesn't work
+  // useEffect(() => {
+  //   if (!pgLite) return;
 
-  async function handleLog() {
-    const result = await db?.select().from(transactions);
-    console.log("Transactions", result);
-  }
-  async function handlePropertyLog() {
-    const result = await db?.select().from(properties);
-    console.log("Properties", result || "0 properties");
-  }
+  //   const liveQuery = live.query(pgLite, "SELECT * FROM transactions");
+  //   const unsubscribe = liveQuery.subscribe((rows) =>
+  //     setTransactionsData(rows)
+  //   );
+
+  //   return () => unsubscribe(); // cleanup
+  // }, [pgLite]);
+
+  // if (!db) {
+  //   return <div>Loading database...</div>;
+  // } else {
+  //   console.log("Database loaded.");
+  // }
+
   return (
+    //PGliteProvider shares the database instance
+    //DbContext.Provider shares the Drizzle connection and transactionsData state
     <PGliteProvider db={pgLite}>
-      <Repl pg={pgLite} />
-      <button
-        className="hover:bg-gray-50 cursor-pointer border"
-        onClick={handleAdd}
+      <DbContext.Provider
+        value={{ pgLite, db, transactionsData, loadTransactions }}
       >
-        Add Transaction
-      </button>
-      <button
-        className="ml-2 hover:bg-gray-50 cursor-pointer border"
-        onClick={handleLog}
-      >
-        Log Transactions
-      </button>
-      <button
-        className="ml-2 hover:bg-gray-50 cursor-pointer border"
-        onClick={handlePropertyLog}
-      >
-        Add Properties
-      </button>
-      <button
-        className="ml-2 hover:bg-gray-50 cursor-pointer border"
-        onClick={addProperties}
-      >
-        Log Properties
-      </button>
-      {children}
+        <ReplWithButtons />
+        {children}
+      </DbContext.Provider>
     </PGliteProvider>
   );
 }

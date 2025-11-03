@@ -26,7 +26,9 @@ export const CREATE_TRANSACTIONS_TABLE = `
         total_occupancy_taxes NUMERIC,
         earnings_year INTEGER,
         county_tax NUMERIC,
-        state_tax NUMERIC
+        state_tax NUMERIC,
+        source_file TEXT,
+        uploaded_at TIMESTAMP
       );
   `;
 
@@ -36,5 +38,19 @@ export const CREATE_PROPERTIES_TABLE = `
      address varchar(255),
      town varchar(100),
      listings varchar(255)
+   );
+  `;
+
+export const CREATE_QUARTERLY_TABLE = `
+   CREATE TABLE IF NOT EXISTS quarterly(
+   id SERIAL PRIMARY KEY,
+       monthYear varchar(20),
+       totalRevenue numeric,
+       qCleaningExternal numeric,
+       qCleaningInternal numeric,
+       qRefund numeric,
+       qReimburse numeric,
+       total30Plus numeric,
+       totalShortTerm numeric
    );
   `;
