@@ -24,7 +24,6 @@ export const CREATE_TRANSACTIONS_TABLE = `
         cleaning_fee NUMERIC,
         gross_earnings NUMERIC,
         total_occupancy_taxes NUMERIC,
-        quarter VARCHAR(10),
         earnings_year INTEGER,
         county_tax NUMERIC,
         state_tax NUMERIC,

@@ -40,9 +40,6 @@ export async function parseCsvFile(file: File) {
     }
   );
 
-  //calculate quarter
-  // const async function getQuarter(date)
-
   // Normalize & clean data
 
   const cleaned = results.data.map((row) => ({
@@ -56,7 +53,8 @@ export async function parseCsvFile(file: File) {
     shortTerm: row["Short Term"] ?? "",
     nights: parseInt(row["Nights"] || "0"),
     guest: row["Guest"] ?? "",
-    listing: row["Listing"] ?? "", // This must be converted to "listingId" for the for the transactions table
+    listing: row["Listing"] ?? "", // This must be converted to "listingId" for the for the transactions table,
+    listingId: null,
     details: row["Details"] ?? "",
     amount: parseFloat(row["Amount"] || "0"),
     paidOut: parseFloat(row["Paid out"] || "0"),
@@ -64,7 +62,6 @@ export async function parseCsvFile(file: File) {
     cleaningFee: parseFloat(row["Cleaning fee"] || "0"),
     grossEarnings: parseFloat(row["Gross earnings"] || "0"),
     totalOccupancyTaxes: parseFloat(row["Occupancy taxes"] || "0"),
-    quarter: null,
     earningsYear: parseInt(row["Earnings year"] || "0"),
     countyTax: null,
     stateTax: null,
