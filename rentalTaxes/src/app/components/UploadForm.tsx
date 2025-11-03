@@ -1,7 +1,7 @@
 "use client";
 
 import { quarterlyFile, transactions } from "@/lib/db/schema";
-import { parseCsvFile } from "@/lib/importCsv";
+import { parseCsvFile } from "@/lib/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
 
