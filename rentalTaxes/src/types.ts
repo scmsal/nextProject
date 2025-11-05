@@ -1,3 +1,5 @@
-import { transactions } from "./lib/db/schema";
+import { listings, properties, transactions } from "./lib/db/schema";
 
-export type Transaction = typeof transactions.$inferSelect
+export type Transaction = typeof transactions.$inferSelect;
+export type Property = typeof properties.$inferSelect;
+export type Listing = typeof listings.$inferSelect;

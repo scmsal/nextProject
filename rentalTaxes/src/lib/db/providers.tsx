@@ -18,8 +18,8 @@ import {
 
 import ReplWithButtons from "@/app/components/ReplWithButtons";
 
-import { properties, transactions, quarterlyFile } from "./schema";
-import { Transaction } from "@/types";
+import { properties, transactions, listings, quarterlyFile } from "./schema";
+import { Property, Transaction, Listing } from "@/types";
 
 type DbContextType = {
   pgLite: PGliteWithLive | undefined;
@@ -41,12 +41,28 @@ export function Providers({ children }: { children: ReactNode }) {
   const [pgLite, setPgLite] = useState<PGliteWithLive>();
   const [db, setDb] = useState<PgliteDatabase>();
   const [transactionsData, setTransactionsData] = useState<Transaction[]>([]);
+  const [propertiesData, setPropertiesData] = useState<Property[]>([]);
+  const [listingsData, setListingsData] = useState<Listing[]>([]);
 
   async function loadTransactions() {
     if (!db) return;
 
     const result = await db.select().from(transactions);
     setTransactionsData(result);
+  }
+
+  async function loadProperties() {
+    if (!db) return;
+
+    const result = await db.select().from(properties);
+    setPropertiesData(result);
+  }
+
+  async function loadListings() {
+    if (!db) return;
+
+    const result = await db.select().from(listings);
+    setListingsData(result);
   }
 
   useEffect(() => {

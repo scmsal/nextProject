@@ -64,17 +64,18 @@ export const transactions = pgTable("transactions", {
 // ----------------------
 export const properties = pgTable("properties", {
   id: serial("id").primaryKey(),
-  address: varchar("address", { length: 255 }),
+  propertyName: varchar("property_name", { length: 255 }).unique(),
+  address: varchar("address", { length: 255 }).unique(),
   town: varchar("town", { length: 100 }),
-  // listings: jsonb("listings").$type<string[]>(), <---- remove this property
+  county: varchar("county", { length: 100 }),
 });
 
 // ----------------------
-// Properties Table
+// Listings Table
 // ----------------------
 export const listings = pgTable("listings", {
   id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }),
+  listingName: varchar("listing_name", { length: 255 }).unique(),
   propertyId: integer("property_id").references(() => properties.id),
 });
 

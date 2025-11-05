@@ -2,6 +2,7 @@
 
 import TransactionsTable from "./components/TransactionsTable";
 import UploadForm from "./components/UploadForm";
+import { PropertiesForm } from "./components/PropertiesForm";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,7 +21,8 @@ export default function Home() {
         <h1 className="text-3xl">Rental Income Manager</h1>
 
         <UploadForm />
-        <TransactionsTable data={transactionsData} />
+        {transactionsData && <TransactionsTable data={transactionsData} />}
+        <PropertiesForm />
       </main>
     </div>
   );

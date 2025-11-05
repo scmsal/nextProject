@@ -7,9 +7,10 @@ import {
 
 //TO DO: build properties table with TanStack
 // export type Property = {
-//   address: string;
+//   name: string,
+//address: string;
 //   town: string;
-//   listings: [string];
+//  county: string
 // };
 
 // export default function PropertiesTable({ data }: { data: Property[] }) {}
