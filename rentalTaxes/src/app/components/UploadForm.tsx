@@ -1,7 +1,7 @@
 "use client";
 
 import { quarterlyFile, transactions } from "@/lib/db/schema";
-import { parseCsvFile } from "@/lib/importCSV";
+import { parseTransactionsCsvFile } from "@/lib/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
 
@@ -27,7 +27,7 @@ export default function UploadForm() {
 
         //parse and clean csv data
         // You need to pass the whole table of listing data so it can convert the listing name to a listingId
-        const cleaned = await parseCsvFile(file);
+        const cleaned = await parseTransactionsCsvFile(file);
 
         //bulk insert into PGlite via Drizzle
         if (!db) {

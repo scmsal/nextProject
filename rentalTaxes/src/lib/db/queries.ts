@@ -35,6 +35,7 @@ export async function handleAdd(db: PgliteDatabase) {
 export async function addProperties(db: PgliteDatabase) {
   await db?.insert(properties).values({
     address: "101",
+    propertyName: "Main house",
     town: "Montauk",
   });
   console.log("ran addProperties");

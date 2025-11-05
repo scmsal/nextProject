@@ -6,6 +6,7 @@ import {
   integer,
   text,
   timestamp,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -62,22 +63,33 @@ export const transactions = pgTable("transactions", {
 // ----------------------
 // Properties Table
 // ----------------------
-export const properties = pgTable("properties", {
-  id: serial("id").primaryKey(),
-  propertyName: varchar("property_name", { length: 255 }).unique(),
-  address: varchar("address", { length: 255 }).unique(),
-  town: varchar("town", { length: 100 }),
-  county: varchar("county", { length: 100 }),
-});
+export const properties = pgTable(
+  "properties",
+  {
+    id: serial("id").primaryKey(),
+    propertyName: varchar("property_name", { length: 255 }),
+    address: varchar("address", { length: 255 }),
+    town: varchar("town", { length: 100 }),
+    county: varchar("county", { length: 100 }),
+  },
+  (table) => [
+    uniqueIndex("unique_property_name").on(table.propertyName),
+    uniqueIndex("unique_address").on(table.address),
+  ]
+);
 
 // ----------------------
 // Listings Table
 // ----------------------
-export const listings = pgTable("listings", {
-  id: serial("id").primaryKey(),
-  listingName: varchar("listing_name", { length: 255 }).unique(),
-  propertyId: integer("property_id").references(() => properties.id),
-});
+export const listings = pgTable(
+  "listings",
+  {
+    id: serial("id").primaryKey(),
+    listingName: varchar("listing_name", { length: 255 }),
+    propertyId: integer("property_id").references(() => properties.id),
+  },
+  (table) => [uniqueIndex("unique_listing_name").on(table.listingName)]
+);
 
 // ----------------------
 // Quarterly Table

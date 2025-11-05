@@ -3,9 +3,19 @@ import { FormEvent, useState } from "react";
 import { properties } from "@/lib/db/schema";
 import { Property } from "@/types";
 
+//Use typed status to make conditional styling possible
+//TO DO: see if I need the same for UploadForm.tsx
+interface Status {
+  message: string;
+  type: "success" | "error" | "";
+}
 export function PropertiesForm() {
   const { db } = useDb();
-  const [status, setStatus] = useState("");
+
+  const [status, setStatus] = useState<Status>({
+    message: "",
+    type: "",
+  });
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,17 +36,32 @@ export function PropertiesForm() {
     /*TO DO: eventually use toast library or UI framework for toast. Use a small toast library (react-hot-toast, sonner, react-toastify) or  UI framework’s built-in (e.g. NextUI, Radix, or MUI Snackbar). Trigger it after the insert resolves:
             toast.success("Property successfully added");
     */
-    setStatus(`Property successfully added.`);
-    setTimeout(() => setStatus(""), 2000);
+  }
+  function isPgError(error: any): error is { code: string } {
+    return typeof error?.code === "string";
   }
 
   async function addPropertyToDb(cleaned: any) {
     if (!db) {
-      setStatus("Database not initialized.");
+      setStatus({ message: "Database not initialized.", type: "error" });
       return;
     }
-    await db.insert(properties).values(cleaned);
-    //TO DO: handle error status
+    try {
+      await db.insert(properties).values(cleaned);
+      setStatus({ message: `Property successfully added.`, type: "success" });
+      setTimeout(() => setStatus({ message: "", type: "" }), 2000);
+    } catch (error: any) {
+      //Postgres unique constraint violation
+      if (isPgError(error) && error.code === "23505") {
+        setStatus({
+          message: "A property with this name or address already exists.",
+          type: "error",
+        });
+      } else {
+        console.error("Database insert error:", error);
+        setStatus({ message: "Error adding property", type: "error" });
+      }
+    }
   }
 
   return (
@@ -72,7 +97,15 @@ export function PropertiesForm() {
       <button className="border p-2" type="submit">
         Submit
       </button>
-      {status && <p className="text-green-600">{status}</p>}
+      {status && (
+        <p
+          className={
+            status.type === "success" ? "text-green-600" : "text-red-600"
+          }
+        >
+          {status.message}
+        </p>
+      )}
     </form>
   );
 }

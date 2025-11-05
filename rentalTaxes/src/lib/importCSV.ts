@@ -2,7 +2,7 @@ import Papa from "papaparse";
 
 // Define a type for a single CSV row
 //TODO: CONVERT STRINGS TO NUMERIC/BOOLEAN WHERE APPLICABLE?
-export interface RawCsvRow {
+export interface RawTransactionsCsv {
   Date?: string;
   "Arriving by date"?: string;
   Type?: string;
@@ -27,18 +27,31 @@ export interface RawCsvRow {
   // stateTax?: null; //TODO DO: THIS WILL BE A CALCULATED FIELD
 }
 
+export interface RawPropertiesCsv {
+  propertyName?: string;
+  address?: string;
+  town?: string;
+  county?: string;
+}
+
+export interface RawListingsCsv {
+  listingName?: string;
+  propertyId: number;
+}
+
 // pure data parser, no DB access
-export async function parseCsvFile(file: File) {
-  const results = await new Promise<{ data: RawCsvRow[]; errors: any[] }>(
-    (resolve, reject) => {
-      Papa.parse<RawCsvRow>(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: resolve,
-        error: reject,
-      });
-    }
-  );
+export async function parseTransactionsCsvFile(file: File) {
+  const results = await new Promise<{
+    data: RawTransactionsCsv[];
+    errors: any[];
+  }>((resolve, reject) => {
+    Papa.parse<RawTransactionsCsv>(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: resolve,
+      error: reject,
+    });
+  });
 
   // Normalize & clean data
 
@@ -67,5 +80,49 @@ export async function parseCsvFile(file: File) {
     stateTax: null,
   }));
 
+  return cleaned;
+}
+
+export async function parsePropertiesCsvFile(file: File) {
+  const results = await new Promise<{
+    data: RawPropertiesCsv[];
+    errors: any[];
+  }>((resolve, reject) => {
+    Papa.parse<RawPropertiesCsv>(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: resolve,
+      error: reject,
+    });
+  });
+  // Normalize & clean data
+
+  const cleaned = results.data.map((row) => ({
+    propertyName: row["propertyName"] ?? "",
+    address: row["address"] ?? "",
+    town: row["town"] ?? "",
+    county: row["county"] ?? "",
+  }));
+  return cleaned;
+}
+
+export async function parseListingsCsvFile(file: File) {
+  const results = await new Promise<{
+    data: RawListingsCsv[];
+    errors: any[];
+  }>((resolve, reject) => {
+    Papa.parse<RawListingsCsv>(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: resolve,
+      error: reject,
+    });
+  });
+  // Normalize & clean data
+
+  const cleaned = results.data.map((row) => ({
+    listingName: row["listingName"] ?? "",
+    propertyId: row["propertyId"] ?? null,
+  }));
   return cleaned;
 }
