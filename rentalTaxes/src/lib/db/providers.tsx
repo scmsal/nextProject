@@ -24,8 +24,10 @@ import { Property, Transaction, Listing } from "@/types";
 type DbContextType = {
   pgLite: PGliteWithLive | undefined;
   db: PgliteDatabase | undefined;
-  transactionsData: Transaction[]; //or Transactions type? Yes!
+  transactionsData: Transaction[];
   loadTransactions: () => Promise<void>;
+  loadProperties: () => Promise<void>;
+  loadListings: () => Promise<void>;
 };
 
 const DbContext = createContext<DbContextType | null>(null);
@@ -88,6 +90,8 @@ export function Providers({ children }: { children: ReactNode }) {
       setPgLite(pgLite);
       setDb(db);
       await loadTransactions(); // initial load
+      await loadProperties();
+      await loadListings();
     };
 
     initDb();
@@ -120,7 +124,14 @@ export function Providers({ children }: { children: ReactNode }) {
     //DbContext.Provider shares the Drizzle connection and transactionsData state
     <PGliteProvider db={pgLite}>
       <DbContext.Provider
-        value={{ pgLite, db, transactionsData, loadTransactions }}
+        value={{
+          pgLite,
+          db,
+          transactionsData,
+          loadTransactions,
+          loadProperties,
+          loadListings,
+        }}
       >
         <ReplWithButtons />
         {children}

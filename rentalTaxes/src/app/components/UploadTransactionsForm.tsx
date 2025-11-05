@@ -1,11 +1,11 @@
 "use client";
 
-import { quarterlyFile, transactions } from "@/lib/db/schema";
+import { transactions } from "@/lib/db/schema";
 import { parseTransactionsCsvFile } from "@/lib/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
 
-export default function UploadForm() {
+export default function UploadTransactionsForm() {
   const { db, loadTransactions } = useDb();
   const [status, setStatus] = useState("");
   const [file, setFile] = useState<File | null>(null);

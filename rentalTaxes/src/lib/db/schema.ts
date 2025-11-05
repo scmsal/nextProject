@@ -165,21 +165,21 @@ Listings
 This allows you to use drizzle's query syntax (https://orm.drizzle.team/docs/rqb)
 which is better than the select syntax
 */
-// export const transactionsRelations = relations(transactions, ({ one }) => ({
-//   listing: one(listings, {
-//     fields: [transactions.listingId],
-//     references: [listings.id],
-//   }),
-// }));
+export const transactionsRelations = relations(transactions, ({ one }) => ({
+  listing: one(listings, {
+    fields: [transactions.listingId],
+    references: [listings.id],
+  }),
+}));
 
-// export const propertiesRelations = relations(properties, ({ many }) => ({
-//   listings: many(listings),
-// }));
+export const propertiesRelations = relations(properties, ({ many }) => ({
+  listings: many(listings),
+}));
 
-// export const listingsRelations = relations(listings, ({ one, many }) => ({
-//   property: one(properties, {
-//     fields: [listings.propertyId],
-//     references: [properties.id],
-//   }),
-//   transactions: many(transactions),
-// }));
+export const listingsRelations = relations(listings, ({ one, many }) => ({
+  property: one(properties, {
+    fields: [listings.propertyId],
+    references: [properties.id],
+  }),
+  transactions: many(transactions),
+}));

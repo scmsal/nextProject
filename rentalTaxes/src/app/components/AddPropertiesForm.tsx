@@ -9,7 +9,8 @@ interface Status {
   message: string;
   type: "success" | "error" | "";
 }
-export function PropertiesForm() {
+export function AddPropertiesForm() {
+  //TO DO: add propertiesData to state?
   const { db } = useDb();
 
   const [status, setStatus] = useState<Status>({
