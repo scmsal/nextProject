@@ -43,6 +43,14 @@ export const CREATE_PROPERTIES_TABLE = `
    );
   `;
 
+export const CREATE_LISTINGS_TABLE = `
+   CREATE TABLE IF NOT EXISTS listings(
+   id SERIAL PRIMARY KEY,
+   listing_name varchar(150),
+   property_id integer
+   );
+  `;
+
 export const CREATE_QUARTERLY_TABLE = `
    CREATE TABLE IF NOT EXISTS quarterly(
    id SERIAL PRIMARY KEY,

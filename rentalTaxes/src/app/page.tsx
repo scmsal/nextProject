@@ -2,8 +2,10 @@
 
 import TransactionsTable from "./components/TransactionsTable";
 import UploadTransactionsForm from "./components/UploadTransactionsForm";
-import { AddPropertiesForm } from "./components/AddPropertiesForm";
+import { AddPropertyForm } from "./components/AddPropertyForm";
 import UploadPropertiesForm from "./components/UploadPropertiesForm";
+import { AddListingForm } from "./components/AddListingForm";
+
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -23,8 +25,9 @@ export default function Home() {
 
         <UploadTransactionsForm />
         {transactionsData && <TransactionsTable data={transactionsData} />}
-        <AddPropertiesForm />
+        <AddPropertyForm />
         <UploadPropertiesForm />
+        <AddListingForm />
       </main>
     </div>
   );

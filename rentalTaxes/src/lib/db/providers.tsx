@@ -13,6 +13,7 @@ import { drizzle, PgliteDatabase } from "drizzle-orm/pglite";
 import {
   CREATE_TRANSACTIONS_TABLE,
   CREATE_PROPERTIES_TABLE,
+  CREATE_LISTINGS_TABLE,
   CREATE_QUARTERLY_TABLE,
 } from "./createTables";
 
@@ -25,6 +26,7 @@ type DbContextType = {
   pgLite: PGliteWithLive | undefined;
   db: PgliteDatabase | undefined;
   transactionsData: Transaction[];
+  propertiesData: Property[];
   loadTransactions: () => Promise<void>;
   loadProperties: () => Promise<void>;
   loadListings: () => Promise<void>;
@@ -58,6 +60,7 @@ export function Providers({ children }: { children: ReactNode }) {
 
     const result = await db.select().from(properties);
     setPropertiesData(result);
+    console.log("properties:", result);
   }
 
   async function loadListings() {
@@ -82,6 +85,9 @@ export function Providers({ children }: { children: ReactNode }) {
       await pgLite.exec(CREATE_PROPERTIES_TABLE);
       console.log("Properties table created.");
 
+      await pgLite.exec(CREATE_LISTINGS_TABLE);
+      console.log("Listings table created.");
+
       await pgLite.exec(CREATE_QUARTERLY_TABLE);
       console.log("Quarterly table created.");
 
@@ -89,13 +95,24 @@ export function Providers({ children }: { children: ReactNode }) {
       const db = drizzle(pgLite);
       setPgLite(pgLite);
       setDb(db);
-      await loadTransactions(); // initial load
-      await loadProperties();
-      await loadListings();
     };
 
     initDb();
   }, []);
+
+  useEffect(() => {
+    if (!db) return;
+    (async () => {
+      try {
+        // initial load
+        await loadTransactions();
+        await loadProperties();
+        await loadListings();
+      } catch (err) {
+        console.error("Error loading data:", err);
+      }
+    })();
+  }, [db]);
 
   if (!pgLite || !db) {
     return <div>Initializing database...</div>;
@@ -128,6 +145,7 @@ export function Providers({ children }: { children: ReactNode }) {
           pgLite,
           db,
           transactionsData,
+          propertiesData,
           loadTransactions,
           loadProperties,
           loadListings,
