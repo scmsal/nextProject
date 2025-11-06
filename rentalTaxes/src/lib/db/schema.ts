@@ -72,6 +72,7 @@ export const properties = pgTable(
     town: varchar("town", { length: 100 }),
     county: varchar("county", { length: 100 }),
   },
+  //PGlite doesn't fully enforce unique constraints, so this would only work in the full PostgreSQL
   (table) => [
     uniqueIndex("unique_property_name").on(table.propertyName),
     uniqueIndex("unique_address").on(table.address),

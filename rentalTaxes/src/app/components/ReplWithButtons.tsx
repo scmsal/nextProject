@@ -4,6 +4,7 @@ import {
   handleLog,
   handlePropertyLog,
   addProperties,
+  addSampleListings,
 } from "@/lib/db/queries";
 
 import { useDb } from "@/lib/db/providers";
@@ -50,6 +51,14 @@ export default function ReplWithButtons() {
         }}
       >
         Log Properties
+      </button>
+      <button
+        className="ml-2 hover:bg-gray-50 cursor-pointer border"
+        onClick={() => {
+          addSampleListings(db);
+        }}
+      >
+        Add Listings
       </button>
     </>
   );
