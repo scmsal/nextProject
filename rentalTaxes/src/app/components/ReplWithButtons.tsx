@@ -3,7 +3,7 @@ import {
   handleAdd,
   handleLog,
   handlePropertyLog,
-  addProperties,
+  addSampleProperties,
   addSampleListings,
 } from "@/lib/db/queries";
 
@@ -39,7 +39,7 @@ export default function ReplWithButtons() {
       <button
         className="ml-2 hover:bg-gray-50 cursor-pointer border"
         onClick={() => {
-          addProperties(db);
+          addSampleProperties(db);
         }}
       >
         Add Properties
