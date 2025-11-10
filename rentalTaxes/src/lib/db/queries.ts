@@ -14,10 +14,9 @@ export async function handleAdd(db: PgliteDatabase) {
     bookingDate: "2022-01-01",
     startDate: "2022-01-01",
     endDate: "2022-01-02",
-    shortTerm: "yes",
     nights: 1,
     guest: "Jane Doe",
-    listing: "Hotel XYZ",
+    listingName: "Hotel XYZ",
     listingId: 0,
     details: "Test booking",
     amount: 100,
@@ -33,7 +32,7 @@ export async function handleAdd(db: PgliteDatabase) {
     uploadedAt: new Date(),
   });
 }
-export async function addProperties(db: PgliteDatabase) {
+export async function addSampleProperties(db: PgliteDatabase) {
   await db?.insert(properties).values({
     address: "101",
     propertyName: "Main house",
@@ -43,13 +42,14 @@ export async function addProperties(db: PgliteDatabase) {
 }
 
 export async function addSampleListings(db: PgliteDatabase) {
+  console.log("addSampleListings ran.");
   await db.insert(listings).values([
     { listingName: "Cozy haven", propertyId: 3 },
-    { listingName: "Comfortable 2 bedroom", propertyId: 3 },
-    { listingName: "Neat 1 bedroom", propertyId: 3 },
-    { listingName: "Spacious 2 bedroom", propertyId: 1 },
-    { listingName: "Bright 1 bedroom", propertyId: 4 },
-    { listingName: "Peaceful 2 bedroom", propertyId: 2 },
+    { listingName: "Comfortable 2nd floor apartment", propertyId: 3 },
+    { listingName: "Neat one-bedroom apartment", propertyId: 3 },
+    { listingName: "Spacious 2-bedroom", propertyId: 1 },
+    { listingName: "Bright 1-bedroom", propertyId: 4 },
+    { listingName: "Peaceful 2-bedroom", propertyId: 2 },
   ]);
 }
 
@@ -75,33 +75,33 @@ export async function getListingsWithProperties(db: PgliteDatabase) {
 }
 
 export async function getPropertyAggregates(
-  db: PgliteDatabase,
-  startDate?: string,
-  endDate?: string
+  db: PgliteDatabase
+  // startDate?: string,
+  // endDate?: string
 ) {
+  console.log("getPropertyAggregates ran");
   //base query
   let query = db
     .select({
+      propertyId: properties.id,
       propertyName: properties.propertyName,
-      totalRevenue: sql<number>`SUM(${transactions.amount}`,
+      totalRevenue: sql<number>`SUM(${transactions.amount})`,
+      //lt30NightsRevenue
       listingCount: sql<number>`COUNT(${listings.id})`,
     })
     .from(properties)
     .leftJoin(listings, eq(listings.propertyId, properties.id))
     .leftJoin(transactions, eq(transactions.listingId, listings.id))
-    .where(
-      startDate && endDate
-        ? and(
-            gte(transactions.date, startDate),
-            lte(transactions.date, endDate)
-          )
-        : startDate
-        ? gte(transactions.date, startDate)
-        : endDate
-        ? lte(transactions.date, endDate)
-        : undefined
-    )
-    .groupBy(properties.propertyName);
+    .groupBy(properties.id);
 
-  return query;
+  //TO DO: normalize listing names before grouping(but with drizzle instead of sql)
+  //  SELECT
+  //  TRIM(LOWER(listing)) AS normalized_listing,
+  //  SUM(amount)
+  //  FROM transactions
+  //  GROUP BY normalized_listing;
+
+  const results = await query;
+  console.log("aggregates:", results);
+  return results;
 }

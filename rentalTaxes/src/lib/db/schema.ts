@@ -7,6 +7,7 @@ import {
   text,
   timestamp,
   uniqueIndex,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -33,9 +34,9 @@ export const transactions = pgTable("transactions", {
     .$type<string | null>()
     .default(null),
   nights: integer("nights").$type<number | null>().default(null),
-  shortTerm: varchar("short_term").default(""),
+  shortTerm: boolean("short_term"),
   guest: varchar("guest", { length: 100 }).$type<string | null>().default(null),
-  listing: varchar("listing", { length: 100 })
+  listingName: varchar("listing_name", { length: 100 })
     .$type<string | null>()
     .default(null),
   listingId: integer("listing_id")
@@ -44,7 +45,7 @@ export const transactions = pgTable("transactions", {
   details: varchar("details", { length: 255 })
     .$type<string | null>()
     .default(null),
-  amount: numeric("amount").$type<number | null>().default(null),
+  amount: numeric("amount").$type<number>().default(0),
   paidOut: numeric("paid_out").$type<number | null>().default(null),
   serviceFee: numeric("service_fee").$type<number | null>().default(null),
   fastPayFee: numeric("fast_pay_fee").$type<number | null>().default(null),
@@ -86,9 +87,10 @@ export const listings = pgTable(
   "listings",
   {
     id: serial("id").primaryKey(),
-    listingName: varchar("listing_name", { length: 255 }),
+    listingName: varchar("listing_name", { length: 255 }).notNull(),
     propertyId: integer("property_id").references(() => properties.id),
   },
+  //PGlite doesn't fully enforce unique constraints, so this would only work in the full PostgreSQL
   (table) => [uniqueIndex("unique_listing_name").on(table.listingName)]
 );
 

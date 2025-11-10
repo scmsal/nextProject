@@ -5,19 +5,22 @@ import {
   handlePropertyLog,
   addSampleProperties,
   addSampleListings,
+  getPropertyAggregates,
+  getListingsWithProperties,
 } from "@/lib/db/queries";
 
 import { useDb } from "@/lib/db/providers";
 
 export default function ReplWithButtons() {
-  const { db, pgLite, loadTransactions } = useDb();
+  const { db, pgLite, loadTransactions, loadListings, loadProperties } =
+    useDb();
 
   if (!pgLite || !db) {
     return <div>Loading database...</div>;
   }
 
   return (
-    <>
+    <div className="ps-4">
       <Repl pg={pgLite} />
       <button
         className="hover:bg-gray-50 cursor-pointer border"
@@ -40,6 +43,7 @@ export default function ReplWithButtons() {
         className="ml-2 hover:bg-gray-50 cursor-pointer border"
         onClick={() => {
           addSampleProperties(db);
+          loadProperties();
         }}
       >
         Add Properties
@@ -56,10 +60,20 @@ export default function ReplWithButtons() {
         className="ml-2 hover:bg-gray-50 cursor-pointer border"
         onClick={() => {
           addSampleListings(db);
+          loadListings();
         }}
       >
         Add Listings
       </button>
-    </>
+      <button
+        className="ml-2 hover:bg-gray-50 cursor-pointer border"
+        onClick={() => {
+          const results = getPropertyAggregates(db);
+          console.log("aggregates:", results);
+        }}
+      >
+        Aggregates
+      </button>
+    </div>
   );
 }

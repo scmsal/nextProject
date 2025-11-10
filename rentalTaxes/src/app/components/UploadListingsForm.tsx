@@ -6,7 +6,7 @@ import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
 
 export default function UploadListingsForm() {
-  const { db, loadListings } = useDb();
+  const { db, listingsData, loadListings } = useDb();
   const [status, setStatus] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
@@ -31,6 +31,7 @@ export default function UploadListingsForm() {
         await db.insert(listings).values(cleaned);
         setStatus(`Imported ${cleaned.length} listings.`);
         await loadListings();
+        console.log("listingsData:", listingsData);
       } catch (err) {
         console.error(err);
         setStatus("Error importing file.");

@@ -27,6 +27,7 @@ type DbContextType = {
   db: PgliteDatabase | undefined;
   transactionsData: Transaction[];
   propertiesData: Property[];
+  listingsData: Listing[];
   loadTransactions: () => Promise<void>;
   loadProperties: () => Promise<void>;
   loadListings: () => Promise<void>;
@@ -67,7 +68,8 @@ export function Providers({ children }: { children: ReactNode }) {
     if (!db) return;
 
     const result = await db.select().from(listings);
-    setListingsData(result);
+    await setListingsData(result);
+    await console.log("inside loadListings. ListingsData:", listingsData);
   }
 
   useEffect(() => {
@@ -146,6 +148,7 @@ export function Providers({ children }: { children: ReactNode }) {
           db,
           transactionsData,
           propertiesData,
+          listingsData,
           loadTransactions,
           loadProperties,
           loadListings,

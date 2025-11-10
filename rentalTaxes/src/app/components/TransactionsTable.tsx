@@ -8,34 +8,6 @@ import {
 import { sampleTransactions } from "@/lib/db/sampleData";
 import { Transaction } from "@/types";
 
-// I removed this custom type, and replaced it with the inferred type from the types.ts file
-// export type Transaction = {
-//   date: string;
-//   arrivalDate: string;
-//   type: string; // e.g. payout, reimbursement, refund
-//   confirmationCode: string;
-//   bookingDate: string;
-//   startDate: string;
-//   endDate: string;
-//   nights: number;
-//   shortTerm: string;
-//   guest: string;
-//   listing: string;
-//   details: string;
-//   amount: number;
-//   paidOut: number;
-//   serviceFee: number;
-//   fastPayFee: number;
-//   cleaningFee: number;
-//   grossEarnings: number;
-//   totalOccupancyTaxes: number;
-//   earningsYear: number;
-//   countyTax: number;
-//   stateTax: number;
-//   sourceFile: string;
-//   uploadedAt: Date;
-// };
-
 export default function TransactionsTable({ data }: { data: Transaction[] }) {
   //   const data: Transaction[] = sampleTransactions;
 
@@ -56,7 +28,8 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
     { accessorKey: "nights", header: "Nights" },
     { accessorKey: "shortTerm", header: "Short Term" },
     { accessorKey: "guest", header: "Guest" },
-    { accessorKey: "listing", header: "Listing" },
+    { accessorKey: "listingName", header: "Listing" },
+    { accessorKey: "listingId", header: "ListingID" },
     { accessorKey: "details", header: "Details" },
     {
       accessorKey: "amount",
@@ -80,7 +53,7 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
         const year = date.getFullYear();
         const quarter = Math.ceil(month / 3);
         return `Q${quarter}-${year}`;
-      }
+      },
     },
     { accessorKey: "earningsYear", header: "Earnings Year" },
     { accessorKey: "countyTax", header: "County Tax" },

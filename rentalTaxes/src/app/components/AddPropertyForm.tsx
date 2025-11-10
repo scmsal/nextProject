@@ -39,6 +39,7 @@ export function AddPropertyForm() {
             toast.success("Property successfully added");
     */
   }
+  //This might not work, as the unique constraints are not enforced in pglite
   function isPgError(error: any): error is { code: string } {
     return typeof error?.code === "string";
   }
