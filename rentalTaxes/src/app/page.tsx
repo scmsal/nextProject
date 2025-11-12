@@ -1,12 +1,12 @@
 "use client";
 
-import TransactionsTable from "./components/TransactionsTable";
-import UploadTransactionsForm from "./components/UploadTransactionsForm";
-import { AddPropertyForm } from "./components/AddPropertyForm";
-import UploadPropertiesForm from "./components/UploadPropertiesForm";
-import { AddListingForm } from "./components/AddListingForm";
-import UploadListingsForm from "./components/UploadListingsForm";
-import AggregateSummaries from "./components/AggregateSummaries";
+import TransactionsTable from "./components/tables/TransactionsTable";
+import UploadTransactionsForm from "./components/forms/UploadTransactionsForm";
+import { AddPropertyForm } from "./components/forms/AddPropertyForm";
+import UploadPropertiesForm from "./components/forms/UploadPropertiesForm";
+import { AddListingForm } from "./components/forms/AddListingForm";
+import UploadListingsForm from "./components/forms/UploadListingsForm";
+import AggregateSummaries from "./components/data/AggregateSummaries";
 
 import Image from "next/image";
 import Link from "next/link";

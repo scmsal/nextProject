@@ -66,7 +66,7 @@ export async function parseTransactionsCsvFile(file: File) {
     shortTerm: row["Short Term"] ?? "",
     nights: parseInt(row["Nights"] || "0"),
     guest: row["Guest"] ?? "",
-    listingName: row["Listing"] ?? "", // Normalize here? row["Listing"].trim().toLowerCase()
+    listingName: row["Listing"] ?? "",
     listingId: null,
     details: row["Details"] ?? "",
     amount: parseFloat(row["Amount"] || "0"),

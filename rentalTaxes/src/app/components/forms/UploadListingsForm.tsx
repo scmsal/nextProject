@@ -1,7 +1,7 @@
 "use client";
 
 import { listings } from "@/lib/db/schema";
-import { parseListingsCsvFile } from "@/lib/importCSV";
+import { parseListingsCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
 

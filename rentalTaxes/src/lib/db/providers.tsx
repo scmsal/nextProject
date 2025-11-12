@@ -17,7 +17,7 @@ import {
   CREATE_QUARTERLY_TABLE,
 } from "./createTables";
 
-import ReplWithButtons from "@/app/components/ReplWithButtons";
+import ReplWithButtons from "@/app/components/data/ReplWithButtons";
 
 import { properties, transactions, listings, quarterlyFile } from "./schema";
 import { Property, Transaction, Listing } from "@/types";

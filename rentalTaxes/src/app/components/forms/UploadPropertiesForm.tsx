@@ -1,7 +1,7 @@
 "use client";
 
 import { properties } from "@/lib/db/schema";
-import { parsePropertiesCsvFile } from "@/lib/importCSV";
+import { parsePropertiesCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
 

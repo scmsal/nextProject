@@ -94,13 +94,6 @@ export async function getPropertyAggregates(
     .leftJoin(transactions, eq(transactions.listingId, listings.id))
     .groupBy(properties.id);
 
-  //TO DO: normalize listing names before grouping(but with drizzle instead of sql)
-  //  SELECT
-  //  TRIM(LOWER(listing)) AS normalized_listing,
-  //  SUM(amount)
-  //  FROM transactions
-  //  GROUP BY normalized_listing;
-
   const results = await query;
   console.log("aggregates:", results);
   return results;
