@@ -9,7 +9,7 @@ import {
   uniqueIndex,
   boolean,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { isNotNull, relations } from "drizzle-orm";
 
 // ----------------------
 // Transactions Table
@@ -72,7 +72,7 @@ export const properties = pgTable(
   "properties",
   {
     id: serial("id").primaryKey(),
-    propertyName: varchar("property_name", { length: 255 }),
+    propertyName: varchar("property_name", { length: 255 }).notNull(),
     propertyKey: varchar("property_key", { length: 50 }),
     address: varchar("address", { length: 255 }),
     town: varchar("town", { length: 100 }),

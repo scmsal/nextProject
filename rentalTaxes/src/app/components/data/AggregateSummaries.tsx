@@ -1,12 +1,11 @@
 import { useDb } from "@/lib/db/providers";
-import { getPropertyAggregates } from "@/lib/db/queries";
+import { getRevenueAggregates } from "@/lib/db/queries";
 
 export default function AggregateSummaries() {
-  const { db } = useDb();
-  const handleAggregate = () => {
+  const { loadRevenueAggregates } = useDb();
+  const handleAggregate = async () => {
     console.log("handleAggregate clicked");
-    if (!db) return <p>Database not initialized</p>;
-    getPropertyAggregates(db);
+    await loadRevenueAggregates();
   };
   return (
     <button className="border py-2 px-4" onClick={handleAggregate}>

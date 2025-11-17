@@ -5,6 +5,9 @@ import { Listing, Property } from "@/types";
 
 //Use typed status to make conditional styling possible
 //TO DO: see if I need the same for UploadForm.tsx
+
+//TO DO: use createListingKey and add propertyKey
+//TO DO: clear property selection after submit
 interface Status {
   message: string;
   type: "success" | "error" | "";

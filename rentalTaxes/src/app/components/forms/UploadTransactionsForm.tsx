@@ -5,6 +5,7 @@ import { parseTransactionsCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
 import { useEffect } from "react";
+import { normalizeText } from "@/lib/data/normalization";
 
 export default function UploadTransactionsForm() {
   const { db, loadTransactions, listingsData } = useDb();
@@ -34,29 +35,26 @@ export default function UploadTransactionsForm() {
 
         const cleaned = await parseTransactionsCsvFile(file);
 
-        // You need to pass the whole table of listing data so it can convert the listing name to a listingId
-
         //created map for faster listingId and propertyId lookup
         const listingMap = Object.fromEntries(
           listingsData.map((row) => [
-            row.listingName.trim().toLowerCase(),
-            { id: row.id, propertyId: row.propertyId },
+            normalizeText(row.listingName),
+            { listingKey: row.listingKey, propertyKey: row.propertyKey },
           ])
         );
 
         console.log("listingMap:", listingMap);
         //enrich transaction CSV data with listingId from listingMap
+        //TO DO: also enrich with source file and uploadedAt
         const enriched = cleaned.map((row) => {
-          const listingName = row.listingName?.trim().toLowerCase(); //normalize listingName
+          const listingName = normalizeText(row.listingName);
           const match = listingMap[listingName];
 
-          //TO DO: REVIEW
           return {
             ...row,
-            // listing: row.listing,
-            listingId: match?.id ?? null,
-            propertyId: match?.propertyId ?? null,
-            shortTerm: Number(row.nights) < 30,
+            listingKey: match?.listingKey ?? null,
+            propertyKey: match?.propertyKey ?? null,
+            shortTerm: Number(row.nights) < 30 && Number(row.nights) > 0,
           };
         });
 
@@ -65,14 +63,14 @@ export default function UploadTransactionsForm() {
           setStatus("Database not initialized.");
           return;
         }
-        await db.insert(transactions).values(enriched);
+        await db.insert(transactions).values(enriched); //TO FIX: date is missing from a template
 
         setStatus(`Imported ${enriched.length} transactions.`);
         await loadTransactions();
 
         //warn about unmatched listings. TO DO: make it appear in UI too.
 
-        const unmatched = enriched.filter((row) => row.listingId === null);
+        const unmatched = enriched.filter((row) => row.listingKey === null);
         if (unmatched.length > 0) {
           console.warn(
             "Unmatched listings: ",

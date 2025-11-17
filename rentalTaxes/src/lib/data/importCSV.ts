@@ -1,4 +1,5 @@
 import Papa from "papaparse";
+import { createListingKey, createPropertyKey } from "./normalization";
 
 // Define a type for a single CSV row
 //TODO: CONVERT STRINGS TO NUMERIC/BOOLEAN WHERE APPLICABLE?
@@ -23,20 +24,18 @@ export interface RawTransactionsCsv {
   "Gross earnings"?: string;
   "Occupancy taxes"?: string;
   "Earnings year"?: string;
-  // countyTax?: null; //TODO DO: THIS WILL BE A CALCULATED FIELD
-  // stateTax?: null; //TODO DO: THIS WILL BE A CALCULATED FIELD
 }
 
 export interface RawPropertiesCsv {
-  propertyName?: string;
+  name?: string;
   address?: string;
   town?: string;
   county?: string;
 }
 
 export interface RawListingsCsv {
-  listingName?: string;
-  propertyId: number;
+  listing_name?: string;
+  property_key: string;
 }
 
 // pure data parser, no DB access
@@ -61,13 +60,15 @@ export async function parseTransactionsCsvFile(file: File) {
     type: row["Type"] ?? "",
     confirmationCode: row["Confirmation code"] ?? "",
     bookingDate: row["Booking date"] ?? "",
+    //TO DO: change dates from string to Date?
     startDate: row["Start date"] ?? "",
     endDate: row["End date"] ?? "",
     shortTerm: row["Short Term"] ?? "",
     nights: parseInt(row["Nights"] || "0"),
     guest: row["Guest"] ?? "",
     listingName: row["Listing"] ?? "",
-    listingId: null,
+    listingKey: null,
+    propertyKey: null,
     details: row["Details"] ?? "",
     amount: parseFloat(row["Amount"] || "0"),
     paidOut: parseFloat(row["Paid out"] || "0"),
@@ -95,14 +96,21 @@ export async function parsePropertiesCsvFile(file: File) {
       error: reject,
     });
   });
-  // Normalize & clean data
 
-  const cleaned = results.data.map((row) => ({
-    propertyName: row["propertyName"] ?? "",
-    address: row["address"] ?? "",
-    town: row["town"] ?? "",
-    county: row["county"] ?? "",
-  }));
+  // Normalize, clean, and enrich data (add propertyKey)
+
+  const cleaned = results.data.map((row) => {
+    const { name = "", address = "" } = row;
+    const propertyKey = createPropertyKey(name, address);
+    return {
+      propertyName: row["name"] ?? "",
+      address: row["address"] ?? "",
+      propertyKey,
+      town: row["town"] ?? "",
+      county: row["county"] ?? "",
+    };
+  });
+
   return cleaned;
 }
 
@@ -120,9 +128,14 @@ export async function parseListingsCsvFile(file: File) {
   });
   // Normalize & clean data
 
-  const cleaned = results.data.map((row) => ({
-    listingName: row["listingName"] ?? "",
-    propertyId: row["propertyId"] ?? null,
-  }));
+  const cleaned = results.data.map((row) => {
+    const { listing_name = "", property_key = "" } = row;
+    const listingKey = createListingKey(listing_name, property_key);
+    return {
+      listingName: row["listing_name"] ?? "",
+      propertyKey: row["property_key"] ?? null,
+      listingKey,
+    };
+  });
   return cleaned;
 }

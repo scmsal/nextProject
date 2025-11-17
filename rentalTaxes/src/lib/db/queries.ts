@@ -1,8 +1,27 @@
 import type { PgliteDatabase } from "drizzle-orm/pglite";
 import { transactions, properties, listings } from "./schema";
+// import { TableType } from "@/types";
 import { eq, sql, and, gte, lte } from "drizzle-orm";
 
-//TO DO: review how to break circular imports
+/**
+ * Check whether a record with the given key/value exists in a table.
+ * Works for both `properties` and `listings` tables.
+ */
+
+export async function existsInDb(
+  db: PgliteDatabase,
+  table: any,
+  keyName: string,
+  value: string
+): Promise<boolean> {
+  const column = table[keyName];
+  if (!column) throw new Error(`Column ${String(keyName)} not found in table`);
+  const result = await db
+    .select()
+    .from(table as any)
+    .where(eq(column as any, value));
+  return result.length > 0;
+}
 
 export async function handleAdd(db: PgliteDatabase) {
   console.log("handleAdd ran");
@@ -17,7 +36,6 @@ export async function handleAdd(db: PgliteDatabase) {
     nights: 1,
     guest: "Jane Doe",
     listingName: "Hotel XYZ",
-    listingId: 0,
     details: "Test booking",
     amount: 100,
     paidOut: 90,
@@ -43,14 +61,14 @@ export async function addSampleProperties(db: PgliteDatabase) {
 
 export async function addSampleListings(db: PgliteDatabase) {
   console.log("addSampleListings ran.");
-  await db.insert(listings).values([
-    { listingName: "Cozy haven", propertyId: 3 },
-    { listingName: "Comfortable 2nd floor apartment", propertyId: 3 },
-    { listingName: "Neat one-bedroom apartment", propertyId: 3 },
-    { listingName: "Spacious 2-bedroom", propertyId: 1 },
-    { listingName: "Bright 1-bedroom", propertyId: 4 },
-    { listingName: "Peaceful 2-bedroom", propertyId: 2 },
-  ]);
+  // await db.insert(listings).values([
+  //   { listingName: "Cozy haven", propertyId: 3 },
+  //   { listingName: "Comfortable 2nd floor apartment", propertyId: 3 },
+  //   { listingName: "Neat one-bedroom apartment", propertyId: 3 },
+  //   { listingName: "Spacious 2-bedroom", propertyId: 1 },
+  //   { listingName: "Bright 1-bedroom", propertyId: 4 },
+  //   { listingName: "Peaceful 2-bedroom", propertyId: 2 },
+  // ]);
 }
 
 export async function handleLog(db: PgliteDatabase) {
@@ -71,10 +89,12 @@ export async function getListingsWithProperties(db: PgliteDatabase) {
       propertyName: properties.propertyName,
     })
     .from(properties)
-    .leftJoin(listings, eq(listings.propertyId, properties.id));
+    .leftJoin(listings, eq(listings.propertyKey, properties.propertyKey));
 }
 
-export async function getPropertyAggregates(
+//TO DO: simplify the joins now that propertyKey and listingKey are in the transactions table
+//TO DO: aggregate by date
+export async function getRevenueAggregates(
   db: PgliteDatabase
   // startDate?: string,
   // endDate?: string
@@ -83,16 +103,29 @@ export async function getPropertyAggregates(
   //base query
   let query = db
     .select({
-      propertyId: properties.id,
+      propertyKey: properties.propertyKey,
       propertyName: properties.propertyName,
       totalRevenue: sql<number>`SUM(${transactions.amount})`,
-      //lt30NightsRevenue
-      listingCount: sql<number>`COUNT(${listings.id})`,
+      //add filter for only reservation and adjustment
+      lt30NightsRevenue: sql<number>`
+      SUM(
+        CASE WHEN ${transactions.shortTerm}
+        THEN ${transactions.amount}
+        ELSE 0 END
+      )
+    `,
+      gte30NightsRevenue: sql<number>`
+      SUM(
+        CASE WHEN NOT ${transactions.shortTerm}
+        ELSE 0 END
+      )
+    `,
+      // listingCount: sql<number>`COUNT(${listings.listingKey})`,
     })
     .from(properties)
-    .leftJoin(listings, eq(listings.propertyId, properties.id))
-    .leftJoin(transactions, eq(transactions.listingId, listings.id))
-    .groupBy(properties.id);
+    .leftJoin(listings, eq(listings.propertyKey, properties.propertyKey))
+    .leftJoin(transactions, eq(transactions.listingKey, listings.listingKey))
+    .groupBy(properties.propertyKey, properties.propertyName);
 
   const results = await query;
   console.log("aggregates:", results);

@@ -4,6 +4,9 @@ import { properties } from "@/lib/db/schema";
 import { parsePropertiesCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
+import { existsInDb } from "@/lib/db/queries";
+import { exists } from "node:fs";
+import { Property } from "@/types";
 
 export default function UploadPropertiesForm() {
   const { db, loadProperties } = useDb();
@@ -21,14 +24,33 @@ export default function UploadPropertiesForm() {
 
       try {
         setStatus(`Importing CSV file:, ${file.name}...`);
-
+        // clean and normalize data
         const cleaned = await parsePropertiesCsvFile(file);
 
         if (!db) {
           setStatus("Database not initialized.");
           return;
         }
-        await db.insert(properties).values(cleaned);
+
+        // Filter out duplicates asynchronously (existsInDb returns a Promise)
+
+        const uniqueCleaned = (
+          await Promise.all(
+            cleaned.map(async (row) => {
+              const exists = await existsInDb(
+                db,
+                properties,
+                "propertyKey",
+                row.propertyKey
+              );
+              return exists ? null : row; //only include unique rows
+            })
+          )
+        ).filter(Boolean) as Property[]; //remove nulls;
+
+        //insert into database
+
+        await db.insert(properties).values(uniqueCleaned);
         setStatus(`Imported ${cleaned.length} properties.`);
         await loadProperties();
       } catch (err) {

@@ -19,8 +19,10 @@ import {
 
 import ReplWithButtons from "@/app/components/data/ReplWithButtons";
 
+import { getRevenueAggregates } from "@/lib/db/queries";
+
 import { properties, transactions, listings, quarterlyFile } from "./schema";
-import { Property, Transaction, Listing } from "@/types";
+import { Property, Transaction, Listing, RevenueAggregates } from "@/types";
 
 type DbContextType = {
   pgLite: PGliteWithLive | undefined;
@@ -28,9 +30,11 @@ type DbContextType = {
   transactionsData: Transaction[];
   propertiesData: Property[];
   listingsData: Listing[];
+  revenueAggregatesData: RevenueAggregates[];
   loadTransactions: () => Promise<void>;
   loadProperties: () => Promise<void>;
   loadListings: () => Promise<void>;
+  loadRevenueAggregates: () => Promise<void>;
 };
 
 const DbContext = createContext<DbContextType | null>(null);
@@ -48,6 +52,9 @@ export function Providers({ children }: { children: ReactNode }) {
   const [transactionsData, setTransactionsData] = useState<Transaction[]>([]);
   const [propertiesData, setPropertiesData] = useState<Property[]>([]);
   const [listingsData, setListingsData] = useState<Listing[]>([]);
+  const [revenueAggregatesData, setRevenueAggregatesData] = useState<
+    RevenueAggregates[]
+  >([]);
 
   async function loadTransactions() {
     if (!db) return;
@@ -70,6 +77,12 @@ export function Providers({ children }: { children: ReactNode }) {
     const result = await db.select().from(listings);
     await setListingsData(result);
     await console.log("inside loadListings. ListingsData:", listingsData);
+  }
+
+  async function loadRevenueAggregates() {
+    if (!db) return;
+    const rows = await getRevenueAggregates(db);
+    setRevenueAggregatesData(rows);
   }
 
   useEffect(() => {
@@ -149,9 +162,11 @@ export function Providers({ children }: { children: ReactNode }) {
           transactionsData,
           propertiesData,
           listingsData,
+          revenueAggregatesData,
           loadTransactions,
           loadProperties,
           loadListings,
+          loadRevenueAggregates,
         }}
       >
         <ReplWithButtons />

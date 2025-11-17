@@ -7,6 +7,7 @@ import UploadPropertiesForm from "./components/forms/UploadPropertiesForm";
 import { AddListingForm } from "./components/forms/AddListingForm";
 import UploadListingsForm from "./components/forms/UploadListingsForm";
 import AggregateSummaries from "./components/data/AggregateSummaries";
+import RevenueAggregatesTable from "./components/tables/AggregateTable";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -17,7 +18,7 @@ import { useDb } from "@/lib/db/providers";
 
 export default function Home() {
   // You will also need listing and property data
-  const { transactionsData } = useDb();
+  const { transactionsData, revenueAggregatesData } = useDb();
   // const pathname = usePathname(); //TO DO: see if it's still necessary
 
   return (
@@ -42,6 +43,7 @@ export default function Home() {
         <h3 className="underline">Step 4</h3>
         <div className="flex flex-col md:flex-row">
           <AggregateSummaries />
+          <RevenueAggregatesTable data={revenueAggregatesData} />
         </div>
       </main>
     </div>
