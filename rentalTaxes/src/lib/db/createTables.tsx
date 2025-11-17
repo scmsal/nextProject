@@ -16,7 +16,8 @@ export const CREATE_TRANSACTIONS_TABLE = `
         nights INTEGER,
         guest VARCHAR(255),
         listing_name VARCHAR(255),
-        listing_id INTEGER,
+        listing_key VARCHAR(50),
+        property_key VARCHAR(50),
         details TEXT,
         amount NUMERIC,
         paid_out NUMERIC,
@@ -37,6 +38,7 @@ export const CREATE_PROPERTIES_TABLE = `
    CREATE TABLE IF NOT EXISTS properties(
    id SERIAL PRIMARY KEY,
    property_name varchar(150),
+   property_key varchar(50),
    address varchar(255),
    town varchar(100),
    county varchar(100)
@@ -46,8 +48,10 @@ export const CREATE_PROPERTIES_TABLE = `
 export const CREATE_LISTINGS_TABLE = `
    CREATE TABLE IF NOT EXISTS listings(
    id SERIAL PRIMARY KEY,
+   listing_key varchar(50),
    listing_name varchar(150),
-   property_id integer
+   property_key varchar(50),
+   platform varchar(100)
    );
   `;
 

@@ -19,18 +19,25 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
 
   const columns: ColumnDef<Transaction>[] = [
     { accessorKey: "date", header: "Date" },
-    { accessorKey: "arrivalDate", header: "Arrival Date" },
+    // { accessorKey: "arrivalDate", header: "Arrival Date" },
     { accessorKey: "type", header: "Type" },
     { accessorKey: "confirmationCode", header: "Confirmation Code" },
     { accessorKey: "bookingDate", header: "Booking Date" },
     { accessorKey: "startDate", header: "Start Date" },
     { accessorKey: "endDate", header: "End Date" },
     { accessorKey: "nights", header: "Nights" },
-    { accessorKey: "shortTerm", header: "Short Term" },
-    { accessorKey: "guest", header: "Guest" },
+    {
+      accessorKey: "shortTerm",
+      header: "Short Term",
+      cell: ({ row }) => {
+        const nights = row.original.nights ?? 0;
+        return nights > 0 && nights < 30;
+      },
+    },
+    // { accessorKey: "guest", header: "Guest" },
     { accessorKey: "listingName", header: "Listing" },
-    { accessorKey: "listingId", header: "ListingID" },
-    { accessorKey: "details", header: "Details" },
+    // { accessorKey: "listingKey", header: "Listing Key" },
+    // { accessorKey: "details", header: "Details" },
     {
       accessorKey: "amount",
       header: "Amount",
@@ -39,7 +46,7 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
     },
     { accessorKey: "paidOut", header: "Paid Out" },
     { accessorKey: "serviceFee", header: "Service Fee" },
-    { accessorKey: "fastPayFee", header: "Fast Pay Fee" },
+    // { accessorKey: "fastPayFee", header: "Fast Pay Fee" },
     { accessorKey: "cleaningFee", header: "Cleaning Fee" },
     { accessorKey: "grossEarnings", header: "Gross Earnings" },
     { accessorKey: "totalOccupancyTaxes", header: "Total Occupancy Taxes" },
@@ -55,7 +62,7 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
         return `Q${quarter}-${year}`;
       },
     },
-    { accessorKey: "earningsYear", header: "Earnings Year" },
+    // { accessorKey: "earningsYear", header: "Earnings Year" },
     { accessorKey: "countyTax", header: "County Tax" },
     { accessorKey: "stateTax", header: "State Tax" },
     { accessorKey: "sourceFile", header: "Source File" },

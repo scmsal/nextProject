@@ -39,9 +39,12 @@ export const transactions = pgTable("transactions", {
   listingName: varchar("listing_name", { length: 100 })
     .$type<string | null>()
     .default(null),
-  listingId: integer("listing_id")
+  listingKey: varchar("listing_key", { length: 50 })
     // .notNull()
     .references(() => listings.id),
+  propertyKey: varchar("property_key", { length: 50 })
+    .$type<string | null>()
+    .default(null),
   details: varchar("details", { length: 255 })
     .$type<string | null>()
     .default(null),
@@ -57,6 +60,7 @@ export const transactions = pgTable("transactions", {
   earningsYear: integer("earnings_year").$type<number | null>().default(null),
   countyTax: numeric("county_tax").$type<number | null>().default(null),
   stateTax: numeric("state_tax").$type<number | null>().default(null),
+  //TO DO: move to a metadata table instead?
   sourceFile: text("source_file").$type<string | null>().default(null),
   uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
 });
@@ -69,6 +73,7 @@ export const properties = pgTable(
   {
     id: serial("id").primaryKey(),
     propertyName: varchar("property_name", { length: 255 }),
+    propertyKey: varchar("property_key", { length: 50 }),
     address: varchar("address", { length: 255 }),
     town: varchar("town", { length: 100 }),
     county: varchar("county", { length: 100 }),
@@ -87,8 +92,12 @@ export const listings = pgTable(
   "listings",
   {
     id: serial("id").primaryKey(),
+    listingKey: varchar("listing_key", { length: 50 }),
     listingName: varchar("listing_name", { length: 255 }).notNull(),
-    propertyId: integer("property_id").references(() => properties.id),
+    propertyKey: varchar("property_key", { length: 50 }).references(
+      () => properties.propertyKey
+    ),
+    // platform: varchar("platform", { length: 100 }),
   },
   //PGlite doesn't fully enforce unique constraints, so this would only work in the full PostgreSQL
   (table) => [uniqueIndex("unique_listing_name").on(table.listingName)]
@@ -170,19 +179,24 @@ which is better than the select syntax
 */
 export const transactionsRelations = relations(transactions, ({ one }) => ({
   listing: one(listings, {
-    fields: [transactions.listingId],
-    references: [listings.id],
+    fields: [transactions.listingKey],
+    references: [listings.listingKey],
+  }),
+  property: one(properties, {
+    fields: [transactions.propertyKey],
+    references: [properties.propertyKey],
   }),
 }));
 
 export const propertiesRelations = relations(properties, ({ many }) => ({
   listings: many(listings),
+  transactions: many(transactions),
 }));
 
 export const listingsRelations = relations(listings, ({ one, many }) => ({
   property: one(properties, {
-    fields: [listings.propertyId],
-    references: [properties.id],
+    fields: [listings.propertyKey],
+    references: [properties.propertyKey],
   }),
   transactions: many(transactions),
 }));
