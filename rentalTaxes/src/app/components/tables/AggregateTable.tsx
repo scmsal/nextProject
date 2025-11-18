@@ -14,8 +14,10 @@ export default function RevenueAggregatesTable({
   const columns: ColumnDef<RevenueAggregates>[] = [
     { accessorKey: "propertyName", header: "Property" },
     { accessorKey: "totalRevenue", header: "Total Payouts" },
-    { accessorKey: "lt30NightsRevenue", header: "<30 Nights Revenue" },
-    { accessorKey: "gte30NightsRevenue", header: "30+ Nights Revenue" },
+    { accessorKey: "shortTermRevenue", header: "<30 Nights Revenue" },
+    { accessorKey: "shortTermStays", header: "<30 Nights Stays" },
+    { accessorKey: "longTermRevenue", header: "30+ Nights Revenue" },
+    { accessorKey: "longTermStays", header: "30+ Nights Stays" },
   ];
 
   const table = useReactTable<RevenueAggregates>({

@@ -10,8 +10,10 @@ export type TableType = typeof properties | typeof listings;
 export type RevenueAggregates = {
   propertyName: string;
   totalRevenue: number;
-  lt30NightsRevenue: number;
-  gte30NightsRevenue: number;
+  shortTermRevenue: number;
+  longTermRevenue: number;
+  shortTermStays: number;
+  longTermStays: number;
 };
 
 export type PropertyListings = {

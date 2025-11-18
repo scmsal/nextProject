@@ -62,7 +62,7 @@ export const transactions = pgTable("transactions", {
   stateTax: numeric("state_tax").$type<number | null>().default(null),
   //TO DO: move to a metadata table instead?
   sourceFile: text("source_file").$type<string | null>().default(null),
-  uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
+  uploadedAt: timestamp("uploaded_at").notNull(),
 });
 
 // ----------------------

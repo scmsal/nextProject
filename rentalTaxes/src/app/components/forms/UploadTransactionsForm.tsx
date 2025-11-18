@@ -29,8 +29,6 @@ export default function UploadTransactionsForm() {
         setStatus(`Importing CSV file:, ${file.name}...`);
 
         //TO DO: get filename to include as source in the table
-        //TO DO: get quarter by payout date
-
         //parse and clean csv data
 
         const cleaned = await parseTransactionsCsvFile(file);
@@ -44,6 +42,7 @@ export default function UploadTransactionsForm() {
         );
 
         console.log("listingMap:", listingMap);
+
         //enrich transaction CSV data with listingId from listingMap
         //TO DO: also enrich with source file and uploadedAt
         const enriched = cleaned.map((row) => {
@@ -55,6 +54,7 @@ export default function UploadTransactionsForm() {
             listingKey: match?.listingKey ?? null,
             propertyKey: match?.propertyKey ?? null,
             shortTerm: Number(row.nights) < 30 && Number(row.nights) > 0,
+            uploadedAt: new Date(),
           };
         });
 
@@ -65,12 +65,32 @@ export default function UploadTransactionsForm() {
         }
         await db.insert(transactions).values(enriched); //TO FIX: date is missing from a template
 
+        //debugging timestamp of uploadedAt defaulting to null
+        const cols = await db.execute(`
+  SELECT column_name, data_type, is_nullable, column_default
+  FROM information_schema.columns
+  WHERE table_name = 'transactions'
+`);
+        console.log(cols);
+
+        const r = await db.execute(`
+  INSERT INTO transactions (listing_key, amount)
+  VALUES ('test_manual', 1)
+  RETURNING *;
+`);
+
+        console.log("r:", r);
+
+        //end debugging
+
         setStatus(`Imported ${enriched.length} transactions.`);
         await loadTransactions();
 
         //warn about unmatched listings. TO DO: make it appear in UI too.
 
-        const unmatched = enriched.filter((row) => row.listingKey === null);
+        const unmatched = enriched.filter(
+          (row) => row.confirmationCode && row.listingKey === null
+        );
         if (unmatched.length > 0) {
           console.warn(
             "Unmatched listings: ",

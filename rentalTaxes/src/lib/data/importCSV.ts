@@ -1,5 +1,6 @@
 import Papa from "papaparse";
 import { createListingKey, createPropertyKey } from "./normalization";
+import { timeStamp } from "console";
 
 // Define a type for a single CSV row
 //TODO: CONVERT STRINGS TO NUMERIC/BOOLEAN WHERE APPLICABLE?
@@ -53,7 +54,6 @@ export async function parseTransactionsCsvFile(file: File) {
   });
 
   // Normalize & clean data
-
   const cleaned = results.data.map((row) => ({
     date: row["Date"] ?? "",
     arrivalDate: row["Arriving by date"] ?? "",

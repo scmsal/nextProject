@@ -107,22 +107,29 @@ export async function getRevenueAggregates(
       propertyName: properties.propertyName,
       totalRevenue: sql<number>`SUM(${transactions.amount})`,
       //add filter for only reservation and adjustment
-      lt30NightsRevenue: sql<number>`
+      shortTermRevenue: sql<number>`
       SUM(
         CASE WHEN ${transactions.shortTerm}
         THEN ${transactions.amount}
         ELSE 0 END
       )
     `,
-      gte30NightsRevenue: sql<number>`
+      longTermRevenue: sql<number>`
       SUM(
         CASE WHEN NOT ${transactions.shortTerm}
+        THEN ${transactions.amount}
         ELSE 0 END
       )
     `,
       // listingCount: sql<number>`COUNT(${listings.listingKey})`,
+      shortTermStays: sql<number>`COUNT(DISTINCT CASE WHEN ${transactions.shortTerm} THEN ${transactions.confirmationCode}
+        
+        ELSE null END)`,
+      longTermStays: sql<number>`COUNT(DISTINCT CASE WHEN NOT ${transactions.shortTerm} THEN ${transactions.confirmationCode}
+        ELSE null END)`,
     })
     .from(properties)
+    //TO DO: check against transactions schema, if propertyKey is included there
     .leftJoin(listings, eq(listings.propertyKey, properties.propertyKey))
     .leftJoin(transactions, eq(transactions.listingKey, listings.listingKey))
     .groupBy(properties.propertyKey, properties.propertyName);

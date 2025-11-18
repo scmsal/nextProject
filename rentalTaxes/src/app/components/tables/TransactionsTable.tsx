@@ -30,8 +30,8 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
       accessorKey: "shortTerm",
       header: "Short Term",
       cell: ({ row }) => {
-        const nights = row.original.nights ?? 0;
-        return nights > 0 && nights < 30;
+        const symbol = row.original.shortTerm ? "✅" : "❌";
+        return symbol;
       },
     },
     // { accessorKey: "guest", header: "Guest" },
@@ -44,13 +44,32 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
       cell: ({ getValue }) => formatCurrency(getValue() as number),
       enableSorting: true,
     },
-    { accessorKey: "paidOut", header: "Paid Out" },
-    { accessorKey: "serviceFee", header: "Service Fee" },
+    {
+      accessorKey: "paidOut",
+      header: "Paid Out",
+      cell: ({ getValue }) => formatCurrency(getValue() as number),
+      enableSorting: true,
+    },
+    // { accessorKey: "serviceFee", header: "Service Fee" },
     // { accessorKey: "fastPayFee", header: "Fast Pay Fee" },
-    { accessorKey: "cleaningFee", header: "Cleaning Fee" },
-    { accessorKey: "grossEarnings", header: "Gross Earnings" },
-    { accessorKey: "totalOccupancyTaxes", header: "Total Occupancy Taxes" },
-    // This is just an example of the type of thing you can do
+    {
+      accessorKey: "cleaningFee",
+      header: "Cleaning Fee",
+      cell: ({ getValue }) => formatCurrency(getValue() as number),
+      enableSorting: true,
+    },
+    {
+      accessorKey: "grossEarnings",
+      header: "Gross Earnings",
+      cell: ({ getValue }) => formatCurrency(getValue() as number),
+      enableSorting: true,
+    },
+    {
+      accessorKey: "totalOccupancyTaxes",
+      header: "Total Occupancy Taxes",
+      cell: ({ getValue }) => formatCurrency(getValue() as number),
+      enableSorting: true,
+    },
     {
       accessorKey: "quarter",
       header: "Quarter",
@@ -63,10 +82,20 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
       },
     },
     // { accessorKey: "earningsYear", header: "Earnings Year" },
-    { accessorKey: "countyTax", header: "County Tax" },
-    { accessorKey: "stateTax", header: "State Tax" },
+    // {
+    //   accessorKey: "countyTax",
+    //   header: "County Tax",
+    //   cell: ({ getValue }) => formatCurrency(getValue() as number),
+    //   enableSorting: true,
+    // },
+    // {
+    //   accessorKey: "stateTax",
+    //   header: "State Tax",
+    //   cell: ({ getValue }) => formatCurrency(getValue() as number),
+    //   enableSorting: true,
+    // },
     { accessorKey: "sourceFile", header: "Source File" },
-    { accessorKey: "uploadedAt", header: "Timestamp" },
+    { accessorKey: "uploadedAt", header: "Uploaded At" },
   ];
 
   const table = useReactTable<Transaction>({
