@@ -36,7 +36,7 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
     },
     // { accessorKey: "guest", header: "Guest" },
     { accessorKey: "listingName", header: "Listing" },
-    // { accessorKey: "listingKey", header: "Listing Key" },
+    // { accessorKey: "listingId", header: "Listing ID" },
     // { accessorKey: "details", header: "Details" },
     {
       accessorKey: "amount",

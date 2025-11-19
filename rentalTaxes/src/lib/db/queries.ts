@@ -1,5 +1,6 @@
 import type { PgliteDatabase } from "drizzle-orm/pglite";
 import { transactions, properties, listings } from "./schema";
+import { PropertyListing, Property, Listing } from "@/types";
 // import { TableType } from "@/types";
 import { eq, sql, and, gte, lte } from "drizzle-orm";
 
@@ -51,11 +52,12 @@ export async function handleAdd(db: PgliteDatabase) {
   });
 }
 export async function addSampleProperties(db: PgliteDatabase) {
-  await db?.insert(properties).values({
-    address: "101",
-    propertyName: "Main house",
-    town: "Montauk",
-  });
+  //TO DO: update fields to match schema
+  // await db?.insert(properties).values({
+  //   address: "101",
+  //   propertyName: "Main house",
+  //   town: "Montauk",
+  // });
   console.log("ran addProperties");
 }
 
@@ -84,15 +86,72 @@ export async function handlePropertyLog(db: PgliteDatabase) {
 export async function getListingsWithProperties(db: PgliteDatabase) {
   return db
     .select({
-      id: listings.id,
+      listingKey: listings.listingId,
       listingName: listings.listingName,
       propertyName: properties.propertyName,
     })
     .from(properties)
-    .leftJoin(listings, eq(listings.propertyKey, properties.propertyKey));
+    .leftJoin(listings, eq(listings.propertyId, properties.propertyId));
 }
 
-//TO DO: simplify the joins now that propertyKey and listingKey are in the transactions table
+//note: this function might be redundant since propertiesData and listingsData are already stored in context
+// export async function getPropertiesWithListings(db: PgliteDatabase) {
+/*note that this query doesn't work in pglite because of the way it handles (or doesn't handle) relations and constraints client-side:
+        const propertiesWithListings = await db.query.  properties.findMany({
+          with: { listings: true },
+        });
+*/
+
+//   return db
+//     .select({
+//       propertyId: properties.propertyId,
+//       propertyName: properties.propertyName,
+//       address: properties.address,
+//       town: properties.town,
+//       county: properties.county,
+//       listingKey: listings.listingKey,
+//       listingName: listings.listingName,
+//     })
+//     .from(properties)
+//     .leftJoin(listings, eq(listings.propertyId, properties.propertyId));
+// }
+
+export function groupProperties(
+  properties: Property[],
+  listings: Listing[]
+): PropertyListing[] {
+  const map = new Map<string, PropertyListing>();
+
+  for (const p of properties) {
+    if (!map.has(p.propertyId)) {
+      map.set(p.propertyId, {
+        propertyId: p.propertyId,
+        propertyName: p.propertyName,
+        address: p.address ?? "",
+        town: p.town ?? "",
+        county: p.county ?? "",
+        listings: [],
+      } as PropertyListing);
+    }
+
+    // If this row includes a listing, add it to the property's listings
+    for (const l of listings) {
+      const group = map.get(l.propertyId);
+      if (group) {
+        group.listings.push({
+          listingId: l.listingId,
+          listingName: l.listingName ?? "",
+          propertyId: l.propertyId,
+        } as Listing);
+      }
+    }
+  }
+
+  return [...map.values()] as PropertyListing[];
+}
+
+//TO DO: simplify the joins now that propertyId and listingKey are in the transactions table
+
 //TO DO: aggregate by date
 export async function getRevenueAggregates(
   db: PgliteDatabase
@@ -103,7 +162,7 @@ export async function getRevenueAggregates(
   //base query
   let query = db
     .select({
-      propertyKey: properties.propertyKey,
+      propertyId: properties.propertyId,
       propertyName: properties.propertyName,
       totalRevenue: sql<number>`SUM(${transactions.amount})`,
       //add filter for only reservation and adjustment
@@ -129,10 +188,10 @@ export async function getRevenueAggregates(
         ELSE null END)`,
     })
     .from(properties)
-    //TO DO: check against transactions schema, if propertyKey is included there
-    .leftJoin(listings, eq(listings.propertyKey, properties.propertyKey))
-    .leftJoin(transactions, eq(transactions.listingKey, listings.listingKey))
-    .groupBy(properties.propertyKey, properties.propertyName);
+    //TO DO: check against transactions schema, if propertyId is included there
+    .leftJoin(listings, eq(listings.propertyId, properties.propertyId))
+    .leftJoin(transactions, eq(transactions.listingKey, listings.listingId))
+    .groupBy(properties.propertyId, properties.propertyName);
 
   const results = await query;
   console.log("aggregates:", results);

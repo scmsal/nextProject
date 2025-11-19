@@ -100,9 +100,10 @@ export function AddListingForm() {
           {propertiesData.length === 0
             ? null
             : propertiesData.map((p) => {
-                const label = p.propertyName?.trim() || `Property #${p.id} `;
+                const label =
+                  p.propertyName?.trim() || `Property #${p.propertyKey} `;
                 return (
-                  <option key={p.id} value={p.id}>
+                  <option key={p.propertyKey} value={p.propertyKey}>
                     {label}
                   </option>
                 );

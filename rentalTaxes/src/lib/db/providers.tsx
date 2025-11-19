@@ -19,10 +19,16 @@ import {
 
 import ReplWithButtons from "@/app/components/data/ReplWithButtons";
 
-import { getRevenueAggregates } from "@/lib/db/queries";
+import { getRevenueAggregates, groupProperties } from "@/lib/db/queries";
 
 import { properties, transactions, listings, quarterlyFile } from "./schema";
-import { Property, Transaction, Listing, RevenueAggregates } from "@/types";
+import {
+  Property,
+  Transaction,
+  Listing,
+  RevenueAggregate,
+  PropertyListing,
+} from "@/types";
 
 type DbContextType = {
   pgLite: PGliteWithLive | undefined;
@@ -30,7 +36,7 @@ type DbContextType = {
   transactionsData: Transaction[];
   propertiesData: Property[];
   listingsData: Listing[];
-  revenueAggregatesData: RevenueAggregates[];
+  revenueAggregatesData: RevenueAggregate[];
   loadTransactions: () => Promise<void>;
   loadProperties: () => Promise<void>;
   loadListings: () => Promise<void>;
@@ -53,7 +59,7 @@ export function Providers({ children }: { children: ReactNode }) {
   const [propertiesData, setPropertiesData] = useState<Property[]>([]);
   const [listingsData, setListingsData] = useState<Listing[]>([]);
   const [revenueAggregatesData, setRevenueAggregatesData] = useState<
-    RevenueAggregates[]
+    RevenueAggregate[]
   >([]);
 
   async function loadTransactions() {

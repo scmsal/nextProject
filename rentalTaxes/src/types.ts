@@ -7,7 +7,7 @@ export type TableType = typeof properties | typeof listings;
 
 //Phase 1 will only handle Airbnb data.
 //Later phases will integrate other platforms. That will involve distinguishing between physical units (platform agnostic) and listings (platform specific).
-export type RevenueAggregates = {
+export type RevenueAggregate = {
   propertyName: string;
   totalRevenue: number;
   shortTermRevenue: number;
@@ -16,9 +16,13 @@ export type RevenueAggregates = {
   longTermStays: number;
 };
 
-export type PropertyListings = {
+export type PropertyListing = {
   propertyName: string;
+  propertyId: string;
   address: string;
+  town: string;
   county: string;
-  listingCount: number;
+  listings: Listing[];
+
+  // listings: [{ listingKey: string; listingName: string }];
 };

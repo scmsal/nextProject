@@ -4,20 +4,16 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  getListingsWithProperties,
-  getRevenueAggregates,
-} from "@/lib/db/queries";
-import { Listing, RevenueAggregates } from "@/types";
+import { groupProperties, getRevenueAggregates } from "@/lib/db/queries";
+import { Listing, RevenueAggregate, PropertyListing } from "@/types";
 import { useDb } from "@/lib/db/providers";
 import { useState } from "react";
 //TO DO: build listings table with TanStack
 
 // export default function ListingsTable({ data }: { data: Property[] }) {}
 
-export default function ListingsTable() {
-  const { db } = useDb();
+const { propertiesData, listingsData } = useDb();
 
-  const [grouped, setGrouped] = useState(false);
-  const [data, setData] = useState<(Listing | RevenueAggregates)[]>([]);
-}
+const propertiesWithListings = groupProperties(propertiesData, listingsData);
+
+export default function ListingsTable(rows: PropertyListing) {}

@@ -4,14 +4,14 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { RevenueAggregates } from "@/types";
+import { RevenueAggregate } from "@/types";
 
 export default function RevenueAggregatesTable({
   data,
 }: {
-  data: RevenueAggregates[];
+  data: RevenueAggregate[];
 }) {
-  const columns: ColumnDef<RevenueAggregates>[] = [
+  const columns: ColumnDef<RevenueAggregate>[] = [
     { accessorKey: "propertyName", header: "Property" },
     { accessorKey: "totalRevenue", header: "Total Payouts" },
     { accessorKey: "shortTermRevenue", header: "<30 Nights Revenue" },
@@ -20,7 +20,7 @@ export default function RevenueAggregatesTable({
     { accessorKey: "longTermStays", header: "30+ Nights Stays" },
   ];
 
-  const table = useReactTable<RevenueAggregates>({
+  const table = useReactTable<RevenueAggregate>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),

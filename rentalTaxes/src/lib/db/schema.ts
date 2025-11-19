@@ -39,10 +39,10 @@ export const transactions = pgTable("transactions", {
   listingName: varchar("listing_name", { length: 100 })
     .$type<string | null>()
     .default(null),
-  listingKey: varchar("listing_key", { length: 50 })
+  listingKey: varchar("listing_id", { length: 50 })
     // .notNull()
-    .references(() => listings.id),
-  propertyKey: varchar("property_key", { length: 50 })
+    .references(() => listings.listingId),
+  propertyKey: varchar("property_id", { length: 50 })
     .$type<string | null>()
     .default(null),
   details: varchar("details", { length: 255 })
@@ -71,9 +71,8 @@ export const transactions = pgTable("transactions", {
 export const properties = pgTable(
   "properties",
   {
-    id: serial("id").primaryKey(),
     propertyName: varchar("property_name", { length: 255 }).notNull(),
-    propertyKey: varchar("property_key", { length: 50 }),
+    propertyId: varchar("property_id", { length: 50 }).primaryKey(),
     address: varchar("address", { length: 255 }),
     town: varchar("town", { length: 100 }),
     county: varchar("county", { length: 100 }),
@@ -91,12 +90,11 @@ export const properties = pgTable(
 export const listings = pgTable(
   "listings",
   {
-    id: serial("id").primaryKey(),
-    listingKey: varchar("listing_key", { length: 50 }),
+    listingId: varchar("listing_id", { length: 50 }).primaryKey(),
     listingName: varchar("listing_name", { length: 255 }).notNull(),
-    propertyKey: varchar("property_key", { length: 50 }).references(
-      () => properties.propertyKey
-    ),
+    propertyId: varchar("property_id", { length: 50 })
+      .notNull()
+      .references(() => properties.propertyId),
     // platform: varchar("platform", { length: 100 }),
   },
   //PGlite doesn't fully enforce unique constraints, so this would only work in the full PostgreSQL
@@ -180,11 +178,11 @@ which is better than the select syntax
 export const transactionsRelations = relations(transactions, ({ one }) => ({
   listing: one(listings, {
     fields: [transactions.listingKey],
-    references: [listings.listingKey],
+    references: [listings.listingId],
   }),
   property: one(properties, {
     fields: [transactions.propertyKey],
-    references: [properties.propertyKey],
+    references: [properties.propertyId],
   }),
 }));
 
@@ -195,8 +193,8 @@ export const propertiesRelations = relations(properties, ({ many }) => ({
 
 export const listingsRelations = relations(listings, ({ one, many }) => ({
   property: one(properties, {
-    fields: [listings.propertyKey],
-    references: [properties.propertyKey],
+    fields: [listings.propertyId],
+    references: [properties.propertyId],
   }),
   transactions: many(transactions),
 }));
