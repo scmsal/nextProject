@@ -4,6 +4,8 @@ import { listings } from "@/lib/db/schema";
 import { parseListingsCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
+import { existsInDb } from "@/lib/db/queries";
+import { Listing } from "@/types";
 
 export default function UploadListingsForm() {
   const { db, listingsData, loadListings } = useDb();
@@ -28,7 +30,22 @@ export default function UploadListingsForm() {
           setStatus("Database not initialized.");
           return;
         }
-        await db.insert(listings).values(cleaned);
+
+        const uniqueCleaned = (
+          await Promise.all(
+            cleaned.map(async (row) => {
+              const exists = await existsInDb(
+                db,
+                listings,
+                "listingId",
+                row.listingId
+              );
+              return exists ? null : row; //only include unique rows
+            })
+          )
+        ).filter(Boolean) as Listing[]; //remove nulls;
+
+        await db.insert(listings).values(uniqueCleaned);
         setStatus(`Imported ${cleaned.length} listings.`);
         await loadListings();
         console.log("listingsData:", listingsData);

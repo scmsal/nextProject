@@ -8,18 +8,30 @@ import { AddListingForm } from "./components/forms/AddListingForm";
 import UploadListingsForm from "./components/forms/UploadListingsForm";
 import AggregateSummaries from "./components/data/AggregateSummaries";
 import RevenueAggregatesTable from "./components/tables/AggregateTable";
-
+import ListingsTable from "./components/tables/ListingsTable";
+import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 // import { useState, useEffect } from "react";
 // import { Providers } from "@/lib/db/providers";
 import { useDb } from "@/lib/db/providers";
+import { groupProperties } from "@/lib/db/queries";
 
 export default function Home() {
   // You will also need listing and property data
-  const { transactionsData, revenueAggregatesData } = useDb();
-  // const pathname = usePathname(); //TO DO: see if it's still necessary
+  const {
+    transactionsData,
+    revenueAggregatesData,
+    propertiesData,
+    listingsData,
+  } = useDb();
+
+  const propertiesWithListings =
+    useMemo(() =>
+    groupProperties(propertiesData, listingsData),
+    [propertiesData, listingsData]
+  );
 
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
@@ -34,6 +46,7 @@ export default function Home() {
         <div className="flex flex-col md:flex-row gap-10">
           <AddListingForm />
           <UploadListingsForm />
+          {listingsData && <ListingsTable data={propertiesWithListings} />}
         </div>
         <h3 className="underline">Step 3</h3>
         <div>

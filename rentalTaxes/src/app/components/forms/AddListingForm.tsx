@@ -6,7 +6,7 @@ import { Listing, Property } from "@/types";
 //Use typed status to make conditional styling possible
 //TO DO: see if I need the same for UploadForm.tsx
 
-//TO DO: use createListingKey and add propertyKey
+//TO DO: use createListingKey and add propertyId
 //TO DO: clear property selection after submit
 interface Status {
   message: string;
@@ -101,9 +101,9 @@ export function AddListingForm() {
             ? null
             : propertiesData.map((p) => {
                 const label =
-                  p.propertyName?.trim() || `Property #${p.propertyKey} `;
+                  p.propertyName?.trim() || `Property #${p.propertyId} `;
                 return (
-                  <option key={p.propertyKey} value={p.propertyKey}>
+                  <option key={p.propertyId} value={p.propertyId}>
                     {label}
                   </option>
                 );

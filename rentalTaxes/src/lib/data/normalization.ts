@@ -16,7 +16,7 @@ export function normalizeText(input: string): string {
  * Combines normalized propertyName + address with a short hash of the same.
  */
 
-export function createPropertyKey(
+export function createPropertyId(
   propertyName: string,
   address: string
 ): string {
@@ -35,11 +35,11 @@ export function createPropertyKey(
  * Deterministic listing key generator.
  * Combines normalized propertyName + address with a short hash of the same.
  */
-export function createListingKey(
+export function createListingId(
   listingName: string,
-  propertyKey: string
+  propertyId: string
 ): string {
-  const base = normalizeText(listingName + propertyKey);
+  const base = normalizeText(listingName + propertyId);
 
   let hash = 0;
   for (let i = 0; i < base.length; i++) {

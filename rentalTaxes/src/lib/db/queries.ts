@@ -123,30 +123,26 @@ export function groupProperties(
   const map = new Map<string, PropertyListing>();
 
   for (const p of properties) {
-    if (!map.has(p.propertyId)) {
-      map.set(p.propertyId, {
-        propertyId: p.propertyId,
-        propertyName: p.propertyName,
-        address: p.address ?? "",
-        town: p.town ?? "",
-        county: p.county ?? "",
-        listings: [],
-      } as PropertyListing);
-    }
+    map.set(p.propertyId, {
+      // propertyId: p.propertyId,
+      // propertyName: p.propertyName,
+      // address: p.address ?? "",
+      // town: p.town ?? "",
+      // county: p.county ?? "",
+      ...p,
+      listings: [],
+    } as PropertyListing);
+  }
 
-    // If this row includes a listing, add it to the property's listings
-    for (const l of listings) {
-      const group = map.get(l.propertyId);
-      if (group) {
-        group.listings.push({
-          listingId: l.listingId,
-          listingName: l.listingName ?? "",
-          propertyId: l.propertyId,
-        } as Listing);
-      }
+  // Add each listing to its property's listings once
+  for (const l of listings) {
+    const group = map.get(l.propertyId);
+    if (group) {
+      group.listings.push(l as Listing);
     }
   }
 
+  console.log("Inside groupProperties, the map is:", map);
   return [...map.values()] as PropertyListing[];
 }
 
@@ -190,7 +186,7 @@ export async function getRevenueAggregates(
     .from(properties)
     //TO DO: check against transactions schema, if propertyId is included there
     .leftJoin(listings, eq(listings.propertyId, properties.propertyId))
-    .leftJoin(transactions, eq(transactions.listingKey, listings.listingId))
+    .leftJoin(transactions, eq(transactions.listingId, listings.listingId))
     .groupBy(properties.propertyId, properties.propertyName);
 
   const results = await query;

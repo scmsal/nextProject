@@ -37,7 +37,7 @@ export default function UploadTransactionsForm() {
         const listingMap = Object.fromEntries(
           listingsData.map((row) => [
             normalizeText(row.listingName),
-            { listingKey: row.listingKey, propertyKey: row.propertyKey },
+            { listingId: row.listingId, propertyId: row.propertyId },
           ])
         );
 
@@ -51,8 +51,8 @@ export default function UploadTransactionsForm() {
 
           return {
             ...row,
-            listingKey: match?.listingKey ?? null,
-            propertyKey: match?.propertyKey ?? null,
+            listingId: match?.listingId ?? null,
+            propertyId: match?.propertyId ?? null,
             shortTerm: Number(row.nights) < 30 && Number(row.nights) > 0,
             uploadedAt: new Date(),
           };
@@ -66,20 +66,20 @@ export default function UploadTransactionsForm() {
         await db.insert(transactions).values(enriched); //TO FIX: date is missing from a template
 
         //debugging timestamp of uploadedAt defaulting to null
-        const cols = await db.execute(`
-  SELECT column_name, data_type, is_nullable, column_default
-  FROM information_schema.columns
-  WHERE table_name = 'transactions'
-`);
-        console.log(cols);
+        //         const cols = await db.execute(`
+        //   SELECT column_name, data_type, is_nullable, column_default
+        //   FROM information_schema.columns
+        //   WHERE table_name = 'transactions'
+        // `);
+        //         console.log(cols);
 
-        const r = await db.execute(`
-  INSERT INTO transactions (listing_key, amount)
-  VALUES ('test_manual', 1)
-  RETURNING *;
-`);
+        //         const r = await db.execute(`
+        //   INSERT INTO transactions (listing_id, amount)
+        //   VALUES ('test_manual', 1)
+        //   RETURNING *;
+        // `);
 
-        console.log("r:", r);
+        //         console.log("r:", r);
 
         //end debugging
 
@@ -89,7 +89,7 @@ export default function UploadTransactionsForm() {
         //warn about unmatched listings. TO DO: make it appear in UI too.
 
         const unmatched = enriched.filter(
-          (row) => row.confirmationCode && row.listingKey === null
+          (row) => row.confirmationCode && row.listingId === null
         );
         if (unmatched.length > 0) {
           console.warn(

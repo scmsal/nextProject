@@ -6,7 +6,7 @@ import { Property } from "@/types";
 //Use typed status to make conditional styling possible
 //TO DO: see if I need the same for UploadForm.tsx
 
-//TO DO: use createPropertyKey
+//TO DO: use createPropertyId
 
 interface Status {
   message: string;

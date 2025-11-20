@@ -40,8 +40,8 @@ export default function UploadPropertiesForm() {
               const exists = await existsInDb(
                 db,
                 properties,
-                "propertyKey",
-                row.propertyKey
+                "propertyId",
+                row.propertyId
               );
               return exists ? null : row; //only include unique rows
             })

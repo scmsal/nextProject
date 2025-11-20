@@ -1,5 +1,5 @@
 import Papa from "papaparse";
-import { createListingKey, createPropertyKey } from "./normalization";
+import { createListingId, createPropertyId } from "./normalization";
 import { timeStamp } from "console";
 
 // Define a type for a single CSV row
@@ -36,7 +36,7 @@ export interface RawPropertiesCsv {
 
 export interface RawListingsCsv {
   listing_name?: string;
-  property_key: string;
+  property_id: string;
 }
 
 // pure data parser, no DB access
@@ -67,8 +67,8 @@ export async function parseTransactionsCsvFile(file: File) {
     nights: parseInt(row["Nights"] || "0"),
     guest: row["Guest"] ?? "",
     listingName: row["Listing"] ?? "",
-    listingKey: null,
-    propertyKey: null,
+    // listingId: null,
+    // propertyId: null,
     details: row["Details"] ?? "",
     amount: parseFloat(row["Amount"] || "0"),
     paidOut: parseFloat(row["Paid out"] || "0"),
@@ -97,15 +97,15 @@ export async function parsePropertiesCsvFile(file: File) {
     });
   });
 
-  // Normalize, clean, and enrich data (add propertyKey)
+  // Normalize, clean, and enrich data (add propertyId)
 
   const cleaned = results.data.map((row) => {
     const { name = "", address = "" } = row;
-    const propertyKey = createPropertyKey(name, address);
+    const propertyId = createPropertyId(name, address);
     return {
       propertyName: row["name"] ?? "",
       address: row["address"] ?? "",
-      propertyKey,
+      propertyId,
       town: row["town"] ?? "",
       county: row["county"] ?? "",
     };
@@ -129,12 +129,12 @@ export async function parseListingsCsvFile(file: File) {
   // Normalize & clean data
 
   const cleaned = results.data.map((row) => {
-    const { listing_name = "", property_key = "" } = row;
-    const listingKey = createListingKey(listing_name, property_key);
+    const { listing_name = "", property_id: property_id = "" } = row;
+    const listingId = createListingId(listing_name, property_id);
     return {
       listingName: row["listing_name"] ?? "",
-      propertyKey: row["property_key"] ?? null,
-      listingKey,
+      propertyId: row["property_id"],
+      listingId,
     };
   });
   return cleaned;

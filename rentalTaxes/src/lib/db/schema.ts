@@ -39,10 +39,10 @@ export const transactions = pgTable("transactions", {
   listingName: varchar("listing_name", { length: 100 })
     .$type<string | null>()
     .default(null),
-  listingKey: varchar("listing_id", { length: 50 })
+  listingId: varchar("listing_id", { length: 50 })
     // .notNull()
     .references(() => listings.listingId),
-  propertyKey: varchar("property_id", { length: 50 })
+  propertyId: varchar("property_id", { length: 50 })
     .$type<string | null>()
     .default(null),
   details: varchar("details", { length: 255 })
@@ -177,11 +177,11 @@ which is better than the select syntax
 */
 export const transactionsRelations = relations(transactions, ({ one }) => ({
   listing: one(listings, {
-    fields: [transactions.listingKey],
+    fields: [transactions.listingId],
     references: [listings.listingId],
   }),
   property: one(properties, {
-    fields: [transactions.propertyKey],
+    fields: [transactions.propertyId],
     references: [properties.propertyId],
   }),
 }));
