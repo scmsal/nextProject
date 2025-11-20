@@ -8,7 +8,7 @@ export default function AggregateSummaries() {
     await loadRevenueAggregates();
   };
   return (
-    <button className="border py-2 px-4" onClick={handleAggregate}>
+    <button className="border py-2 px-4 w-2/5" onClick={handleAggregate}>
       Calculate aggregates
     </button>
   );

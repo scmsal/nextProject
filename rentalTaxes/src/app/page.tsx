@@ -27,9 +27,8 @@ export default function Home() {
     listingsData,
   } = useDb();
 
-  const propertiesWithListings =
-    useMemo(() =>
-    groupProperties(propertiesData, listingsData),
+  const propertiesWithListings = useMemo(
+    () => groupProperties(propertiesData, listingsData),
     [propertiesData, listingsData]
   );
 
@@ -54,7 +53,7 @@ export default function Home() {
           {transactionsData && <TransactionsTable data={transactionsData} />}
         </div>
         <h3 className="underline">Step 4</h3>
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-col">
           <AggregateSummaries />
           <RevenueAggregatesTable data={revenueAggregatesData} />
         </div>
