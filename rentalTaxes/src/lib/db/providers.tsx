@@ -20,8 +20,8 @@ import {
 import ReplWithButtons from "@/app/components/data/ReplWithButtons";
 
 import { getRevenueAggregates, groupProperties } from "@/lib/db/queries";
-
-import { properties, transactions, listings, quarterlyFile } from "./schema";
+import * as schema from "./schema";
+// import { properties, transactions, listings, quarterlyFile } from "./schema";
 import {
   Property,
   Transaction,
@@ -32,7 +32,7 @@ import {
 
 type DbContextType = {
   pgLite: PGliteWithLive | undefined;
-  db: PgliteDatabase | undefined;
+  db: PgliteDatabase<typeof schema>;
   transactionsData: Transaction[];
   propertiesData: Property[];
   listingsData: Listing[];
@@ -54,7 +54,7 @@ export function useDb() {
 
 export function Providers({ children }: { children: ReactNode }) {
   const [pgLite, setPgLite] = useState<PGliteWithLive>();
-  const [db, setDb] = useState<PgliteDatabase>();
+  const [db, setDb] = useState<PgliteDatabase<typeof schema>>();
   const [transactionsData, setTransactionsData] = useState<Transaction[]>([]);
   const [propertiesData, setPropertiesData] = useState<Property[]>([]);
   const [listingsData, setListingsData] = useState<Listing[]>([]);
@@ -65,24 +65,36 @@ export function Providers({ children }: { children: ReactNode }) {
   async function loadTransactions() {
     if (!db) return;
 
-    const result = await db.select().from(transactions);
+    const result = await db.query.transactions.findMany();
+
+    //JS converts Date objects to strings on queries. They need to be converted back into dates to correspond to schema and types and to work in TanStack tables.
+    console.log("Result 0:", result[0]);
+    // const resultsDatesParsed = result.map((t) => ({
+    //   ...t,
+    //   date: new Date(String(t.date)),
+    //   bookingDate: t.bookingDate ? new Date(t.bookingDate) : null,
+    //   arrivalDate: t.arrivalDate ? new Date(t.arrivalDate) : null,
+    //   startDate: t.startDate ? new Date(t.startDate) : null,
+    //   endDate: t.endDate ? new Date(t.endDate) : null,
+    // }));
+    // console.log("loadTransactions:", resultsDatesParsed[0]);
     setTransactionsData(result);
   }
 
   async function loadProperties() {
     if (!db) return;
 
-    const result = await db.select().from(properties);
+    const result = await db.query.properties.findMany();
     setPropertiesData(result);
-    console.log("properties:", result);
+    // console.log("properties:", result);
   }
 
   async function loadListings() {
     if (!db) return;
 
-    const result = await db.select().from(listings);
-    await setListingsData(result);
-    await console.log("inside loadListings. ListingsData:", listingsData);
+    const result = await db.query.listings.findMany();
+    setListingsData(result);
+    //  console.log("inside loadListings. ListingsData:", listingsData);
   }
 
   async function loadRevenueAggregates() {
@@ -113,7 +125,7 @@ export function Providers({ children }: { children: ReactNode }) {
       console.log("Quarterly table created.");
 
       //this part is very important
-      const db = drizzle(pgLite);
+      const db = drizzle(pgLite, { schema });
       setPgLite(pgLite);
       setDb(db);
     };

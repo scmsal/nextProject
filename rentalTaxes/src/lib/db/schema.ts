@@ -16,23 +16,15 @@ import { isNotNull, relations } from "drizzle-orm";
 // ----------------------
 export const transactions = pgTable("transactions", {
   id: serial("id").primaryKey(),
-  date: varchar("date", { length: 50 }).notNull(),
-  arrivalDate: varchar("arrival_date", { length: 50 })
-    .$type<string | null>()
-    .default(null),
+  date: varchar("date", { length: 50 }).notNull(), // YYYY-MM-DD string storage
+  arrivalDate: varchar("arrival_date", { length: 50 }),
   type: varchar("type", { length: 50 }).$type<string | null>().default(null), // e.g. payout, reimbursement, refund
   confirmationCode: varchar("confirmation_code", { length: 50 })
     .$type<string | null>()
     .default(null),
-  bookingDate: varchar("booking_date", { length: 50 })
-    .$type<string | null>()
-    .default(null),
-  startDate: varchar("start_date", { length: 50 })
-    .$type<string | null>()
-    .default(null),
-  endDate: varchar("end_date", { length: 50 })
-    .$type<string | null>()
-    .default(null),
+  bookingDate: varchar("booking_date", { length: 50 }),
+  startDate: varchar("start_date", { length: 50 }),
+  endDate: varchar("end_date", { length: 50 }),
   nights: integer("nights").$type<number | null>().default(null),
   shortTerm: boolean("short_term"),
   guest: varchar("guest", { length: 100 }).$type<string | null>().default(null),
@@ -62,7 +54,7 @@ export const transactions = pgTable("transactions", {
   stateTax: numeric("state_tax").$type<number | null>().default(null),
   //TO DO: move to a metadata table instead?
   sourceFile: text("source_file").$type<string | null>().default(null),
-  uploadedAt: timestamp("uploaded_at").notNull(),
+  uploadedAt: timestamp("uploaded_at", { mode: "date" }).notNull(),
 });
 
 // ----------------------

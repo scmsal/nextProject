@@ -13,8 +13,6 @@ import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-// import { useState, useEffect } from "react";
-// import { Providers } from "@/lib/db/providers";
 import { useDb } from "@/lib/db/providers";
 import { groupProperties } from "@/lib/db/queries";
 

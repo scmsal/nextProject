@@ -6,6 +6,7 @@ import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
 import { useEffect } from "react";
 import { normalizeText } from "@/lib/data/normalization";
+import { transactionExists } from "@/lib/db/queries";
 
 export default function UploadTransactionsForm() {
   const { db, loadTransactions, listingsData } = useDb();
@@ -33,6 +34,20 @@ export default function UploadTransactionsForm() {
 
         const cleaned = await parseTransactionsCsvFile(file);
 
+        if (!db) {
+          setStatus("Database not initialized.");
+          return;
+        }
+
+        const uniqueCleaned = (
+          await Promise.all(
+            cleaned.map(async (row) => {
+              const exists = await transactionExists(db, transactions, row);
+              return exists.length > 0 ? null : row;
+            })
+          )
+        ).filter(Boolean); //only include unique rows
+
         //created map for faster listingId and propertyId lookup
         const listingMap = Object.fromEntries(
           listingsData.map((row) => [
@@ -44,7 +59,7 @@ export default function UploadTransactionsForm() {
         console.log("listingMap:", listingMap);
 
         //enrich transaction CSV data with listingId from listingMap
-        //TO DO: also enrich with source file and uploadedAt
+        //TO DO: also enrich with source file
         const enriched = cleaned.map((row) => {
           const listingName = normalizeText(row.listingName);
           const match = listingMap[listingName];

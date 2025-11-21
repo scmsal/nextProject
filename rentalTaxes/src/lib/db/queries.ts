@@ -1,8 +1,31 @@
 import type { PgliteDatabase } from "drizzle-orm/pglite";
-import { transactions, properties, listings } from "./schema";
+
 import { PropertyListing, Property, Listing } from "@/types";
 // import { TableType } from "@/types";
+import { PgTableWithColumns } from "drizzle-orm/pg-core";
 import { eq, sql, and, gte, lte } from "drizzle-orm";
+import { properties, transactions, listings } from "./schema";
+import * as schema from "./schema";
+
+//Ensure transactions are unique (to be used before insertion into db)
+
+export async function transactionExists(
+  db: PgliteDatabase<typeof schema>,
+  transactions: any,
+  row: { confirmationCode: string; date: string; amount: number }
+) {
+  return await db
+    .select()
+    .from(transactions)
+    .where(
+      and(
+        eq(transactions.confirmationCode, row.confirmationCode),
+        eq(transactions.date, row.date),
+        eq(transactions.amount, row.amount)
+      )
+    )
+    .limit(1);
+}
 
 /**
  * Check whether a record with the given key/value exists in a table.
@@ -26,30 +49,30 @@ export async function existsInDb(
 
 export async function handleAdd(db: PgliteDatabase) {
   console.log("handleAdd ran");
-  await db?.insert(transactions).values({
-    date: "2022-01-01",
-    arrivalDate: "2022-01-02",
-    type: "hotel",
-    confirmationCode: "CONF123",
-    bookingDate: "2022-01-01",
-    startDate: "2022-01-01",
-    endDate: "2022-01-02",
-    nights: 1,
-    guest: "Jane Doe",
-    listingName: "Hotel XYZ",
-    details: "Test booking",
-    amount: 100,
-    paidOut: 90,
-    serviceFee: 10,
-    fastPayFee: 5,
-    cleaningFee: 5,
-    grossEarnings: 100,
-    totalOccupancyTaxes: 10,
-    earningsYear: 2022,
-    countyTax: 5,
-    stateTax: 5,
-    uploadedAt: new Date(),
-  });
+  // await db?.insert(transactions).values({
+  //   date: new Date("2022-01-01"),
+  //   arrivalDate: "2022-01-02",
+  //   type: "hotel",
+  //   confirmationCode: "CONF123",
+  //   bookingDate: "2022-01-01",
+  //   startDate: "2022-01-01",
+  //   endDate: "2022-01-02",
+  //   nights: 1,
+  //   guest: "Jane Doe",
+  //   listingName: "Hotel XYZ",
+  //   details: "Test booking",
+  //   amount: 100,
+  //   paidOut: 90,
+  //   serviceFee: 10,
+  //   fastPayFee: 5,
+  //   cleaningFee: 5,
+  //   grossEarnings: 100,
+  //   totalOccupancyTaxes: 10,
+  //   earningsYear: 2022,
+  //   countyTax: 5,
+  //   stateTax: 5,
+  //   uploadedAt: new Date(),
+  // });
 }
 export async function addSampleProperties(db: PgliteDatabase) {
   //TO DO: update fields to match schema
@@ -73,28 +96,30 @@ export async function addSampleListings(db: PgliteDatabase) {
   // ]);
 }
 
-export async function handleLog(db: PgliteDatabase) {
-  const result = await db?.select().from(transactions);
+export async function handleLog(db: PgliteDatabase<typeof schema>) {
+  const result = await db?.query.transactions.findMany();
   console.log("Transactions", result);
 }
 
-export async function handlePropertyLog(db: PgliteDatabase) {
-  const result = await db?.select().from(properties);
+export async function handlePropertyLog(db: PgliteDatabase<typeof schema>) {
+  const result = await db?.query.properties.findMany();
+
   console.log("Properties", result || "0 properties");
+  return result;
 }
 
-export async function getListingsWithProperties(db: PgliteDatabase) {
-  return db
-    .select({
-      listingKey: listings.listingId,
-      listingName: listings.listingName,
-      propertyName: properties.propertyName,
-    })
-    .from(properties)
-    .leftJoin(listings, eq(listings.propertyId, properties.propertyId));
-}
+//note: these functions might be redundant since propertiesData and listingsData are already stored in context
+// export async function getListingsWithProperties(db: PgliteDatabase) {
+//   return db
+//     .select({
+//       listingKey: listings.listingId,
+//       listingName: listings.listingName,
+//       propertyName: properties.propertyName,
+//     })
+//     .from(properties)
+//     .leftJoin(listings, eq(listings.propertyId, properties.propertyId));
+// }
 
-//note: this function might be redundant since propertiesData and listingsData are already stored in context
 // export async function getPropertiesWithListings(db: PgliteDatabase) {
 /*note that this query doesn't work in pglite because of the way it handles (or doesn't handle) relations and constraints client-side:
         const propertiesWithListings = await db.query.  properties.findMany({
@@ -124,11 +149,6 @@ export function groupProperties(
 
   for (const p of properties) {
     map.set(p.propertyId, {
-      // propertyId: p.propertyId,
-      // propertyName: p.propertyName,
-      // address: p.address ?? "",
-      // town: p.town ?? "",
-      // county: p.county ?? "",
       ...p,
       listings: [],
     } as PropertyListing);
@@ -150,7 +170,7 @@ export function groupProperties(
 
 //TO DO: aggregate by date
 export async function getRevenueAggregates(
-  db: PgliteDatabase
+  db: PgliteDatabase<typeof schema>
   // startDate?: string,
   // endDate?: string
 ) {
