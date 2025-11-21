@@ -169,22 +169,47 @@ export function groupProperties(
 //TO DO: simplify the joins now that propertyId and listingKey are in the transactions table
 
 //TO DO: aggregate by date
+
+function dateWindow(
+  dateColumn: typeof transactions.date,
+  startFilterDate?: string,
+  endFilterDate?: string
+) {
+  if (!startFilterDate && !endFilterDate) return sql`TRUE`; //no filter
+
+  return sql`${dateColumn} >= ${
+    startFilterDate ?? "0000-01-01"
+  } AND ${dateColumn} <= ${endFilterDate ?? "9999-12-31"}`;
+}
 export async function getRevenueAggregates(
-  db: PgliteDatabase<typeof schema>
-  // startDate?: string,
-  // endDate?: string
+  db: PgliteDatabase<typeof schema>,
+  startFilterDate?: string,
+  endFilterDate?: string
 ) {
   console.log("getPropertyAggregates ran");
   //base query
-  let query = db
+
+  const dateFilter = dateWindow(
+    transactions.date,
+    startFilterDate,
+    endFilterDate
+  );
+
+  let query = await db
     .select({
       propertyId: properties.propertyId,
       propertyName: properties.propertyName,
-      totalRevenue: sql<number>`SUM(${transactions.amount})`,
+      totalRevenue: sql<number>`
+      SUM( 
+      CASE WHEN ${dateFilter}
+        THEN ${transactions.amount}
+        ELSE 0 END
+      )`,
       //add filter for only reservation and adjustment
       shortTermRevenue: sql<number>`
       SUM(
         CASE WHEN ${transactions.shortTerm}
+          AND ${dateFilter}
         THEN ${transactions.amount}
         ELSE 0 END
       )
@@ -192,15 +217,17 @@ export async function getRevenueAggregates(
       longTermRevenue: sql<number>`
       SUM(
         CASE WHEN NOT ${transactions.shortTerm}
+        AND ${dateFilter}
         THEN ${transactions.amount}
         ELSE 0 END
       )
     `,
       // listingCount: sql<number>`COUNT(${listings.listingKey})`,
-      shortTermStays: sql<number>`COUNT(DISTINCT CASE WHEN ${transactions.shortTerm} THEN ${transactions.confirmationCode}
+      shortTermStays: sql<number>`COUNT(DISTINCT CASE WHEN ${transactions.shortTerm} AND ${dateFilter}
+      THEN ${transactions.confirmationCode}
         
         ELSE null END)`,
-      longTermStays: sql<number>`COUNT(DISTINCT CASE WHEN NOT ${transactions.shortTerm} THEN ${transactions.confirmationCode}
+      longTermStays: sql<number>`COUNT(DISTINCT CASE WHEN NOT ${transactions.shortTerm} AND ${dateFilter} THEN ${transactions.confirmationCode}
         ELSE null END)`,
     })
     .from(properties)

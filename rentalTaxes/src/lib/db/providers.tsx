@@ -99,7 +99,13 @@ export function Providers({ children }: { children: ReactNode }) {
 
   async function loadRevenueAggregates() {
     if (!db) return;
-    const rows = await getRevenueAggregates(db);
+    //TO DO: change out the hardcoded start and end dates. Put parameters inside loadRevenueAggregates; create input element for start and end dates.
+    const rows = await getRevenueAggregates(
+      db,
+      "2025-07-02T04:00:00.000Z", //sample date
+      "2025-07-04T04:00:00.000Z" //sample date
+    );
+
     setRevenueAggregatesData(rows);
   }
 
