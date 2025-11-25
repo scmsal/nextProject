@@ -5,7 +5,7 @@ import { PGlite } from "@electric-sql/pglite";
 export const CREATE_TRANSACTIONS_TABLE = `
      CREATE TABLE IF NOT EXISTS transactions(
       id SERIAL PRIMARY KEY,
-        date VARCHAR(50),
+        date DATE,
         arrival_date VARCHAR(50),
         type VARCHAR(50),
         confirmation_code VARCHAR(50),

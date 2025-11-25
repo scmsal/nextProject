@@ -1,6 +1,6 @@
 import type { PgliteDatabase } from "drizzle-orm/pglite";
 
-import { PropertyListing, Property, Listing } from "@/types";
+import { PropertyListing, Property, Listing, Db } from "@/types";
 // import { TableType } from "@/types";
 import { PgTableWithColumns } from "drizzle-orm/pg-core";
 import { eq, sql, and, gte, lte } from "drizzle-orm";
@@ -10,7 +10,7 @@ import * as schema from "./schema";
 //Ensure transactions are unique (to be used before insertion into db)
 
 export async function transactionExists(
-  db: PgliteDatabase<typeof schema>,
+  db: Db,
   transactions: any,
   row: { confirmationCode: string; date: string; amount: number }
 ) {
@@ -33,7 +33,7 @@ export async function transactionExists(
  */
 
 export async function existsInDb(
-  db: PgliteDatabase,
+  db: Db,
   table: any,
   keyName: string,
   value: string
@@ -47,7 +47,7 @@ export async function existsInDb(
   return result.length > 0;
 }
 
-export async function handleAdd(db: PgliteDatabase) {
+export async function handleAdd(db: Db) {
   console.log("handleAdd ran");
   // await db?.insert(transactions).values({
   //   date: new Date("2022-01-01"),
@@ -74,7 +74,7 @@ export async function handleAdd(db: PgliteDatabase) {
   //   uploadedAt: new Date(),
   // });
 }
-export async function addSampleProperties(db: PgliteDatabase) {
+export async function addSampleProperties(db: Db) {
   //TO DO: update fields to match schema
   // await db?.insert(properties).values({
   //   address: "101",
@@ -84,24 +84,24 @@ export async function addSampleProperties(db: PgliteDatabase) {
   console.log("ran addProperties");
 }
 
-export async function addSampleListings(db: PgliteDatabase) {
-  console.log("addSampleListings ran.");
-  // await db.insert(listings).values([
-  //   { listingName: "Cozy haven", propertyId: 3 },
-  //   { listingName: "Comfortable 2nd floor apartment", propertyId: 3 },
-  //   { listingName: "Neat one-bedroom apartment", propertyId: 3 },
-  //   { listingName: "Spacious 2-bedroom", propertyId: 1 },
-  //   { listingName: "Bright 1-bedroom", propertyId: 4 },
-  //   { listingName: "Peaceful 2-bedroom", propertyId: 2 },
-  // ]);
-}
+// export async function addSampleListings(db: PgliteDatabase) {
+//   console.log("addSampleListings ran.");
+// await db.insert(listings).values([
+//   { listingName: "Cozy haven", propertyId: 3 },
+//   { listingName: "Comfortable 2nd floor apartment", propertyId: 3 },
+//   { listingName: "Neat one-bedroom apartment", propertyId: 3 },
+//   { listingName: "Spacious 2-bedroom", propertyId: 1 },
+//   { listingName: "Bright 1-bedroom", propertyId: 4 },
+//   { listingName: "Peaceful 2-bedroom", propertyId: 2 },
+// ]);
+// }
 
-export async function handleLog(db: PgliteDatabase<typeof schema>) {
+export async function handleLog(db: Db) {
   const result = await db?.query.transactions.findMany();
   console.log("Transactions", result);
 }
 
-export async function handlePropertyLog(db: PgliteDatabase<typeof schema>) {
+export async function handlePropertyLog(db: Db) {
   const result = await db?.query.properties.findMany();
 
   console.log("Properties", result || "0 properties");
@@ -182,7 +182,7 @@ function dateWindow(
   } AND ${dateColumn} <= ${endFilterDate ?? "9999-12-31"}`;
 }
 export async function getRevenueAggregates(
-  db: PgliteDatabase<typeof schema>,
+  db: Db,
   fromDate?: string | undefined,
   toDate?: string | undefined
 ) {

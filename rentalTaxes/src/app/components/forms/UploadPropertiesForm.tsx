@@ -5,7 +5,6 @@ import { parsePropertiesCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
 import { existsInDb } from "@/lib/db/queries";
-import { exists } from "node:fs";
 import { Property } from "@/types";
 
 export default function UploadPropertiesForm() {

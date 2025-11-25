@@ -1,6 +1,7 @@
 import {
   pgTable,
   serial,
+  date,
   varchar,
   numeric,
   integer,
@@ -16,7 +17,7 @@ import { isNotNull, relations } from "drizzle-orm";
 // ----------------------
 export const transactions = pgTable("transactions", {
   id: serial("id").primaryKey(),
-  date: varchar("date", { length: 50 }).notNull(), // YYYY-MM-DD string storage
+  date: date("date").notNull(),
   arrivalDate: varchar("arrival_date", { length: 50 }),
   type: varchar("type", { length: 50 }).$type<string | null>().default(null), // e.g. payout, reimbursement, refund
   confirmationCode: varchar("confirmation_code", { length: 50 })

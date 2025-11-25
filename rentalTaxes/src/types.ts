@@ -1,5 +1,6 @@
+import { PgliteDatabase } from "drizzle-orm/pglite";
 import { listings, properties, transactions } from "./lib/db/schema";
-
+import * as schema from "./lib/db/schema";
 export type Transaction = typeof transactions.$inferSelect;
 export type Property = typeof properties.$inferSelect;
 export type Listing = typeof listings.$inferSelect;
@@ -26,3 +27,5 @@ export type PropertyListing = {
 
   // listings: [{ listingKey: string; listingName: string }];
 };
+
+export type Db = PgliteDatabase<typeof schema>;

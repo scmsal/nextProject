@@ -19,7 +19,14 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
     }).format(val);
 
   const columns: ColumnDef<Transaction>[] = [
-    { accessorKey: "date", header: "Date" },
+    {
+      accessorKey: "date",
+      header: "Date",
+      cell: ({ row }) => {
+        const date = new Date(row.original.date);
+        return date.toLocaleDateString();
+      },
+    },
     // { accessorKey: "arrivalDate", header: "Arrival Date" },
     { accessorKey: "type", header: "Type" },
     { accessorKey: "confirmationCode", header: "Confirmation Code" },
