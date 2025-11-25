@@ -183,17 +183,14 @@ function dateWindow(
 }
 export async function getRevenueAggregates(
   db: PgliteDatabase<typeof schema>,
-  startFilterDate?: string,
-  endFilterDate?: string
+  fromDate?: string | undefined,
+  toDate?: string | undefined
 ) {
   console.log("getPropertyAggregates ran");
   //base query
-
-  const dateFilter = dateWindow(
-    transactions.date,
-    startFilterDate,
-    endFilterDate
-  );
+  const fromISO = fromDate ? `${fromDate}T00:00:00:000Z` : undefined;
+  const toISO = toDate ? `${toDate}T00:00:00:000Z` : undefined;
+  const dateFilter = dateWindow(transactions.date, fromISO, toISO);
 
   let query = await db
     .select({

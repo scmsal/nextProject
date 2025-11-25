@@ -66,10 +66,10 @@ export function AddListingForm() {
       }
     }
   }
-
-  useEffect(() => {
-    console.log("propertiesData", propertiesData);
-  }, [propertiesData]);
+  //debugging
+  // useEffect(() => {
+  //   console.log("propertiesData", propertiesData);
+  // }, [propertiesData]);
 
   return (
     <form className="flex flex-col" onSubmit={handleSubmit}>

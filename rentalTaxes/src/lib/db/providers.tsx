@@ -40,7 +40,10 @@ type DbContextType = {
   loadTransactions: () => Promise<void>;
   loadProperties: () => Promise<void>;
   loadListings: () => Promise<void>;
-  loadRevenueAggregates: () => Promise<void>;
+  loadRevenueAggregates: (params: {
+    fromDate: string | undefined;
+    toDate: string | undefined;
+  }) => Promise<void>;
 };
 
 const DbContext = createContext<DbContextType | null>(null);
@@ -97,13 +100,21 @@ export function Providers({ children }: { children: ReactNode }) {
     //  console.log("inside loadListings. ListingsData:", listingsData);
   }
 
-  async function loadRevenueAggregates() {
+  async function loadRevenueAggregates({
+    fromDate,
+    toDate,
+  }: {
+    fromDate: string | undefined;
+    toDate: string | undefined;
+  }) {
     if (!db) return;
-    //TO DO: change out the hardcoded start and end dates. Put parameters inside loadRevenueAggregates; create input element for start and end dates.
+
     const rows = await getRevenueAggregates(
       db,
-      "2025-07-02T04:00:00.000Z", //sample date
-      "2025-07-04T04:00:00.000Z" //sample date
+      fromDate ?? undefined,
+      toDate ?? undefined
+      // "2025-07-02T04:00:00.000Z", //sample date
+      // "2025-07-04T04:00:00.000Z" //sample date
     );
 
     setRevenueAggregatesData(rows);
