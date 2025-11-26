@@ -11,7 +11,6 @@ import { Transaction } from "@/types";
 export default function TransactionsTable({ data }: { data: Transaction[] }) {
   //   const data: Transaction[] = sampleTransactions;
 
-  console.log("transactions:", data);
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat("en-US", {
       style: "currency",

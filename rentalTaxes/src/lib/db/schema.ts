@@ -10,12 +10,12 @@ import {
   uniqueIndex,
   boolean,
 } from "drizzle-orm/pg-core";
-import { isNotNull, relations } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 
 // ----------------------
 // Transactions Table
 // ----------------------
-export const transactions = pgTable("transactions", {
+export const transactionsTable = pgTable("transactions", {
   id: serial("id").primaryKey(),
   date: date("date").notNull(),
   arrivalDate: varchar("arrival_date", { length: 50 }),
@@ -34,7 +34,7 @@ export const transactions = pgTable("transactions", {
     .default(null),
   listingId: varchar("listing_id", { length: 50 })
     // .notNull()
-    .references(() => listings.listingId),
+    .references(() => listingsTable.listingId),
   propertyId: varchar("property_id", { length: 50 })
     .$type<string | null>()
     .default(null),
@@ -61,7 +61,7 @@ export const transactions = pgTable("transactions", {
 // ----------------------
 // Properties Table
 // ----------------------
-export const properties = pgTable(
+export const propertiesTable = pgTable(
   "properties",
   {
     propertyName: varchar("property_name", { length: 255 }).notNull(),
@@ -80,49 +80,19 @@ export const properties = pgTable(
 // ----------------------
 // Listings Table
 // ----------------------
-export const listings = pgTable(
+export const listingsTable = pgTable(
   "listings",
   {
     listingId: varchar("listing_id", { length: 50 }).primaryKey(),
     listingName: varchar("listing_name", { length: 255 }).notNull(),
     propertyId: varchar("property_id", { length: 50 })
       .notNull()
-      .references(() => properties.propertyId),
+      .references(() => propertiesTable.propertyId),
     // platform: varchar("platform", { length: 100 }),
   },
   //PGlite doesn't fully enforce unique constraints, so this would only work in the full PostgreSQL
   (table) => [uniqueIndex("unique_listing_name").on(table.listingName)]
 );
-
-// ----------------------
-// Quarterly Table
-// ----------------------
-// export const quarterly = pgTable("quarterly", {
-//   id: serial("id").primaryKey(),
-//   monthYear: varchar("month_year", { length: 20 }),
-//   qIncome: numeric("q_income"),
-//   qCleaningExternal: numeric("q_cleaning_external"),
-//   qCleaningInternal: numeric("q_cleaning_internal"),
-//   qRefund: numeric("q_refund"),
-//   qReimburse: numeric("q_reimburse"),
-//   qStateTaxes: numeric("q_state_taxes"),
-//   qCountyTaxes: numeric("q_county_taxes"),
-//   qServiceFees: numeric("q_service_fees"),
-//   qFastPayFees: numeric("q_fast_pay_fees"),
-//   qNetIncome: numeric("q_net_income"),
-// });
-
-export const quarterlyFile = pgTable("quarterlyFile", {
-  id: serial("id").primaryKey(),
-  monthYear: varchar("month_year", { length: 20 }),
-  totalRevenue: numeric("total_revenue"), //**Total revenue** (long term and short term) including all fees (all reservations earnings minus refunds, reimbursements, optionally minus cleaning)
-  qCleaningExternal: numeric("q_cleaning_external"),
-  qCleaningInternal: numeric("q_cleaning_internal"),
-  qRefund: numeric("q_refund"),
-  qReimburse: numeric("q_reimburse"),
-  total30Plus: numeric("q_30_plus_revenue"), //total long term earnings (deductible),
-  totalShortTerm: numeric("q_short_term_revenue"), //total revenue minus total30Plus
-});
 
 /*
 
@@ -132,62 +102,30 @@ export const quarterlyFile = pgTable("quarterlyFile", {
 - (automatically calculated, Suffolk County tax for hotel and motel occupancy is 5.5%) KEEP UPDATED
 
 */
-// // ----------------------
-// // Yearly Table
-// // ----------------------
-// export const yearly = pgTable("yearly", {
-//   id: serial("id").primaryKey(),
-//   yearlyIncome: numeric("yearly_income"),
-//   yearlyCleaningExternal: numeric("yearly_cleaning_external"),
-//   yearlyCleaningInternal: numeric("yearly_cleaning_internal"),
-//   yearlyTaxes: numeric("yearly_taxes"),
-//   yearlyServiceFees: numeric("yearly_service_fees"),
-//   yearlyFastPayFees: numeric("yearly_fast_pay_fees"),
-//   yearlyNetIncome: numeric("yearly_net_income"),
-//   yearNetIncome: numeric("year_net_income"),
-// })
 
-/*
-This means:
-"Each transaction is connected to one listing
-where the transaction's listingId
-corresponds to the listing's id"
+export const transactionsRelations = relations(
+  transactionsTable,
+  ({ one }) => ({
+    listing: one(listingsTable, {
+      fields: [transactionsTable.listingId],
+      references: [listingsTable.listingId],
+    }),
+    property: one(propertiesTable, {
+      fields: [transactionsTable.propertyId],
+      references: [propertiesTable.propertyId],
+    }),
+  })
+);
 
-Example data:
-Transactions
-| id | date       | arrivalDate | type   | listingId | ... |
-| 1  | 2024-01-01 | 2024-01-05  | payout | *1*         | ... |
-| 2  | 2024-01-10 | 2024-01-15  | payout | *1*         | ... |
-| 3  | 2024-02-01 | 2024-02-05  | payout | *2*         | ... |
-
-Listings
-| id   | name           | propertyId |
-| *1*  | "Cozy Cottage" | 1          |
-| *2*  | "Beach House"  | 2          |
-
-This allows you to use drizzle's query syntax (https://orm.drizzle.team/docs/rqb)
-which is better than the select syntax
-*/
-export const transactionsRelations = relations(transactions, ({ one }) => ({
-  listing: one(listings, {
-    fields: [transactions.listingId],
-    references: [listings.listingId],
-  }),
-  property: one(properties, {
-    fields: [transactions.propertyId],
-    references: [properties.propertyId],
-  }),
+export const propertiesRelations = relations(propertiesTable, ({ many }) => ({
+  listings: many(listingsTable),
+  transactions: many(transactionsTable),
 }));
 
-export const propertiesRelations = relations(properties, ({ many }) => ({
-  listings: many(listings),
-  transactions: many(transactions),
-}));
-
-export const listingsRelations = relations(listings, ({ one, many }) => ({
-  property: one(properties, {
-    fields: [listings.propertyId],
-    references: [properties.propertyId],
+export const listingsRelations = relations(listingsTable, ({ one, many }) => ({
+  property: one(propertiesTable, {
+    fields: [listingsTable.propertyId],
+    references: [propertiesTable.propertyId],
   }),
-  transactions: many(transactions),
+  transactions: many(transactionsTable),
 }));

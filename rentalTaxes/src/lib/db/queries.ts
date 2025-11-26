@@ -4,24 +4,23 @@ import { PropertyListing, Property, Listing, Db } from "@/types";
 // import { TableType } from "@/types";
 import { PgTableWithColumns } from "drizzle-orm/pg-core";
 import { eq, sql, and, gte, lte } from "drizzle-orm";
-import { properties, transactions, listings } from "./schema";
+import { propertiesTable, transactionsTable, listingsTable } from "./schema";
 import * as schema from "./schema";
 
 //Ensure transactions are unique (to be used before insertion into db)
 
 export async function transactionExists(
   db: Db,
-  transactions: any,
   row: { confirmationCode: string; date: string; amount: number }
 ) {
   return await db
     .select()
-    .from(transactions)
+    .from(transactionsTable)
     .where(
       and(
-        eq(transactions.confirmationCode, row.confirmationCode),
-        eq(transactions.date, row.date),
-        eq(transactions.amount, row.amount)
+        eq(transactionsTable.confirmationCode, row.confirmationCode),
+        eq(transactionsTable.date, row.date),
+        eq(transactionsTable.amount, row.amount)
       )
     )
     .limit(1);
@@ -97,49 +96,16 @@ export async function addSampleProperties(db: Db) {
 // }
 
 export async function handleLog(db: Db) {
-  const result = await db?.query.transactions.findMany();
+  const result = await db?.query.transactionsTable.findMany();
   console.log("Transactions", result);
 }
 
 export async function handlePropertyLog(db: Db) {
-  const result = await db?.query.properties.findMany();
+  const result = await db?.query.propertiesTable.findMany();
 
   console.log("Properties", result || "0 properties");
   return result;
 }
-
-//note: these functions might be redundant since propertiesData and listingsData are already stored in context
-// export async function getListingsWithProperties(db: PgliteDatabase) {
-//   return db
-//     .select({
-//       listingKey: listings.listingId,
-//       listingName: listings.listingName,
-//       propertyName: properties.propertyName,
-//     })
-//     .from(properties)
-//     .leftJoin(listings, eq(listings.propertyId, properties.propertyId));
-// }
-
-// export async function getPropertiesWithListings(db: PgliteDatabase) {
-/*note that this query doesn't work in pglite because of the way it handles (or doesn't handle) relations and constraints client-side:
-        const propertiesWithListings = await db.query.  properties.findMany({
-          with: { listings: true },
-        });
-*/
-
-//   return db
-//     .select({
-//       propertyId: properties.propertyId,
-//       propertyName: properties.propertyName,
-//       address: properties.address,
-//       town: properties.town,
-//       county: properties.county,
-//       listingKey: listings.listingKey,
-//       listingName: listings.listingName,
-//     })
-//     .from(properties)
-//     .leftJoin(listings, eq(listings.propertyId, properties.propertyId));
-// }
 
 export function groupProperties(
   properties: Property[],
@@ -161,8 +127,6 @@ export function groupProperties(
       group.listings.push(l as Listing);
     }
   }
-
-  console.log("Inside groupProperties, the map is:", map);
   return [...map.values()] as PropertyListing[];
 }
 
@@ -171,7 +135,7 @@ export function groupProperties(
 //TO DO: aggregate by date
 
 function dateWindow(
-  dateColumn: typeof transactions.date,
+  dateColumn: typeof transactionsTable.date,
   startFilterDate?: string,
   endFilterDate?: string
 ) {
@@ -190,50 +154,56 @@ export async function getRevenueAggregates(
   //base query
   const fromISO = fromDate ? `${fromDate}T00:00:00:000Z` : undefined;
   const toISO = toDate ? `${toDate}T00:00:00:000Z` : undefined;
-  const dateFilter = dateWindow(transactions.date, fromISO, toISO);
+  const dateFilter = dateWindow(transactionsTable.date, fromISO, toISO);
 
   let query = await db
     .select({
-      propertyId: properties.propertyId,
-      propertyName: properties.propertyName,
+      propertyId: propertiesTable.propertyId,
+      propertyName: propertiesTable.propertyName,
       totalRevenue: sql<number>`
       SUM( 
       CASE WHEN ${dateFilter}
-        THEN ${transactions.amount}
+        THEN ${transactionsTable.amount}
         ELSE 0 END
       )`,
       //add filter for only reservation and adjustment
       shortTermRevenue: sql<number>`
       SUM(
-        CASE WHEN ${transactions.shortTerm}
+        CASE WHEN ${transactionsTable.shortTerm}
           AND ${dateFilter}
-        THEN ${transactions.amount}
+        THEN ${transactionsTable.amount}
         ELSE 0 END
       )
     `,
       longTermRevenue: sql<number>`
       SUM(
-        CASE WHEN NOT ${transactions.shortTerm}
+        CASE WHEN NOT ${transactionsTable.shortTerm}
         AND ${dateFilter}
-        THEN ${transactions.amount}
+        THEN ${transactionsTable.amount}
         ELSE 0 END
       )
     `,
       // listingCount: sql<number>`COUNT(${listings.listingKey})`,
-      shortTermStays: sql<number>`COUNT(DISTINCT CASE WHEN ${transactions.shortTerm} AND ${dateFilter}
-      THEN ${transactions.confirmationCode}
+      shortTermStays: sql<number>`COUNT(DISTINCT CASE WHEN ${transactionsTable.shortTerm} AND ${dateFilter}
+      THEN ${transactionsTable.confirmationCode}
         
         ELSE null END)`,
-      longTermStays: sql<number>`COUNT(DISTINCT CASE WHEN NOT ${transactions.shortTerm} AND ${dateFilter} THEN ${transactions.confirmationCode}
+      longTermStays: sql<number>`COUNT(DISTINCT CASE WHEN NOT ${transactionsTable.shortTerm} AND ${dateFilter} THEN ${transactionsTable.confirmationCode}
         ELSE null END)`,
     })
-    .from(properties)
+    .from(propertiesTable)
     //TO DO: check against transactions schema, if propertyId is included there
-    .leftJoin(listings, eq(listings.propertyId, properties.propertyId))
-    .leftJoin(transactions, eq(transactions.listingId, listings.listingId))
-    .groupBy(properties.propertyId, properties.propertyName);
+    .leftJoin(
+      listingsTable,
+      eq(listingsTable.propertyId, propertiesTable.propertyId)
+    )
+    .leftJoin(
+      transactionsTable,
+      eq(transactionsTable.listingId, listingsTable.listingId)
+    )
+    .groupBy(propertiesTable.propertyId, propertiesTable.propertyName);
 
   const results = await query;
-  console.log("aggregates:", results);
+
   return results;
 }

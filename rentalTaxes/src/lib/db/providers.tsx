@@ -68,36 +68,23 @@ export function Providers({ children }: { children: ReactNode }) {
   async function loadTransactions() {
     if (!db) return;
 
-    const result = await db.query.transactions.findMany();
+    const result = await db.query.transactionsTable.findMany();
 
-    //JS converts Date objects to strings on queries. They need to be converted back into dates to correspond to schema and types and to work in TanStack tables.
-    console.log("Result 0:", result[0]);
-    // const resultsDatesParsed = result.map((t) => ({
-    //   ...t,
-    //   date: new Date(String(t.date)),
-    //   bookingDate: t.bookingDate ? new Date(t.bookingDate) : null,
-    //   arrivalDate: t.arrivalDate ? new Date(t.arrivalDate) : null,
-    //   startDate: t.startDate ? new Date(t.startDate) : null,
-    //   endDate: t.endDate ? new Date(t.endDate) : null,
-    // }));
-    // console.log("loadTransactions:", resultsDatesParsed[0]);
     setTransactionsData(result);
   }
 
   async function loadProperties() {
     if (!db) return;
 
-    const result = await db.query.properties.findMany();
+    const result = await db.query.propertiesTable.findMany();
     setPropertiesData(result);
-    // console.log("properties:", result);
   }
 
   async function loadListings() {
     if (!db) return;
 
-    const result = await db.query.listings.findMany();
+    const result = await db.query.listingsTable.findMany();
     setListingsData(result);
-    //  console.log("inside loadListings. ListingsData:", listingsData);
   }
 
   async function loadRevenueAggregates({
@@ -130,16 +117,10 @@ export function Providers({ children }: { children: ReactNode }) {
       });
 
       await pgLite.exec(CREATE_TRANSACTIONS_TABLE);
-      console.log("Transactions table created.");
 
       await pgLite.exec(CREATE_PROPERTIES_TABLE);
-      console.log("Properties table created.");
 
       await pgLite.exec(CREATE_LISTINGS_TABLE);
-      console.log("Listings table created.");
-
-      await pgLite.exec(CREATE_QUARTERLY_TABLE);
-      console.log("Quarterly table created.");
 
       //this part is very important
       const db = drizzle(pgLite, { schema });
@@ -167,24 +148,6 @@ export function Providers({ children }: { children: ReactNode }) {
   if (!pgLite || !db) {
     return <div>Initializing database...</div>;
   }
-
-  //TO DO: STUDY THIS FUNCTION, CONCEPT OF SUBSCRIPTIONS, AND HOW PGLITE LIVE WORKS because the following useEffect doesn't work
-  // useEffect(() => {
-  //   if (!pgLite) return;
-
-  //   const liveQuery = live.query(pgLite, "SELECT * FROM transactions");
-  //   const unsubscribe = liveQuery.subscribe((rows) =>
-  //     setTransactionsData(rows)
-  //   );
-
-  //   return () => unsubscribe(); // cleanup
-  // }, [pgLite]);
-
-  // if (!db) {
-  //   return <div>Loading database...</div>;
-  // } else {
-  //   console.log("Database loaded.");
-  // }
 
   return (
     //PGliteProvider shares the database instance

@@ -9,7 +9,6 @@ import { groupProperties, getRevenueAggregates } from "@/lib/db/queries";
 import { Listing, RevenueAggregate, PropertyListing } from "@/types";
 
 export default function ListingsTable({ data }: { data: PropertyListing[] }) {
-  console.log("inside ListingsTable, data (PropertyListing[]):", data);
   const columns: ColumnDef<PropertyListing>[] = [
     // { accessorKey: "propertyId", header: "Property ID" },
     {

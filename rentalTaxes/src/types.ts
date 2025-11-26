@@ -1,10 +1,18 @@
 import { PgliteDatabase } from "drizzle-orm/pglite";
-import { listings, properties, transactions } from "./lib/db/schema";
+import {
+  listingsTable,
+  propertiesTable,
+  transactionsTable,
+} from "./lib/db/schema";
 import * as schema from "./lib/db/schema";
-export type Transaction = typeof transactions.$inferSelect;
-export type Property = typeof properties.$inferSelect;
-export type Listing = typeof listings.$inferSelect;
-export type TableType = typeof properties | typeof listings;
+import TransactionsTable from "./app/components/tables/TransactionsTable";
+export type Transaction = typeof transactionsTable.$inferSelect;
+export type Property = typeof propertiesTable.$inferSelect;
+export type Listing = typeof listingsTable.$inferSelect;
+export type TableType = typeof propertiesTable | typeof listingsTable;
+export type TransactionInsert = typeof transactionsTable.$inferInsert; //NOTE: CURRENTLY SAME AS PROPERTY TYPE
+export type PropertyInsert = typeof propertiesTable.$inferInsert;
+export type ListingInsert = typeof listingsTable.$inferInsert;
 
 //Phase 1 will only handle Airbnb data.
 //Later phases will integrate other platforms. That will involve distinguishing between physical units (platform agnostic) and listings (platform specific).

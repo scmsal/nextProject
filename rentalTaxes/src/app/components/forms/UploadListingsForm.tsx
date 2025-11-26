@@ -1,6 +1,6 @@
 "use client";
 
-import { listings } from "@/lib/db/schema";
+import { listingsTable } from "@/lib/db/schema";
 import { parseListingsCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
@@ -36,7 +36,7 @@ export default function UploadListingsForm() {
             cleaned.map(async (row) => {
               const exists = await existsInDb(
                 db,
-                listings,
+                listingsTable,
                 "listingId",
                 row.listingId
               );
@@ -45,10 +45,9 @@ export default function UploadListingsForm() {
           )
         ).filter(Boolean) as Listing[]; //remove nulls;
 
-        await db.insert(listings).values(uniqueCleaned);
+        await db.insert(listingsTable).values(uniqueCleaned);
         setStatus(`Imported ${cleaned.length} listings.`);
         await loadListings();
-        console.log("listingsData:", listingsData);
       } catch (err) {
         console.error(err);
         setStatus("Error importing file.");

@@ -4,24 +4,11 @@ import { FormEvent } from "react";
 export default function AggregateSummaries() {
   const { loadRevenueAggregates } = useDb();
 
-  // const [startFilterDate, setStartFilterDate] = useState<string>("");
-  // const [endFilterDate, setEndFilterDate] = useState<string | "">("");
-
-  // async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-  //   e.preventDefault();
-  //   const form = e.target as HTMLFormElement;
-  //   const formData = new FormData(form);
-  //   //debugging
-  //   for (const [key, value] of formData.entries())
-  //     console.log(`${key}: ${value}`);
-  // }
-
   const handleAggregate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    console.log("handleAggregate clicked");
     let rawFromDate = formData.get("startFilter");
     let rawToDate = formData.get("endFilter");
     await loadRevenueAggregates({

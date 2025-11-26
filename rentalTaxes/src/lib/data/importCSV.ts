@@ -64,7 +64,6 @@ export interface ParsedTransaction {
 }
 
 export function parseDate(timestamp: string): Date {
-  console.log("raw date:", timestamp);
   const parts = timestamp.trim().split("/");
   const monthIndex = Number(parts[0]) - 1;
   const dayNumber = Number(parts[1]);
@@ -79,14 +78,9 @@ function parseDateString(s: string): Date {
   return new Date(fullYear, m - 1, d);
 }
 */
-  console.log("parts:", parts);
-  console.log("monthIndex:", monthIndex);
-  console.log("dayNumber:", dayNumber);
-  console.log("yearNumber", yearNumber);
 
   const parsedDate = new Date(yearNumber, monthIndex, dayNumber);
 
-  console.log("parsedDate:", parsedDate);
   return parsedDate;
 }
 
@@ -94,7 +88,7 @@ function parseDateString(s: string): Date {
 export async function parseTransactionsCsvFile(file: File) {
   const results = await new Promise<{
     data: RawTransactionsCsv[];
-    errors: any[];
+    errors: unknown[];
   }>((resolve, reject) => {
     Papa.parse<RawTransactionsCsv>(file, {
       header: true,
@@ -115,9 +109,6 @@ export async function parseTransactionsCsvFile(file: File) {
     if (!dateRaw) {
       throw new Error("Missing required Date field in CSV row.");
     } // TO DO: UI alert
-    console.log("Date string:", JSON.stringify(row["Date"]));
-    console.log("parsed date inside cleaned:", parseDate(dateRaw));
-
     return {
       date: parseDate(dateRaw).toISOString(),
       arrivalDate: arrivalDateRaw
@@ -156,7 +147,7 @@ export async function parseTransactionsCsvFile(file: File) {
 export async function parsePropertiesCsvFile(file: File) {
   const results = await new Promise<{
     data: RawPropertiesCsv[];
-    errors: any[];
+    errors: unknown[];
   }>((resolve, reject) => {
     Papa.parse<RawPropertiesCsv>(file, {
       header: true,
@@ -186,7 +177,7 @@ export async function parsePropertiesCsvFile(file: File) {
 export async function parseListingsCsvFile(file: File) {
   const results = await new Promise<{
     data: RawListingsCsv[];
-    errors: any[];
+    errors: unknown[];
   }>((resolve, reject) => {
     Papa.parse<RawListingsCsv>(file, {
       header: true,

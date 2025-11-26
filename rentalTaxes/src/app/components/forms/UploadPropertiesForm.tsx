@@ -1,6 +1,6 @@
 "use client";
 
-import { properties } from "@/lib/db/schema";
+import { propertiesTable } from "@/lib/db/schema";
 import { parsePropertiesCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
@@ -38,7 +38,7 @@ export default function UploadPropertiesForm() {
             cleaned.map(async (row) => {
               const exists = await existsInDb(
                 db,
-                properties,
+                propertiesTable,
                 "propertyId",
                 row.propertyId
               );
@@ -49,7 +49,7 @@ export default function UploadPropertiesForm() {
 
         //insert into database
 
-        await db.insert(properties).values(uniqueCleaned);
+        await db.insert(propertiesTable).values(uniqueCleaned);
         setStatus(`Imported ${cleaned.length} properties.`);
         await loadProperties();
       } catch (err) {

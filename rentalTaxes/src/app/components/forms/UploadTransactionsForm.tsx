@@ -1,21 +1,17 @@
 "use client";
 
-import { transactions } from "@/lib/db/schema";
 import { parseTransactionsCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/providers";
 import { useEffect } from "react";
 import { normalizeText } from "@/lib/data/normalization";
 import { transactionExists } from "@/lib/db/queries";
+import { transactionsTable } from "@/lib/db/schema";
 
 export default function UploadTransactionsForm() {
   const { db, loadTransactions, listingsData } = useDb();
   const [status, setStatus] = useState("");
   const [file, setFile] = useState<File | null>(null);
-
-  useEffect(() => {
-    console.log("listingsData", listingsData);
-  }, [listingsData]);
 
   const handleUpload = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -42,7 +38,7 @@ export default function UploadTransactionsForm() {
         const uniqueCleaned = (
           await Promise.all(
             cleaned.map(async (row) => {
-              const exists = await transactionExists(db, transactions, row);
+              const exists = await transactionExists(db, row);
               return exists.length > 0 ? null : row;
             })
           )
@@ -56,9 +52,6 @@ export default function UploadTransactionsForm() {
           ])
         );
 
-        console.log("listingMap:", listingMap);
-
-        //enrich transaction CSV data with listingId from listingMap
         //TO DO: also enrich with source file
         const enriched = cleaned.map((row) => {
           const listingName = normalizeText(row.listingName);
@@ -78,25 +71,7 @@ export default function UploadTransactionsForm() {
           setStatus("Database not initialized.");
           return;
         }
-        await db.insert(transactions).values(enriched); //TO FIX: date is missing from a template
-
-        //debugging timestamp of uploadedAt defaulting to null
-        //         const cols = await db.execute(`
-        //   SELECT column_name, data_type, is_nullable, column_default
-        //   FROM information_schema.columns
-        //   WHERE table_name = 'transactions'
-        // `);
-        //         console.log(cols);
-
-        //         const r = await db.execute(`
-        //   INSERT INTO transactions (listing_id, amount)
-        //   VALUES ('test_manual', 1)
-        //   RETURNING *;
-        // `);
-
-        //         console.log("r:", r);
-
-        //end debugging
+        await db.insert(transactionsTable).values(enriched); //TO FIX: date is missing from a template
 
         setStatus(`Imported ${enriched.length} transactions.`);
         await loadTransactions();

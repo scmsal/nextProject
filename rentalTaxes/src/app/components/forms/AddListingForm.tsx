@@ -1,7 +1,8 @@
 import { useDb } from "@/lib/db/providers";
 import { FormEvent, useState, useEffect } from "react";
-import { listings } from "@/lib/db/schema";
+import { listingsTable } from "@/lib/db/schema";
 import { Listing, Property } from "@/types";
+import { createListingId } from "@/lib/data/normalization";
 
 //Use typed status to make conditional styling possible
 //TO DO: see if I need the same for UploadForm.tsx
@@ -29,11 +30,15 @@ export function AddListingForm() {
     for (const [key, value] of formData.entries())
       console.log(`${key}: ${value}`);
 
-    const cleaned = {
-      listingName: (formData.get("listingName") as string)?.trim() || "",
-      propertyId: formData.get("propertyId") || null,
-    };
+    const name = (formData.get("listingName") as string)?.trim() ?? "";
+    const propertyId = (formData.get("propertyId") as string) ?? ""; //NOTE THIS PATTERN
+    const listingId = createListingId(name, propertyId);
 
+    const cleaned: Listing = {
+      listingName: name,
+      propertyId,
+      listingId,
+    };
     await addListingToDb(cleaned);
     form.reset();
     /*TO DO: eventually use toast library or UI framework for toast. Use a small toast library (react-hot-toast, sonner, react-toastify) or  UI framework’s built-in (e.g. NextUI, Radix, or MUI Snackbar). Trigger it after the insert resolves:
@@ -50,10 +55,10 @@ export function AddListingForm() {
       return;
     }
     try {
-      await db.insert(listings).values(cleaned);
+      await db.insert(listingsTable).values(cleaned);
       setStatus({ message: `Listing successfully added.`, type: "success" });
       setTimeout(() => setStatus({ message: "", type: "" }), 2000);
-    } catch (error: any) {
+    } catch (error) {
       //Postgres unique constraint violation
       if (isPgError(error) && error.code === "23505") {
         setStatus({
@@ -66,10 +71,6 @@ export function AddListingForm() {
       }
     }
   }
-  //debugging
-  // useEffect(() => {
-  //   console.log("propertiesData", propertiesData);
-  // }, [propertiesData]);
 
   return (
     <form className="flex flex-col" onSubmit={handleSubmit}>

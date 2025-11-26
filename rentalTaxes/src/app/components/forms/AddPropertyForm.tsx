@@ -1,12 +1,12 @@
 import { useDb } from "@/lib/db/providers";
 import { FormEvent, useState } from "react";
-import { properties } from "@/lib/db/schema";
-import { Property } from "@/types";
+import { propertiesTable } from "@/lib/db/schema";
+import { Property, PropertyInsert } from "@/types";
+import { createPropertyId } from "@/lib/data/normalization";
+import { existsInDb } from "@/lib/db/queries";
 
 //Use typed status to make conditional styling possible
 //TO DO: see if I need the same for UploadForm.tsx
-
-//TO DO: use createPropertyId
 
 interface Status {
   message: string;
@@ -28,45 +28,54 @@ export function AddPropertyForm() {
     for (const [key, value] of formData.entries())
       console.log(`${key}: ${value}`);
 
-    const cleaned = {
-      propertyName: (formData.get("propertyName") as string)?.trim() || "",
-      address: (formData.get("address") as string)?.trim() || "",
+    const name = (formData.get("propertyName") as string)?.trim() || "";
+    const address = (formData.get("address") as string)?.trim() || "";
+
+    const propertyId = createPropertyId(name, address);
+    const cleaned: Property = {
+      propertyName: name,
+      address: address,
+      propertyId,
       town: (formData.get("town") as string)?.trim() || "",
       county: (formData.get("county") as string)?.trim() || "",
     };
 
-    await addPropertyToDb(cleaned);
-    form.reset();
-    await loadProperties();
-    /*TO DO: eventually use toast library or UI framework for toast. Use a small toast library (react-hot-toast, sonner, react-toastify) or  UI framework’s built-in (e.g. NextUI, Radix, or MUI Snackbar). Trigger it after the insert resolves:
+    const exists = await existsInDb(
+      db,
+      propertiesTable,
+      "propertyId",
+      cleaned.propertyId
+    );
+
+    const uniqueCleaned = exists ? null : (cleaned as Property);
+    if (uniqueCleaned) {
+      await addPropertyToDb(uniqueCleaned);
+      form.reset();
+      await loadProperties();
+    } else {
+      /*TO DO: eventually use toast library or UI framework for toast. Use a small toast library (react-hot-toast, sonner, react-toastify) or  UI framework’s built-in (e.g. NextUI, Radix, or MUI Snackbar). Trigger it after the insert resolves:
             toast.success("Property successfully added");
     */
-  }
-  //This might not work, as the unique constraints are not enforced in pglite
-  function isPgError(error: any): error is { code: string } {
-    return typeof error?.code === "string";
+      setStatus({ message: "Property already exists", type: "error" });
+      form.reset();
+    }
   }
 
-  async function addPropertyToDb(cleaned: any) {
+  async function addPropertyToDb(cleaned: PropertyInsert) {
     if (!db) {
       setStatus({ message: "Database not initialized.", type: "error" });
       return;
     }
     try {
-      await db.insert(properties).values(cleaned);
+      await db.insert(propertiesTable).values(cleaned);
       setStatus({ message: `Property successfully added.`, type: "success" });
       setTimeout(() => setStatus({ message: "", type: "" }), 2000);
-    } catch (error: any) {
-      //Postgres unique constraint violation
-      if (isPgError(error) && error.code === "23505") {
-        setStatus({
-          message: "A property with this name or address already exists.",
-          type: "error",
-        });
-      } else {
-        console.error("Database insert error:", error);
-        setStatus({ message: "Error adding property", type: "error" });
-      }
+    } catch (error) {
+      console.error("Database insert error:", error);
+      setStatus({ message: "Error adding property", type: "error" });
+      console.log("Before timeout", status);
+      setTimeout(() => setStatus({ message: "", type: "" }), 2000);
+      console.log("Inside timeout", status);
     }
   }
 
@@ -105,6 +114,7 @@ export function AddPropertyForm() {
       </button>
       {status && (
         <p
+          id="status"
           className={
             status.type === "success" ? "text-green-600" : "text-red-600"
           }
