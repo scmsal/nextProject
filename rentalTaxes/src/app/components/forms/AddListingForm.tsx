@@ -1,8 +1,9 @@
 import { useDb } from "@/lib/db/providers";
 import { FormEvent, useState, useEffect } from "react";
 import { listingsTable } from "@/lib/db/schema";
-import { Listing, Property } from "@/types";
+import { Listing } from "@/types";
 import { createListingId } from "@/lib/data/normalization";
+import { existsInDb } from "@/lib/db/queries";
 
 //Use typed status to make conditional styling possible
 //TO DO: see if I need the same for UploadForm.tsx
@@ -14,19 +15,20 @@ interface Status {
   type: "success" | "error" | "";
 }
 export function AddListingForm() {
-  const { db, propertiesData } = useDb();
+  const { db, propertiesData, loadListings } = useDb();
 
   const [status, setStatus] = useState<Status>({
     message: "",
     type: "",
   });
 
-  const [selectedPropertyId, setSelectedPropertyId] = useState<number | "">("");
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | "">("");
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
+    //debugging
     for (const [key, value] of formData.entries())
       console.log(`${key}: ${value}`);
 
@@ -39,36 +41,44 @@ export function AddListingForm() {
       propertyId,
       listingId,
     };
-    await addListingToDb(cleaned);
-    form.reset();
-    /*TO DO: eventually use toast library or UI framework for toast. Use a small toast library (react-hot-toast, sonner, react-toastify) or  UI framework’s built-in (e.g. NextUI, Radix, or MUI Snackbar). Trigger it after the insert resolves:
-            toast.success("Property successfully added");
+
+    const exists = await existsInDb(
+      db,
+      listingsTable,
+      "listingId",
+      cleaned.listingId
+    );
+
+    const uniqueCleaned = exists ? null : (cleaned as Listing);
+
+    if (uniqueCleaned) {
+      await addListingToDb(cleaned);
+      form.reset();
+      await loadListings();
+      setSelectedPropertyId("");
+    } else {
+      /*TO DO: eventually use toast library or UI framework for toast. Use a small toast library (react-hot-toast, sonner, react-toastify) or  UI framework’s built-in (e.g. NextUI, Radix, or MUI Snackbar). Trigger it after the insert resolves:
+            toast.success("Listing successfully added");
     */
-  }
-  function isPgError(error: any): error is { code: string } {
-    return typeof error?.code === "string";
+      setStatus({ message: "Listing already exists", type: "error" });
+      form.reset();
+    }
   }
 
-  async function addListingToDb(cleaned: any) {
+  async function addListingToDb(newListing: any) {
     if (!db) {
       setStatus({ message: "Database not initialized.", type: "error" });
       return;
     }
     try {
-      await db.insert(listingsTable).values(cleaned);
+      await db.insert(listingsTable).values(newListing);
       setStatus({ message: `Listing successfully added.`, type: "success" });
+
       setTimeout(() => setStatus({ message: "", type: "" }), 2000);
     } catch (error) {
-      //Postgres unique constraint violation
-      if (isPgError(error) && error.code === "23505") {
-        setStatus({
-          message: "A listing with this name already exists.",
-          type: "error",
-        });
-      } else {
-        console.error("Database insert error:", error);
-        setStatus({ message: "Error adding listing", type: "error" });
-      }
+      console.error("Database insert error:", error);
+      setStatus({ message: "Error adding listing", type: "error" });
+      setTimeout(() => setStatus({ message: "", type: "" }), 2000);
     }
   }
 
@@ -88,12 +98,13 @@ export function AddListingForm() {
         Property:
         <select
           name="propertyId"
+          id="propertyDropdown"
           className="mx-4 bg-gray-100"
           required
           value={selectedPropertyId === "" ? "" : String(selectedPropertyId)}
           onChange={(e) => {
-            const val = e.target.value;
-            setSelectedPropertyId(val === "" ? "" : Number(val));
+            let val = e.target.value;
+            setSelectedPropertyId(val === "" ? "" : val);
           }}
         >
           <option value="">Select property</option>
