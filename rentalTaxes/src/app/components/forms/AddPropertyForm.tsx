@@ -13,7 +13,6 @@ interface Status {
   type: "success" | "error" | "";
 }
 export function AddPropertyForm() {
-  //TO DO: add propertiesData to state?
   const { db, loadProperties } = useDb();
 
   const [status, setStatus] = useState<Status>({
@@ -25,6 +24,7 @@ export function AddPropertyForm() {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
+    //debugging
     for (const [key, value] of formData.entries())
       console.log(`${key}: ${value}`);
 
@@ -48,6 +48,7 @@ export function AddPropertyForm() {
     );
 
     const uniqueCleaned = exists ? null : (cleaned as Property);
+
     if (uniqueCleaned) {
       await addPropertyToDb(uniqueCleaned);
       form.reset();
@@ -61,14 +62,15 @@ export function AddPropertyForm() {
     }
   }
 
-  async function addPropertyToDb(cleaned: PropertyInsert) {
+  async function addPropertyToDb(newProperty: PropertyInsert) {
     if (!db) {
       setStatus({ message: "Database not initialized.", type: "error" });
       return;
     }
     try {
-      await db.insert(propertiesTable).values(cleaned);
+      await db.insert(propertiesTable).values(newProperty);
       setStatus({ message: `Property successfully added.`, type: "success" });
+      //TO DO: find out why the setTimeout isn't working. Maybe because it's not rerendering with the empty message?
       setTimeout(() => setStatus({ message: "", type: "" }), 2000);
     } catch (error) {
       console.error("Database insert error:", error);

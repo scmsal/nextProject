@@ -39,30 +39,6 @@ export interface RawListingsCsv {
   property_id: string;
 }
 
-export interface ParsedTransaction {
-  date: string;
-  arrivalDate: string;
-  bookingDate: string;
-  startDate: string;
-  endDate: string;
-  type: string;
-  confirmationCode: string;
-  shortTerm: string;
-  nights: number; // parsed number
-  guest: string;
-  listingName: string;
-  details: string;
-  amount: number; // parsed number
-  paidOut: number;
-  serviceFee: number;
-  cleaningFee: number;
-  grossEarnings: number;
-  totalOccupancyTaxes: number;
-  earningsYear: number;
-  countyTax: number | null;
-  stateTax: number | null;
-}
-
 export function parseDate(timestamp: string): Date {
   const parts = timestamp.trim().split("/");
   const monthIndex = Number(parts[0]) - 1;

@@ -76,9 +76,6 @@ export default function ListingsTable({ data }: { data: PropertyListing[] }) {
         </tbody>
       </table>
       <div className="h-4" />
-      {/* <button onClick={() => rerender()} className="border p-2">
-        Rerender
-      </button> */}
     </div>
   );
 }
