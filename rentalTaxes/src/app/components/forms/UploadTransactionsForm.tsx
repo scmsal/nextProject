@@ -2,7 +2,7 @@
 
 import { parseTransactionsCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
-import { useDb } from "@/lib/db/providers";
+import { useDb } from "@/lib/db/dbContext";
 import { useEffect } from "react";
 import { normalizeText } from "@/lib/data/normalization";
 import { transactionExists } from "@/lib/db/queries";

@@ -1,4 +1,4 @@
-import { useDb } from "@/lib/db/providers";
+import { useDb } from "@/lib/db/dbContext";
 import { FormEvent, useState } from "react";
 import { propertiesTable } from "@/lib/db/schema";
 import { Property, PropertyInsert } from "@/types";

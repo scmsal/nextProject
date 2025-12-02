@@ -3,7 +3,7 @@
 import { propertiesTable } from "@/lib/db/schema";
 import { parsePropertiesCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
-import { useDb } from "@/lib/db/providers";
+import { useDb } from "@/lib/db/dbContext";
 import { existsInDb } from "@/lib/db/queries";
 import { Property } from "@/types";
 

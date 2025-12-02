@@ -6,6 +6,12 @@ import {
 } from "@tanstack/react-table";
 import { RevenueAggregate } from "@/types";
 
+const formatCurrency = (val: number) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(val);
+
 export default function RevenueAggregatesTable({
   data,
 }: {
@@ -13,10 +19,22 @@ export default function RevenueAggregatesTable({
 }) {
   const columns: ColumnDef<RevenueAggregate>[] = [
     { accessorKey: "propertyName", header: "Property" },
-    { accessorKey: "totalRevenue", header: "Total Payouts" },
-    { accessorKey: "shortTermRevenue", header: "<30 Nights Revenue" },
+    {
+      accessorKey: "totalRevenue",
+      header: "Total Payouts",
+      cell: ({ getValue }) => formatCurrency(getValue() as number),
+    },
+    {
+      accessorKey: "shortTermRevenue",
+      header: "<30 Nights Revenue",
+      cell: ({ getValue }) => formatCurrency(getValue() as number),
+    },
     { accessorKey: "shortTermStays", header: "<30 Nights Stays" },
-    { accessorKey: "longTermRevenue", header: "30+ Nights Revenue" },
+    {
+      accessorKey: "longTermRevenue",
+      header: "30+ Nights Revenue",
+      cell: ({ getValue }) => formatCurrency(getValue() as number),
+    },
     { accessorKey: "longTermStays", header: "30+ Nights Stays" },
   ];
 

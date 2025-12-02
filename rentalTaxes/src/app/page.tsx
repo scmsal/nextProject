@@ -9,15 +9,13 @@ import UploadListingsForm from "./components/forms/UploadListingsForm";
 import AggregateSummaries from "./components/data/AggregateSummaries";
 import RevenueAggregatesTable from "./components/tables/AggregateTable";
 import ListingsTable from "./components/tables/ListingsTable";
+import DateFilterForm from "./components/forms/DateFilterForm";
 import { useMemo } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useDb } from "@/lib/db/providers";
+import { useDb } from "@/lib/db/dbContext";
 import { groupProperties } from "@/lib/db/queries";
 
 export default function Home() {
-  // You will also need listing and property data
   const {
     transactionsData,
     revenueAggregatesData,
@@ -48,6 +46,7 @@ export default function Home() {
         <h3 className="underline">Step 3</h3>
         <div>
           <UploadTransactionsForm />
+          {/* <DateFilterForm /> */}
           {transactionsData && <TransactionsTable data={transactionsData} />}
         </div>
         <h3 className="underline">Step 4</h3>

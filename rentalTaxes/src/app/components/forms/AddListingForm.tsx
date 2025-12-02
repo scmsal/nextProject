@@ -1,4 +1,4 @@
-import { useDb } from "@/lib/db/providers";
+import { useDb } from "@/lib/db/dbContext";
 import { FormEvent, useState, useEffect } from "react";
 import { listingsTable } from "@/lib/db/schema";
 import { Listing } from "@/types";
@@ -62,6 +62,8 @@ export function AddListingForm() {
     */
       setStatus({ message: "Listing already exists", type: "error" });
       form.reset();
+      setSelectedPropertyId("");
+      setTimeout(() => setStatus({ message: "", type: "" }), 2000);
     }
   }
 

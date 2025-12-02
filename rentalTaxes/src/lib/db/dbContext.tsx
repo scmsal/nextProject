@@ -41,8 +41,8 @@ type DbContextType = {
   loadProperties: () => Promise<void>;
   loadListings: () => Promise<void>;
   loadRevenueAggregates: (params: {
-    fromDate: string | undefined;
-    toDate: string | undefined;
+    fromDate: string;
+    toDate: string;
   }) => Promise<void>;
 };
 
@@ -55,7 +55,7 @@ export function useDb() {
   return context;
 }
 
-export function Providers({ children }: { children: ReactNode }) {
+export function DbProvider({ children }: { children: ReactNode }) {
   const [pgLite, setPgLite] = useState<PGliteWithLive>();
   const [db, setDb] = useState<PgliteDatabase<typeof schema>>();
   const [transactionsData, setTransactionsData] = useState<Transaction[]>([]);
@@ -87,22 +87,52 @@ export function Providers({ children }: { children: ReactNode }) {
     setListingsData(result);
   }
 
+  function aggregateAmounts(arrTransactions: Transaction[], debug?: boolean) {
+    const aggregate = arrTransactions.reduce((acc, transaction) => {
+      const amount = transaction.amount ? Number(transaction.amount) : 0;
+      if (debug) {
+        console.log("amount:", amount);
+      }
+      return acc + amount;
+    }, 0);
+
+    return aggregate;
+  }
   async function loadRevenueAggregates({
     fromDate,
     toDate,
   }: {
-    fromDate: string | undefined;
-    toDate: string | undefined;
+    fromDate: string;
+    toDate: string;
   }) {
-    if (!db) return;
-
-    const rows = await getRevenueAggregates(
-      db,
-      fromDate ?? undefined,
-      toDate ?? undefined
-      // "2025-07-02T04:00:00.000Z", //sample date
-      // "2025-07-04T04:00:00.000Z" //sample date
-    );
+    const rows: RevenueAggregate[] = propertiesData.map((prop) => {
+      const propertyDateTransactions = transactionsData.filter(
+        (transaction) => {
+          if (transaction.propertyId !== prop.propertyId) return false;
+          if (fromDate && transaction.date < fromDate) return false;
+          if (toDate && transaction.date > toDate) return false;
+          return true;
+        }
+      );
+      const totalRevenue = aggregateAmounts(propertyDateTransactions, true);
+      const shortTransactions = propertyDateTransactions.filter(
+        (transaction) => transaction.shortTerm
+      );
+      const shortTermRevenue = aggregateAmounts(shortTransactions);
+      const longTransactions = propertyDateTransactions.filter(
+        (transaction) => !transaction.shortTerm
+      );
+      const longTermRevenue = aggregateAmounts(longTransactions);
+      const revenueAggregate: RevenueAggregate = {
+        propertyName: prop.propertyName,
+        totalRevenue,
+        shortTermRevenue,
+        longTermRevenue,
+        shortTermStays: shortTransactions.length,
+        longTermStays: longTransactions.length,
+      };
+      return revenueAggregate;
+    });
 
     setRevenueAggregatesData(rows);
   }

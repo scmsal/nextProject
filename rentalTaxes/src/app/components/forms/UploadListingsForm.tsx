@@ -3,7 +3,7 @@
 import { listingsTable } from "@/lib/db/schema";
 import { parseListingsCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
-import { useDb } from "@/lib/db/providers";
+import { useDb } from "@/lib/db/dbContext";
 import { existsInDb } from "@/lib/db/queries";
 import { Listing } from "@/types";
 

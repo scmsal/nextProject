@@ -147,8 +147,8 @@ function dateWindow(
 }
 export async function getRevenueAggregates(
   db: Db,
-  fromDate?: string | undefined,
-  toDate?: string | undefined
+  fromDate?: string,
+  toDate?: string
 ) {
   console.log("getPropertyAggregates ran");
   //base query
@@ -156,6 +156,10 @@ export async function getRevenueAggregates(
   const toISO = toDate ? `${toDate}T00:00:00:000Z` : undefined;
   const dateFilter = dateWindow(transactionsTable.date, fromISO, toISO);
 
+  /*
+Get all transactions 
+
+  */
   let query = await db
     .select({
       propertyId: propertiesTable.propertyId,

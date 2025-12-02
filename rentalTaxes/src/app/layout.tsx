@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import "./styles/globals.css";
-import { Providers } from "@/lib/db/providers";
+import { DbProvider } from "@/lib/db/dbContext";
 //Added with installation of Roboto font for Material UI
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <DbProvider>{children}</DbProvider>
       </body>
     </html>
   );

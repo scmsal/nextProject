@@ -9,7 +9,7 @@ import {
   // getListingsWithProperties,
 } from "@/lib/db/queries";
 
-import { useDb } from "@/lib/db/providers";
+import { useDb } from "@/lib/db/dbContext";
 
 export default function ReplWithButtons() {
   const { db, pgLite, loadTransactions, loadListings, loadProperties } =
