@@ -4,6 +4,7 @@ import {
   propertiesTable,
   transactionsTable,
 } from "./lib/db/schema";
+import { FormEvent } from "react";
 import * as schema from "./lib/db/schema";
 import TransactionsTable from "./app/components/tables/TransactionsTable";
 export type Transaction = typeof transactionsTable.$inferSelect;

@@ -114,7 +114,7 @@ export function DbProvider({ children }: { children: ReactNode }) {
           return true;
         }
       );
-      const totalRevenue = aggregateAmounts(propertyDateTransactions, true);
+      const totalRevenue = aggregateAmounts(propertyDateTransactions, false);
       const shortTransactions = propertyDateTransactions.filter(
         (transaction) => transaction.shortTerm
       );

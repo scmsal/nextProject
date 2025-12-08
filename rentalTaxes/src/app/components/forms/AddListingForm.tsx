@@ -16,7 +16,6 @@ interface Status {
 }
 export function AddListingForm() {
   const { db, propertiesData, loadListings } = useDb();
-
   const [status, setStatus] = useState<Status>({
     message: "",
     type: "",

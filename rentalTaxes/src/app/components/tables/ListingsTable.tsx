@@ -1,3 +1,4 @@
+import { propertiesTable } from "@/lib/db/schema";
 import {
   createColumnHelper,
   flexRender,
@@ -7,15 +8,34 @@ import {
 } from "@tanstack/react-table";
 import { groupProperties, getRevenueAggregates } from "@/lib/db/queries";
 import { Listing, RevenueAggregate, PropertyListing } from "@/types";
+import Editable from "../forms/Editable";
+import { useDb } from "@/lib/db/dbContext";
+import { eq } from "drizzle-orm";
 
 export default function ListingsTable({ data }: { data: PropertyListing[] }) {
+  const { db, loadProperties } = useDb();
+
   const columns: ColumnDef<PropertyListing>[] = [
     // { accessorKey: "propertyId", header: "Property ID" },
     {
       accessorKey: "propertyName",
       header: "Property",
-      cell: ({ row }) =>
-        "propertyName" in row.original ? row.original.propertyName : "",
+      cell: ({ row }) => {
+        const value =
+          "propertyName" in row.original ? row.original.propertyName : "";
+        return (
+          <Editable
+            value={value}
+            onSubmit={async ({ inputVal }) => {
+              await db
+                .update(propertiesTable)
+                .set({ propertyName: inputVal })
+                .where(eq(propertiesTable.propertyId, row.original.propertyId));
+              await loadProperties();
+            }}
+          />
+        );
+      },
     },
 
     {
