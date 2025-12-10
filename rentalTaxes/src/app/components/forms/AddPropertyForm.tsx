@@ -1,6 +1,6 @@
 import { useDb } from "@/lib/db/dbContext";
 import { FormEvent, useState } from "react";
-import { propertiesTable } from "@/lib/db/schema";
+import { propertiesDbTable } from "@/lib/db/schema";
 import { Property, PropertyInsert } from "@/types";
 import { createPropertyId } from "@/lib/data/normalization";
 import { existsInDb } from "@/lib/db/queries";
@@ -42,7 +42,7 @@ export function AddPropertyForm() {
 
     const exists = await existsInDb(
       db,
-      propertiesTable,
+      propertiesDbTable,
       "propertyId",
       cleaned.propertyId
     );
@@ -68,7 +68,7 @@ export function AddPropertyForm() {
       return;
     }
     try {
-      await db.insert(propertiesTable).values(newProperty);
+      await db.insert(propertiesDbTable).values(newProperty);
       setStatus({ message: `Property successfully added.`, type: "success" });
       //TO DO: find out why the setTimeout isn't working. Maybe because it's not rerendering with the empty message?
       setTimeout(() => setStatus({ message: "", type: "" }), 2000);

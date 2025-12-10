@@ -1,8 +1,8 @@
 import { useDb } from "@/lib/db/dbContext";
 import { FormEvent, useState, useEffect } from "react";
-import { listingsTable } from "@/lib/db/schema";
+import { listingsDbTable } from "@/lib/db/schema";
 import { Listing } from "@/types";
-import { createListingId } from "@/lib/data/normalization";
+import { createListingId, normalizeText } from "@/lib/data/normalization";
 import { existsInDb } from "@/lib/db/queries";
 
 //Use typed status to make conditional styling possible
@@ -32,7 +32,8 @@ export function AddListingForm() {
       console.log(`${key}: ${value}`);
 
     const name = (formData.get("listingName") as string)?.trim() ?? "";
-    const propertyId = (formData.get("propertyId") as string) ?? ""; //NOTE THIS PATTERN
+    const propertyId =
+      normalizeText(formData.get("propertyId") as string) ?? ""; //NOTE THIS PATTERN
     const listingId = createListingId(name, propertyId);
 
     const cleaned: Listing = {
@@ -43,7 +44,7 @@ export function AddListingForm() {
 
     const exists = await existsInDb(
       db,
-      listingsTable,
+      listingsDbTable,
       "listingId",
       cleaned.listingId
     );
@@ -72,7 +73,7 @@ export function AddListingForm() {
       return;
     }
     try {
-      await db.insert(listingsTable).values(newListing);
+      await db.insert(listingsDbTable).values(newListing);
       setStatus({ message: `Listing successfully added.`, type: "success" });
 
       setTimeout(() => setStatus({ message: "", type: "" }), 2000);

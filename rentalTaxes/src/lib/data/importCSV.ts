@@ -1,9 +1,11 @@
 import Papa from "papaparse";
-import { createListingId, createPropertyId } from "./normalization";
+import {
+  createListingId,
+  createPropertyId,
+  normalizeText,
+} from "./normalization";
 import { timeStamp } from "console";
 
-// Define a type for a single CSV row
-//TODO: CONVERT STRINGS TO NUMERIC/BOOLEAN WHERE APPLICABLE?
 export interface RawTransactionsCsv {
   Date?: string;
   "Arriving by date"?: string;

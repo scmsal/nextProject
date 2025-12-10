@@ -15,7 +15,7 @@ import { relations } from "drizzle-orm";
 // ----------------------
 // Transactions Table
 // ----------------------
-export const transactionsTable = pgTable("transactions", {
+export const transactionsDbTable = pgTable("transactions", {
   id: serial("id").primaryKey(),
   date: date("date").notNull(),
   arrivalDate: varchar("arrival_date", { length: 50 }),
@@ -34,7 +34,7 @@ export const transactionsTable = pgTable("transactions", {
     .default(null),
   listingId: varchar("listing_id", { length: 50 })
     // .notNull()
-    .references(() => listingsTable.listingId),
+    .references(() => listingsDbTable.listingId),
   propertyId: varchar("property_id", { length: 50 })
     .$type<string | null>()
     .default(null),
@@ -61,7 +61,7 @@ export const transactionsTable = pgTable("transactions", {
 // ----------------------
 // Properties Table
 // ----------------------
-export const propertiesTable = pgTable(
+export const propertiesDbTable = pgTable(
   "properties",
   {
     propertyName: varchar("property_name", { length: 255 }).notNull(),
@@ -80,14 +80,14 @@ export const propertiesTable = pgTable(
 // ----------------------
 // Listings Table
 // ----------------------
-export const listingsTable = pgTable(
+export const listingsDbTable = pgTable(
   "listings",
   {
     listingId: varchar("listing_id", { length: 50 }).primaryKey(),
     listingName: varchar("listing_name", { length: 255 }).notNull(),
     propertyId: varchar("property_id", { length: 50 })
       .notNull()
-      .references(() => propertiesTable.propertyId),
+      .references(() => propertiesDbTable.propertyId),
     // platform: varchar("platform", { length: 100 }),
   },
   //PGlite doesn't fully enforce unique constraints, so this would only work in the full PostgreSQL
@@ -104,28 +104,31 @@ export const listingsTable = pgTable(
 */
 
 export const transactionsRelations = relations(
-  transactionsTable,
+  transactionsDbTable,
   ({ one }) => ({
-    listing: one(listingsTable, {
-      fields: [transactionsTable.listingId],
-      references: [listingsTable.listingId],
+    listing: one(listingsDbTable, {
+      fields: [transactionsDbTable.listingId],
+      references: [listingsDbTable.listingId],
     }),
-    property: one(propertiesTable, {
-      fields: [transactionsTable.propertyId],
-      references: [propertiesTable.propertyId],
+    property: one(propertiesDbTable, {
+      fields: [transactionsDbTable.propertyId],
+      references: [propertiesDbTable.propertyId],
     }),
   })
 );
 
-export const propertiesRelations = relations(propertiesTable, ({ many }) => ({
-  listings: many(listingsTable),
-  transactions: many(transactionsTable),
+export const propertiesRelations = relations(propertiesDbTable, ({ many }) => ({
+  listings: many(listingsDbTable),
+  transactions: many(transactionsDbTable),
 }));
 
-export const listingsRelations = relations(listingsTable, ({ one, many }) => ({
-  property: one(propertiesTable, {
-    fields: [listingsTable.propertyId],
-    references: [propertiesTable.propertyId],
-  }),
-  transactions: many(transactionsTable),
-}));
+export const listingsRelations = relations(
+  listingsDbTable,
+  ({ one, many }) => ({
+    property: one(propertiesDbTable, {
+      fields: [listingsDbTable.propertyId],
+      references: [propertiesDbTable.propertyId],
+    }),
+    transactions: many(transactionsDbTable),
+  })
+);

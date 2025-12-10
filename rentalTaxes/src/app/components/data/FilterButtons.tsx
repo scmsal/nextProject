@@ -52,7 +52,6 @@ export function FilterButtons({
 
     minYear = result.minYear;
     maxYear = result.maxYear;
-    console.log("minYear, maxYear:", minYear, maxYear);
   }
 
   const years: number[] =
@@ -62,8 +61,6 @@ export function FilterButtons({
           { length: currentYear - minYear + 1 },
           (_, i) => minYear + i
         );
-
-  console.log("years:", years);
 
   interface QuarterRange {
     startMonth: number;
@@ -105,6 +102,8 @@ export function FilterButtons({
     const end = new Date(endYear, endMonth + 1);
     // const startString: string = start.toLocaleDateString(); // MM/DD/YYYY
     // const endString: string = end.toLocaleDateString();
+
+    //Change start and end dates from "Sun Dec 01 2024 00:00:00 GMT-0500 (Eastern Standard Time)" format to "yyyy-MM-dd".
     const formattedStart = start.toISOString().slice(0, 10);
     const formattedEnd = end.toISOString().slice(0, 10);
     console.log("start: " + formattedStart + " end:", formattedEnd);
@@ -115,13 +114,6 @@ export function FilterButtons({
     return { formattedStart, formattedEnd };
   }
 
-  function handleQuarterClick(quarter: string) {
-    setSelectedQuarter(Number(quarter));
-  }
-
-  function handleYearClick(year: number) {
-    setSelectedYear(year);
-  }
   //quarters buttons
   let isActiveQ = ({ quarter }: { quarter: string }) => {
     return quarter ? quarter === String(selectedQuarter) : undefined;
@@ -132,6 +124,7 @@ export function FilterButtons({
   };
 
   useEffect(() => {}, [selectedQuarter, selectedYear]);
+
   //TO DO: make a clear filters button and calculate all button? Connect year and quarter to set filter window
   return (
     <div>
@@ -169,7 +162,6 @@ export function FilterButtons({
       >
         <option value="">All years</option>
         {years.map((y) => {
-          console.log(y);
           return (
             <option
               key={y}

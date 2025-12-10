@@ -6,6 +6,7 @@ import {
   addSampleProperties,
   // addSampleListings,
   getRevenueAggregates,
+  clearTransactions,
   // getListingsWithProperties,
 } from "@/lib/db/queries";
 
@@ -22,6 +23,13 @@ export default function ReplWithButtons() {
   return (
     <div className="ps-4">
       <Repl pg={pgLite} />
+      <button
+        onClick={() => {
+          clearTransactions(db);
+        }}
+      >
+        Delete Transactions
+      </button>
       <button
         className="hover:bg-gray-50 cursor-pointer border"
         onClick={() => {

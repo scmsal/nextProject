@@ -4,9 +4,17 @@ import { PropertyListing, Property, Listing, Db } from "@/types";
 // import { TableType } from "@/types";
 import { PgTableWithColumns } from "drizzle-orm/pg-core";
 import { eq, sql, and, gte, lte } from "drizzle-orm";
-import { propertiesTable, transactionsTable, listingsTable } from "./schema";
+import {
+  propertiesDbTable,
+  transactionsDbTable,
+  listingsDbTable,
+} from "./schema";
 import * as schema from "./schema";
 
+export async function clearTransactions(db: Db) {
+  await db.delete(transactionsDbTable);
+  console.log("All transactions deleted.");
+}
 //Ensure transactions are unique (to be used before insertion into db)
 
 export async function transactionExists(
@@ -15,12 +23,12 @@ export async function transactionExists(
 ) {
   return await db
     .select()
-    .from(transactionsTable)
+    .from(transactionsDbTable)
     .where(
       and(
-        eq(transactionsTable.confirmationCode, row.confirmationCode),
-        eq(transactionsTable.date, row.date),
-        eq(transactionsTable.amount, row.amount)
+        eq(transactionsDbTable.confirmationCode, row.confirmationCode),
+        eq(transactionsDbTable.date, row.date),
+        eq(transactionsDbTable.amount, row.amount)
       )
     )
     .limit(1);
@@ -96,12 +104,12 @@ export async function addSampleProperties(db: Db) {
 // }
 
 export async function handleLog(db: Db) {
-  const result = await db?.query.transactionsTable.findMany();
+  const result = await db?.query.transactionsDbTable.findMany();
   console.log("Transactions", result);
 }
 
 export async function handlePropertyLog(db: Db) {
-  const result = await db?.query.propertiesTable.findMany();
+  const result = await db?.query.propertiesDbTable.findMany();
 
   console.log("Properties", result || "0 properties");
   return result;
@@ -123,10 +131,12 @@ export function groupProperties(
   // Add each listing to its property's listings once
   for (const l of listings) {
     const group = map.get(l.propertyId);
+    console.log(group);
     if (group) {
       group.listings.push(l as Listing);
     }
   }
+
   return [...map.values()] as PropertyListing[];
 }
 
@@ -135,7 +145,7 @@ export function groupProperties(
 //TO DO: aggregate by date
 
 function dateWindow(
-  dateColumn: typeof transactionsTable.date,
+  dateColumn: typeof transactionsDbTable.date,
   startFilterDate?: string,
   endFilterDate?: string
 ) {
@@ -145,6 +155,7 @@ function dateWindow(
     startFilterDate ?? "0000-01-01"
   } AND ${dateColumn} <= ${endFilterDate ?? "9999-12-31"}`;
 }
+//TO DO: This may be obsolete as  aggregateAmounts() performs the same with JS instead of SQL/Drizzle
 export async function getRevenueAggregates(
   db: Db,
   fromDate?: string,
@@ -154,7 +165,7 @@ export async function getRevenueAggregates(
   //base query
   const fromISO = fromDate ? `${fromDate}T00:00:00:000Z` : undefined;
   const toISO = toDate ? `${toDate}T00:00:00:000Z` : undefined;
-  const dateFilter = dateWindow(transactionsTable.date, fromISO, toISO);
+  const dateFilter = dateWindow(transactionsDbTable.date, fromISO, toISO);
 
   /*
 Get all transactions 
@@ -162,52 +173,51 @@ Get all transactions
   */
   let query = await db
     .select({
-      propertyId: propertiesTable.propertyId,
-      propertyName: propertiesTable.propertyName,
+      propertyId: propertiesDbTable.propertyId,
+      propertyName: propertiesDbTable.propertyName,
       totalRevenue: sql<number>`
       SUM( 
       CASE WHEN ${dateFilter}
-        THEN ${transactionsTable.amount}
+        THEN ${transactionsDbTable.amount}
         ELSE 0 END
       )`,
       //add filter for only reservation and adjustment
       shortTermRevenue: sql<number>`
       SUM(
-        CASE WHEN ${transactionsTable.shortTerm}
+        CASE WHEN ${transactionsDbTable.shortTerm}
           AND ${dateFilter}
-        THEN ${transactionsTable.amount}
+        THEN ${transactionsDbTable.amount}
         ELSE 0 END
       )
     `,
       longTermRevenue: sql<number>`
       SUM(
-        CASE WHEN NOT ${transactionsTable.shortTerm}
+        CASE WHEN NOT ${transactionsDbTable.shortTerm}
         AND ${dateFilter}
-        THEN ${transactionsTable.amount}
+        THEN ${transactionsDbTable.amount}
         ELSE 0 END
       )
     `,
-      // listingCount: sql<number>`COUNT(${listings.listingKey})`,
-      shortTermStays: sql<number>`COUNT(DISTINCT CASE WHEN ${transactionsTable.shortTerm} AND ${dateFilter}
-      THEN ${transactionsTable.confirmationCode}
+      shortTermStays: sql<number>`COUNT(DISTINCT CASE WHEN ${transactionsDbTable.shortTerm} AND ${dateFilter}
+      THEN ${transactionsDbTable.confirmationCode}
         
         ELSE null END)`,
-      longTermStays: sql<number>`COUNT(DISTINCT CASE WHEN NOT ${transactionsTable.shortTerm} AND ${dateFilter} THEN ${transactionsTable.confirmationCode}
+      longTermStays: sql<number>`COUNT(DISTINCT CASE WHEN NOT ${transactionsDbTable.shortTerm} AND ${dateFilter} THEN ${transactionsDbTable.confirmationCode}
         ELSE null END)`,
     })
-    .from(propertiesTable)
-    //TO DO: check against transactions schema, if propertyId is included there
+    .from(propertiesDbTable)
     .leftJoin(
-      listingsTable,
-      eq(listingsTable.propertyId, propertiesTable.propertyId)
+      listingsDbTable,
+      eq(listingsDbTable.propertyId, propertiesDbTable.propertyId)
     )
     .leftJoin(
-      transactionsTable,
-      eq(transactionsTable.listingId, listingsTable.listingId)
+      transactionsDbTable,
+      eq(transactionsDbTable.listingId, listingsDbTable.listingId)
     )
-    .groupBy(propertiesTable.propertyId, propertiesTable.propertyName);
+    .groupBy(propertiesDbTable.propertyId, propertiesDbTable.propertyName);
 
   const results = await query;
+  console.log("aggregate results:", results);
 
   return results;
 }

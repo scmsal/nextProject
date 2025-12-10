@@ -68,7 +68,7 @@ export function DbProvider({ children }: { children: ReactNode }) {
   async function loadTransactions() {
     if (!db) return;
 
-    const result = await db.query.transactionsTable.findMany();
+    const result = await db.query.transactionsDbTable.findMany();
 
     setTransactionsData(result);
   }
@@ -76,14 +76,14 @@ export function DbProvider({ children }: { children: ReactNode }) {
   async function loadProperties() {
     if (!db) return;
 
-    const result = await db.query.propertiesTable.findMany();
+    const result = await db.query.propertiesDbTable.findMany();
     setPropertiesData(result);
   }
 
   async function loadListings() {
     if (!db) return;
 
-    const result = await db.query.listingsTable.findMany();
+    const result = await db.query.listingsDbTable.findMany();
     setListingsData(result);
   }
 
@@ -91,13 +91,14 @@ export function DbProvider({ children }: { children: ReactNode }) {
     const aggregate = arrTransactions.reduce((acc, transaction) => {
       const amount = transaction.amount ? Number(transaction.amount) : 0;
       if (debug) {
-        console.log("amount:", amount);
+        console.log("transaction date:", transaction.date, "amount:", amount);
       }
       return acc + amount;
     }, 0);
 
     return aggregate;
   }
+
   async function loadRevenueAggregates({
     fromDate,
     toDate,
@@ -106,15 +107,23 @@ export function DbProvider({ children }: { children: ReactNode }) {
     toDate: string;
   }) {
     const rows: RevenueAggregate[] = propertiesData.map((prop) => {
+      console.log("from:", fromDate, " to:", toDate);
+      console.log(prop.propertyId);
+      // let propTransactions: [] = [];
       const propertyDateTransactions = transactionsData.filter(
         (transaction) => {
+          if (transaction.amount && transaction.amount > 0) {
+          }
+
           if (transaction.propertyId !== prop.propertyId) return false;
-          if (fromDate && transaction.date < fromDate) return false;
-          if (toDate && transaction.date > toDate) return false;
+          // if (fromDate && transaction.date < fromDate) return false;
+          // if (toDate && transaction.date > toDate) return false;
+
           return true;
         }
       );
-      const totalRevenue = aggregateAmounts(propertyDateTransactions, false);
+
+      const totalRevenue = aggregateAmounts(propertyDateTransactions, true);
       const shortTransactions = propertyDateTransactions.filter(
         (transaction) => transaction.shortTerm
       );

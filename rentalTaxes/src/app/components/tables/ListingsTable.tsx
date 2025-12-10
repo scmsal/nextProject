@@ -1,4 +1,4 @@
-import { propertiesTable } from "@/lib/db/schema";
+import { listingsDbTable, propertiesDbTable } from "@/lib/db/schema";
 import {
   createColumnHelper,
   flexRender,
@@ -6,6 +6,7 @@ import {
   useReactTable,
   ColumnDef,
 } from "@tanstack/react-table";
+import { createPropertyId } from "@/lib/data/normalization";
 import { groupProperties, getRevenueAggregates } from "@/lib/db/queries";
 import { Listing, RevenueAggregate, PropertyListing } from "@/types";
 import Editable from "../forms/Editable";
@@ -13,7 +14,7 @@ import { useDb } from "@/lib/db/dbContext";
 import { eq } from "drizzle-orm";
 
 export default function ListingsTable({ data }: { data: PropertyListing[] }) {
-  const { db, loadProperties } = useDb();
+  const { db, loadProperties, loadListings } = useDb();
 
   const columns: ColumnDef<PropertyListing>[] = [
     // { accessorKey: "propertyId", header: "Property ID" },
@@ -27,11 +28,24 @@ export default function ListingsTable({ data }: { data: PropertyListing[] }) {
           <Editable
             value={value}
             onSubmit={async ({ inputVal }) => {
+              const originalPropId = row.original.propertyId;
+              const newPropId = createPropertyId(
+                inputVal,
+                row.original.address
+              );
               await db
-                .update(propertiesTable)
-                .set({ propertyName: inputVal })
-                .where(eq(propertiesTable.propertyId, row.original.propertyId));
+                .update(propertiesDbTable)
+                .set({ propertyName: inputVal, propertyId: newPropId })
+                .where(
+                  eq(propertiesDbTable.propertyId, row.original.propertyId)
+                );
+
+              await db
+                .update(listingsDbTable)
+                .set({ propertyId: newPropId })
+                .where(eq(listingsDbTable.propertyId, originalPropId));
               await loadProperties();
+              await loadListings();
             }}
           />
         );

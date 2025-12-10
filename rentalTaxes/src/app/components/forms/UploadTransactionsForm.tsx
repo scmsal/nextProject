@@ -6,10 +6,11 @@ import { useDb } from "@/lib/db/dbContext";
 import { useEffect } from "react";
 import { normalizeText } from "@/lib/data/normalization";
 import { transactionExists } from "@/lib/db/queries";
-import { transactionsTable } from "@/lib/db/schema";
+import { transactionsDbTable } from "@/lib/db/schema";
 
 export default function UploadTransactionsForm() {
   const { db, loadTransactions, listingsData } = useDb();
+
   const [status, setStatus] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
@@ -35,6 +36,7 @@ export default function UploadTransactionsForm() {
           return;
         }
 
+        //TO DO: see if it makes sense applying this. Will the identifiers really be unique for transactions?
         const uniqueCleaned = (
           await Promise.all(
             cleaned.map(async (row) => {
@@ -44,7 +46,9 @@ export default function UploadTransactionsForm() {
           )
         ).filter(Boolean); //only include unique rows
 
-        //created map for faster listingId and propertyId lookup
+        //create map for faster listingId and propertyId lookup
+
+        console.log(listingsData);
         const listingMap = Object.fromEntries(
           listingsData.map((row) => [
             normalizeText(row.listingName),
@@ -52,26 +56,43 @@ export default function UploadTransactionsForm() {
           ])
         );
 
+        console.log("listingMap:", listingMap);
         //TO DO: also enrich with source file
-        const enriched = cleaned.map((row) => {
-          const listingName = normalizeText(row.listingName);
-          const match = listingMap[listingName];
 
-          return {
-            ...row,
-            listingId: match?.listingId ?? null,
-            propertyId: match?.propertyId ?? null,
-            shortTerm: Number(row.nights) < 30 && Number(row.nights) > 0,
-            uploadedAt: new Date(),
-          };
-        });
+        const enriched = cleaned
+          // .filter((row) => {
+          //   row.type !== "Payout";
+          // })
+          .map((row) => {
+            console.log("inside enriched", row);
+            const listingName =
+              row.listingName === "" ? "" : normalizeText(row.listingName);
+            const match = listingMap[listingName] ?? undefined;
+
+            console.log(
+              "listingName:",
+              listingName,
+              "match:",
+              match,
+              "type:",
+              row.type
+            );
+
+            return {
+              ...row,
+              listingId: match?.listingId ?? null, //FIX it's returning all null
+              propertyId: match?.propertyId ?? null, //FIX it's all returning null
+              shortTerm: Number(row.nights) < 30 && Number(row.nights) > 0,
+              uploadedAt: new Date(),
+            };
+          });
 
         //bulk insert into PGlite via Drizzle
         if (!db) {
           setStatus("Database not initialized.");
           return;
         }
-        await db.insert(transactionsTable).values(enriched); //TO FIX: date is missing from a template
+        await db.insert(transactionsDbTable).values(enriched); //TO FIX: date is missing from a template
 
         setStatus(`Imported ${enriched.length} transactions.`);
         await loadTransactions();
@@ -81,6 +102,7 @@ export default function UploadTransactionsForm() {
         const unmatched = enriched.filter(
           (row) => row.confirmationCode && row.listingId === null
         );
+
         if (unmatched.length > 0) {
           console.warn(
             "Unmatched listings: ",

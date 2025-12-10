@@ -1,6 +1,6 @@
 "use client";
 
-import { listingsTable } from "@/lib/db/schema";
+import { listingsDbTable } from "@/lib/db/schema";
 import { parseListingsCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/dbContext";
@@ -36,7 +36,7 @@ export default function UploadListingsForm() {
             cleaned.map(async (row) => {
               const exists = await existsInDb(
                 db,
-                listingsTable,
+                listingsDbTable,
                 "listingId",
                 row.listingId
               );
@@ -45,7 +45,7 @@ export default function UploadListingsForm() {
           )
         ).filter(Boolean) as Listing[]; //remove nulls;
 
-        await db.insert(listingsTable).values(uniqueCleaned);
+        await db.insert(listingsDbTable).values(uniqueCleaned);
         setStatus(`Imported ${cleaned.length} listings.`);
         await loadListings();
       } catch (err) {
@@ -59,6 +59,10 @@ export default function UploadListingsForm() {
   return (
     <div>
       <h1 className="pb-3 font-bold text-2xl">Upload Listings CSV</h1>
+      <p>
+        Note: Make sure the listing names match the ones in your transactions
+        files.
+      </p>
       <form onSubmit={handleUpload}>
         <input
           type="file"
