@@ -26,12 +26,14 @@ export default function ReplWithButtons() {
       <button
         onClick={() => {
           clearTransactions(db);
+          loadTransactions();
         }}
+        className=" ml-2 hover:bg-gray-50 cursor-pointer border"
       >
         Delete Transactions
       </button>
       <button
-        className="hover:bg-gray-50 cursor-pointer border"
+        className="ml-2 hover:bg-gray-50 cursor-pointer border"
         onClick={() => {
           handleAdd(db);
         }}

@@ -7,18 +7,23 @@ interface FilterButtonsProps {
   to: string;
   setFrom: React.Dispatch<React.SetStateAction<string>>;
   setTo: React.Dispatch<React.SetStateAction<string>>;
+  setToExclNxtMth: React.Dispatch<React.SetStateAction<string>>;
   loadAggregate: (params: {
     fromDate: string;
+    fromDateInclusive: string;
     toDate: string;
+    toExclNxtMth: string;
+    setToExclNxtMth: (val: string) => void;
   }) => Promise<void>;
 }
 
-export function FilterButtons({
+export default function FilterButtons({
   data,
   from,
   to,
   setFrom,
   setTo,
+  setToExclNxtMth,
   loadAggregate,
 }: FilterButtonsProps) {
   type Quarter = 0 | 1 | 2 | 3 | 4;
@@ -69,11 +74,11 @@ export function FilterButtons({
   }
 
   const quarterRanges: { [Q in Quarter]: QuarterRange } = {
+    0: { startMonth: 0, endMonth: 11, text: "Jan - Dec" },
     1: { startMonth: 11, endMonth: 1, text: "Q1 Dec - Feb" },
     2: { startMonth: 2, endMonth: 4, text: "Q2 Mar - May" },
     3: { startMonth: 5, endMonth: 7, text: "Q3 Jun - Aug" },
     4: { startMonth: 8, endMonth: 10, text: "Q4 Sep - Nov" },
-    0: { startMonth: 11, endMonth: 10, text: "All" },
   };
 
   function getCustomQuarter(date: Date) {
@@ -87,6 +92,10 @@ export function FilterButtons({
     if (m >= 5 && m <= 7) return { quarter: 3, quarterYear: y }; // Jun–Aug
     return { quarter: 4, quarterYear: y }; // Sep–Nov
   }
+  function getCalendarYearRange(year: number) {
+    const startMonth = 0;
+    const startYear = year;
+  }
 
   function getQuarterRange(quarter: Quarter, year: number) {
     const { startMonth, endMonth } = quarterRanges[quarter];
@@ -99,16 +108,16 @@ export function FilterButtons({
 
     /*TO FIX: start and end are returning the date in the wrong format. The specified value "Sun Dec 01 2024 00:00:00 GMT-0500 (Eastern Standard Time)" does not conform to the required format, "yyyy-MM-dd".*/
     const start = new Date(startYear, startMonth, 1);
-    const end = new Date(endYear, endMonth + 1);
-    // const startString: string = start.toLocaleDateString(); // MM/DD/YYYY
-    // const endString: string = end.toLocaleDateString();
-
+    const end = new Date(endYear, endMonth + 1, 1); //next month start
+    let toDisplay = end;
     //Change start and end dates from "Sun Dec 01 2024 00:00:00 GMT-0500 (Eastern Standard Time)" format to "yyyy-MM-dd".
     const formattedStart = start.toISOString().slice(0, 10);
-    const formattedEnd = end.toISOString().slice(0, 10);
+    const formattedEnd = end.toISOString().slice(0, 10); //next month start
     console.log("start: " + formattedStart + " end:", formattedEnd);
     setFrom(formattedStart);
-    setTo(formattedEnd);
+    setToExclNxtMth(formattedEnd);
+    //TO DO: finish connecting this to the "Displaying figures from...dates"
+    toDisplay.setDate(toDisplay.getDate() - 1);
 
     //TO DO: see if I really need to return these or if it's appropriate to just set the state instead. Evaluate whether this function will be reused to just reurn the dates without changing state. Also double check the desired type for the returned variables.
     return { formattedStart, formattedEnd };
@@ -125,7 +134,7 @@ export function FilterButtons({
 
   useEffect(() => {}, [selectedQuarter, selectedYear]);
 
-  //TO DO: make a clear filters button and calculate all button? Connect year and quarter to set filter window
+  //TO DO: make a clear filters button
   return (
     <div>
       {/* <button
@@ -140,14 +149,11 @@ export function FilterButtons({
       >
         {info.text}
       </button> */}
-      <p className="mb-4">
-        Filing for Suffolk County hotel and motel occupancy taxes must be
-        postmarked by the 20th day of March, June, September and December.
-      </p>
+
       {/* TO DO : figure out how to deal with calendar year vs Airbnb custom filing year */}
-      <label htmlFor="year" className="mr-4">
+      {/* <label htmlFor="year" className="mr-4">
         Filing year
-      </label>
+      </label> */}
       <select
         name="year"
         value={selectedYear ?? ""}
@@ -191,21 +197,25 @@ export function FilterButtons({
           {info.text}
         </button>
       ))}
-      <button
+      {/* <button
         className="shadow p-2 ml-2"
         onClick={() => {
           loadAggregate({ fromDate: from, toDate: to });
         }}
       >
         Apply filter
-      </button>
-      <p>
-        <span> Displaying figures for </span>
-        <span className="font-bold">
-          {" "}
-          {`${quarterRanges[selectedQuarter as Quarter].text}`} {selectedYear}
-        </span>
-      </p>
+      </button> */}
+
+      {/* TO DO: make the following text only show when the table is populated */}
+      {
+        // <p>
+        //   <span> Displaying figures for </span>
+        //   <span className="font-bold">
+        //     {/* {`${quarterRanges[selectedQuarter as Quarter].text}`} {selectedYear} */}
+        //     {`${from} to ${to}`}
+        //   </span>
+        // </p>
+      }
     </div>
   );
 }
