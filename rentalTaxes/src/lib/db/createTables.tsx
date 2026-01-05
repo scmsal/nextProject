@@ -52,17 +52,3 @@ export const CREATE_LISTINGS_TABLE = `
    platform varchar(100)
    );
   `;
-
-export const CREATE_QUARTERLY_TABLE = `
-   CREATE TABLE IF NOT EXISTS quarterly(
-   id SERIAL PRIMARY KEY,
-       monthYear varchar(20),
-       totalRevenue numeric,
-       qCleaningExternal numeric,
-       qCleaningInternal numeric,
-       qRefund numeric,
-       qReimburse numeric,
-       total30Plus numeric,
-       totalShortTerm numeric
-   );
-  `;

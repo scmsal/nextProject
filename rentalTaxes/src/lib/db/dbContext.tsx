@@ -14,7 +14,6 @@ import {
   CREATE_TRANSACTIONS_TABLE,
   CREATE_PROPERTIES_TABLE,
   CREATE_LISTINGS_TABLE,
-  CREATE_QUARTERLY_TABLE,
 } from "./createTables";
 
 import ReplWithButtons from "@/app/components/data/ReplWithButtons";
@@ -28,9 +27,10 @@ import {
   Listing,
   RevenueAggregate,
   PropertyListing,
+  PropertyTransaction,
 } from "@/types";
 
-type DbContextType = {
+interface DbContextType {
   pgLite: PGliteWithLive | undefined;
   db: PgliteDatabase<typeof schema>;
   transactionsData: Transaction[];
@@ -42,9 +42,12 @@ type DbContextType = {
   loadListings: () => Promise<void>;
   loadRevenueAggregates: (params: {
     fromDate: string;
+    fromDateInclusive: string; //TO DO: REMOVE ALL REFERENCES
     toDate: string;
+    toExclNxtMth: string;
+    setToExclNxtMth: (val: string) => void;
   }) => Promise<void>;
-};
+}
 
 const DbContext = createContext<DbContextType | null>(null);
 
@@ -87,6 +90,14 @@ export function DbProvider({ children }: { children: ReactNode }) {
     setListingsData(result);
   }
 
+  //helper function to keep dates from converting to UTC with date shift
+  //TO DO: check other files to make sure there's no duplication of similar functions
+  function localDateFromISO(iso: string) {
+    const [y, m, d] = iso.split("-").map(Number);
+    return new Date(y, m - 1, d); // local midnight, no timezone shift
+  }
+
+  //helper function for loadRevenueAggregates
   function aggregateAmounts(arrTransactions: Transaction[], debug?: boolean) {
     const aggregate = arrTransactions.reduce((acc, transaction) => {
       const amount = transaction.amount ? Number(transaction.amount) : 0;
@@ -98,32 +109,94 @@ export function DbProvider({ children }: { children: ReactNode }) {
 
     return aggregate;
   }
+  //FIX: grossEarnings showing 0
+  function aggregateGross(arrTransactions: Transaction[]) {
+    const aggregate = arrTransactions.reduce((acc, transaction) => {
+      const gross = transaction.grossEarnings
+        ? Number(transaction.grossEarnings)
+        : 0;
+
+      return acc + gross;
+    }, 0);
+    return aggregate;
+  }
 
   async function loadRevenueAggregates({
     fromDate,
     toDate,
+    toExclNxtMth,
+    setToExclNxtMth,
   }: {
     fromDate: string;
+    fromDateInclusive: string;
     toDate: string;
+    toExclNxtMth: string;
+    setToExclNxtMth: (val: string) => void;
   }) {
     const rows: RevenueAggregate[] = propertiesData.map((prop) => {
-      console.log("from:", fromDate, " to:", toDate);
-      console.log(prop.propertyId);
-      // let propTransactions: [] = [];
+      const inclTransactions: PropertyTransaction[] = [];
+      const excludedTransactions: PropertyTransaction[] = [];
       const propertyDateTransactions = transactionsData.filter(
         (transaction) => {
-          if (transaction.amount && transaction.amount > 0) {
-          }
+          const transactionDate = localDateFromISO(transaction.date);
+
+          const toExcl = new Date(toExclNxtMth);
+          const txTypesToSum = ["Reservation", "Adjustment"]; //**This may not be necessary if total revenue is supposed to include resolution center figures */
 
           if (transaction.propertyId !== prop.propertyId) return false;
-          // if (fromDate && transaction.date < fromDate) return false;
-          // if (toDate && transaction.date > toDate) return false;
 
+          if (fromDate) {
+            const from = localDateFromISO(fromDate); //this makes from date in filter inclusive
+            if (transactionDate < from) return false;
+          }
+
+          //this will apply in FilterButtons with quarters, to set start of next month as end date
+
+          if (toExcl && transactionDate >= toExcl) {
+            setToExclNxtMth("");
+            return false;
+          }
+
+          if (toDate) {
+            const to = localDateFromISO(toDate);
+            //make inclusive
+            console.log(
+              "toDate",
+              toDate,
+              "to:",
+              to,
+              " toExclNextMnt",
+              toExclNxtMth
+            );
+            to.setDate(to.getDate() + 1);
+
+            if (transactionDate >= to) return false;
+          }
+          // if (
+          //   transaction.type === null ||
+          //   !txTypesToSum.includes(transaction.type)
+          // ) {
+          //   excludedTransactions.push({
+          //     type: transaction.type,
+          //     date: transaction.date,
+          //     amount: transaction.amount,
+          //     listing: transaction.listingName,
+          //   });
+          //   return false;
+          // }
+          inclTransactions.push({
+            type: transaction.type,
+            date: transaction.date,
+            nights: transaction.nights,
+            amount: transaction.amount,
+            gross: transaction.grossEarnings,
+            listing: transaction.listingName,
+          });
           return true;
         }
       );
 
-      const totalRevenue = aggregateAmounts(propertyDateTransactions, true);
+      const netRevenue = aggregateAmounts(propertyDateTransactions);
       const shortTransactions = propertyDateTransactions.filter(
         (transaction) => transaction.shortTerm
       );
@@ -132,14 +205,26 @@ export function DbProvider({ children }: { children: ReactNode }) {
         (transaction) => !transaction.shortTerm
       );
       const longTermRevenue = aggregateAmounts(longTransactions);
+      const totalGross = aggregateGross(propertyDateTransactions);
+      const longTermGross = aggregateGross(longTransactions);
+      const shortTermGross = aggregateGross(shortTransactions);
       const revenueAggregate: RevenueAggregate = {
         propertyName: prop.propertyName,
-        totalRevenue,
+        netRevenue: netRevenue,
         shortTermRevenue,
         longTermRevenue,
         shortTermStays: shortTransactions.length,
         longTermStays: longTransactions.length,
+        excludedTransactions,
+        inclTransactions,
+        totalGross,
+        shortTermGross,
+        longTermGross,
       };
+      console.log(
+        revenueAggregate.propertyName,
+        revenueAggregate.inclTransactions
+      );
       return revenueAggregate;
     });
 

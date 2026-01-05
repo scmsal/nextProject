@@ -131,7 +131,6 @@ export function groupProperties(
   // Add each listing to its property's listings once
   for (const l of listings) {
     const group = map.get(l.propertyId);
-    console.log(group);
     if (group) {
       group.listings.push(l as Listing);
     }
@@ -175,7 +174,7 @@ Get all transactions
     .select({
       propertyId: propertiesDbTable.propertyId,
       propertyName: propertiesDbTable.propertyName,
-      totalRevenue: sql<number>`
+      netRevenue: sql<number>`
       SUM( 
       CASE WHEN ${dateFilter}
         THEN ${transactionsDbTable.amount}
@@ -217,7 +216,6 @@ Get all transactions
     .groupBy(propertiesDbTable.propertyId, propertiesDbTable.propertyName);
 
   const results = await query;
-  console.log("aggregate results:", results);
 
   return results;
 }

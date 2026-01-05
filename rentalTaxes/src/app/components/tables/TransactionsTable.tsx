@@ -2,14 +2,28 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
 import { sampleTransactions } from "@/lib/db/sampleData";
-import { Transaction } from "@/types";
+import { Db, Transaction } from "@/types";
+import { useState } from "react";
+import { clearTransactions } from "@/lib/db/queries";
+import { useDb } from "@/lib/db/dbContext";
 
-export default function TransactionsTable({ data }: { data: Transaction[] }) {
-  //   const data: Transaction[] = sampleTransactions;
+export default function TransactionsTable({
+  data,
+  db,
+}: {
+  data: Transaction[];
+  db: Db;
+}) {
+  const { loadTransactions } = useDb();
+  const [pagination, setPagination] = useState({
+    pageIndex: 0, //initial page index
+    pageSize: 3, //default page size
+  });
 
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat("en-US", {
@@ -109,10 +123,25 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination, //update the pagination state when internal APIs mutate the pagination state
+    state: {
+      //...
+      pagination,
+    },
   });
 
   return (
     <div className="p-2">
+      <button
+        onClick={() => {
+          clearTransactions(db);
+          loadTransactions();
+        }}
+        className=" ml-2 hover:bg-gray-50 cursor-pointer border"
+      >
+        Delete Transactions
+      </button>
       <table className="min-w-full divide-y divide-gray-300 text-sm overflow-x-scroll">
         <thead className="bg-gray-100">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -159,9 +188,20 @@ export default function TransactionsTable({ data }: { data: Transaction[] }) {
         </tfoot>
       </table>
       <div className="h-4" />
-      {/* <button onClick={() => rerender()} className="border p-2">
-        Rerender
-      </button> */}
+      <button
+        onClick={() => table.previousPage()}
+        disabled={!table.getCanPreviousPage()}
+        className="mr-6 shadow"
+      >
+        {"Previous page"}
+      </button>
+      <button
+        onClick={() => table.nextPage()}
+        disabled={!table.getCanNextPage()}
+        className="shadow"
+      >
+        {"Next page"}
+      </button>
     </div>
   );
 }
