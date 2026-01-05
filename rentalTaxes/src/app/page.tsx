@@ -21,6 +21,7 @@ export default function Home() {
     revenueAggregatesData,
     propertiesData,
     listingsData,
+    db,
   } = useDb();
 
   const propertiesWithListings = useMemo(
@@ -46,7 +47,9 @@ export default function Home() {
         <div>
           <UploadTransactionsForm />
           {/* <DateFilterForm /> */}
-          {transactionsData && <TransactionsTable data={transactionsData} />}
+          {transactionsData && (
+            <TransactionsTable data={transactionsData} db={db} />
+          )}
         </div>
         <h3 className="underline">Step 4</h3>
         <div className="flex flex-col">

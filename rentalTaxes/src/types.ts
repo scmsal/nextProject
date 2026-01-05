@@ -15,15 +15,29 @@ export type TransactionInsert = typeof transactionsDbTable.$inferInsert; //NOTE:
 export type PropertyInsert = typeof propertiesDbTable.$inferInsert;
 export type ListingInsert = typeof listingsDbTable.$inferInsert;
 
+export type PropertyTransaction = {
+  date: string | null;
+  type: string | null;
+  nights: number | null;
+  gross: number | null;
+  amount: number | null;
+  listing: string | null;
+};
+
 //Phase 1 will only handle Airbnb data.
 //Later phases will integrate other platforms. That will involve distinguishing between physical units (platform agnostic) and listings (platform specific).
 export type RevenueAggregate = {
   propertyName: string;
-  totalRevenue: number;
+  netRevenue: number;
   shortTermRevenue: number;
   longTermRevenue: number;
   shortTermStays: number;
   longTermStays: number;
+  excludedTransactions: PropertyTransaction[];
+  inclTransactions: PropertyTransaction[];
+  totalGross: number;
+  shortTermGross: number;
+  longTermGross: number;
 };
 
 export type PropertyListing = {
