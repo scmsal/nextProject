@@ -18,14 +18,14 @@ import { relations } from "drizzle-orm";
 export const transactionsDbTable = pgTable("transactions", {
   id: serial("id").primaryKey(),
   date: date("date").notNull(),
-  arrivalDate: varchar("arrival_date", { length: 50 }),
+  arrivalDate: date("arrival_date"),
   type: varchar("type", { length: 50 }).$type<string | null>().default(null), // e.g. payout, reimbursement, refund
   confirmationCode: varchar("confirmation_code", { length: 50 })
     .$type<string | null>()
     .default(null),
-  bookingDate: varchar("booking_date", { length: 50 }),
-  startDate: varchar("start_date", { length: 50 }),
-  endDate: varchar("end_date", { length: 50 }),
+  bookingDate: date("booking_date"),
+  startDate: date("start_date"),
+  endDate: date("end_date"),
   nights: integer("nights").$type<number | null>().default(null),
   shortTerm: boolean("short_term"),
   guest: varchar("guest", { length: 100 }).$type<string | null>().default(null),

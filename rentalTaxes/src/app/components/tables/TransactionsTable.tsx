@@ -43,9 +43,36 @@ export default function TransactionsTable({
     // { accessorKey: "arrivalDate", header: "Arrival Date" },
     { accessorKey: "type", header: "Type" },
     { accessorKey: "confirmationCode", header: "Confirmation Code" },
-    { accessorKey: "bookingDate", header: "Booking Date" },
-    { accessorKey: "startDate", header: "Start Date" },
-    { accessorKey: "endDate", header: "End Date" },
+    {
+      accessorKey: "bookingDate",
+      header: "Booking Date",
+      cell: ({ row }) => {
+        const bookingDate = row.original.bookingDate
+          ? new Date(row.original.bookingDate)
+          : null;
+        return bookingDate?.toLocaleDateString();
+      },
+    },
+    {
+      accessorKey: "startDate",
+      header: "Start Date",
+      cell: ({ row }) => {
+        const startDate = row.original.startDate
+          ? new Date(row.original.startDate)
+          : null;
+        return startDate?.toLocaleDateString();
+      },
+    },
+    {
+      accessorKey: "endDate",
+      header: "End Date",
+      cell: ({ row }) => {
+        const endDate = row.original.endDate
+          ? new Date(row.original.endDate)
+          : null;
+        return endDate?.toLocaleDateString();
+      },
+    },
     { accessorKey: "nights", header: "Nights" },
     {
       accessorKey: "shortTerm",

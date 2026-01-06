@@ -67,26 +67,6 @@ export default function AggregateSummaries() {
           setToExclNxtMth={setToExclNxtMth}
         />
       </form>
-      <button
-        onClick={() => {
-          const csvData = revenueAggregatesData.map((item) => {
-            const { excludedTransactions, inclTransactions, ...rest } = item;
-            return rest;
-          });
-          const csv = Papa.unparse(csvData);
-          const blob = new Blob([csv], { type: "text/csv" });
-          const url = URL.createObjectURL(blob);
-          const anchor = document.createElement("a");
-          anchor.href = url;
-          anchor.download = "data.csv";
-          document.body.appendChild(anchor);
-          anchor.click();
-          document.body.removeChild(anchor);
-          URL.revokeObjectURL(url);
-        }}
-      >
-        Download data
-      </button>
     </>
   );
 }
