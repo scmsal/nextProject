@@ -1,5 +1,6 @@
 import { useDb } from "@/lib/db/dbContext";
 import { FormEvent, useState } from "react";
+import { Button } from "@heroui/react";
 import DateFilterForm from "../forms/DateFilterForm";
 import FilterButtons from "./FilterButtons";
 import RevenueAggregatesTable from "../tables/AggregateTable";
@@ -53,9 +54,9 @@ export default function AggregateSummaries() {
           setToExclNxtMth={setToExclNxtMth}
         />
 
-        <button type="submit" className="border py-2 px-4 w-2/5 mb-4">
+        <Button type="submit" className="border py-2 px-4 w-2/5 mb-4">
           Calculate aggregates
-        </button>
+        </Button>
 
         <FilterButtons
           data={transactionsData}
