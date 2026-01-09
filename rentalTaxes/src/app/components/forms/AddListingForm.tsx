@@ -4,6 +4,7 @@ import { listingsDbTable } from "@/lib/db/schema";
 import { Listing } from "@/types";
 import { createListingId, normalizeText } from "@/lib/data/normalization";
 import { existsInDb } from "@/lib/db/queries";
+import { Card, Form, Button } from "@heroui/react";
 
 //Use typed status to make conditional styling possible
 //TO DO: see if I need the same for UploadForm.tsx
@@ -85,61 +86,69 @@ export function AddListingForm() {
   }
 
   return (
-    <form className="flex flex-col" onSubmit={handleSubmit}>
-      <h1 className="pb-3 font-bold text-2xl"> Add Listing</h1>
-      <label className="my-2">
-        Listing name:
-        <input
-          type="text"
-          name="listingName"
-          className="bg-gray-100 mx-4"
-          required
-        />
-      </label>
-      <label className="my-2">
-        Property:
-        <select
-          name="propertyId"
-          id="propertyDropdown"
-          className="mx-4 bg-gray-100"
-          required
-          value={selectedPropertyId === "" ? "" : String(selectedPropertyId)}
-          onChange={(e) => {
-            let val = e.target.value;
-            setSelectedPropertyId(val === "" ? "" : val);
-          }}
-        >
-          <option value="">Select property</option>
-
-          {propertiesData.length === 0
-            ? null
-            : propertiesData.map((p) => {
-                const label =
-                  p.propertyName?.trim() || `Property #${p.propertyId} `;
-                return (
-                  <option key={p.propertyId} value={p.propertyId}>
-                    {label}
-                  </option>
-                );
-              })}
-        </select>
-      </label>
-
-      <button
-        className="ml-3 border py-2 px-4 rounded-lg hover:bg-gray-600 hover:text-white cursor-pointer"
-        type="submit"
+    <Card>
+      <Form
+        className="flex flex-col bg-surface text-surface-foreground"
+        onSubmit={handleSubmit}
       >
-        Submit
-      </button>
-      {status && (
-        <p
-          className={
-            status.type === "success" ? "text-green-600" : "text-red-600"
-          }
+        <h1 className="pb-3 font-bold text-2xl text-background">
+          {" "}
+          Add Listing
+        </h1>
+        <label className="my-2">
+          Listing name:
+          <input
+            type="text"
+            name="listingName"
+            className="bg-gray-100 mx-4"
+            required
+          />
+        </label>
+        <label className="my-2">
+          Property:
+          <select
+            name="propertyId"
+            id="propertyDropdown"
+            className="mx-4 bg-gray-100"
+            required
+            value={selectedPropertyId === "" ? "" : String(selectedPropertyId)}
+            onChange={(e) => {
+              let val = e.target.value;
+              setSelectedPropertyId(val === "" ? "" : val);
+            }}
+          >
+            <option value="">Select property</option>
+
+            {propertiesData.length === 0
+              ? null
+              : propertiesData.map((p) => {
+                  const label =
+                    p.propertyName?.trim() || `Property #${p.propertyId} `;
+                  return (
+                    <option key={p.propertyId} value={p.propertyId}>
+                      {label}
+                    </option>
+                  );
+                })}
+          </select>
+        </label>
+
+        <Button
+          className="ml-3 border py-2 px-4 rounded-lg cursor-pointer bg-background"
+          type="submit"
         >
-          {status.message}
-        </p>
-      )}
-    </form>
+          Submit
+        </Button>
+        {status && (
+          <p
+            className={
+              status.type === "success" ? "text-green-600" : "text-red-600"
+            }
+          >
+            {status.message}
+          </p>
+        )}
+      </Form>
+    </Card>
   );
 }

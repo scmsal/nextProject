@@ -5,7 +5,11 @@
   --background: #008080;
   --foreground: #e0f0f0;
 
-  /* --accent */
+  --accent: #73bab7;
+  --accent-foreground: #e0f0f0;
+
+  --surface: #e0f0f0;
+  --surface-foreground: #5c5c5c;
 }
 
 @theme inline {

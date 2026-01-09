@@ -41,6 +41,8 @@ export default function Home() {
         <div className="flex flex-col md:flex-row gap-10">
           <AddListingForm />
           <UploadListingsForm />
+        </div>
+        <div className="block">
           {listingsData && <ListingsTable data={propertiesWithListings} />}
         </div>
         <h3 className="underline">Step 3</h3>
