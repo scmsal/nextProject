@@ -5,7 +5,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
+import { Button, ButtonGroup } from "@heroui/react";
 import { sampleTransactions } from "@/lib/db/sampleData";
 import { Db, Transaction } from "@/types";
 import { useState } from "react";
@@ -160,7 +160,8 @@ export default function TransactionsTable({
 
   return (
     <div className="p-2">
-      <button
+      <Button
+        variant="tertiary"
         onClick={() => {
           clearTransactions(db);
           loadTransactions();
@@ -168,7 +169,7 @@ export default function TransactionsTable({
         className=" ml-2 hover:bg-gray-50 cursor-pointer border"
       >
         Delete Transactions
-      </button>
+      </Button>
       <table className="min-w-full divide-y divide-gray-300 text-sm overflow-x-scroll">
         <thead className="bg-gray-100">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -229,6 +230,13 @@ export default function TransactionsTable({
       >
         {"Next page"}
       </button>
+
+      <div className="flex flex-col gap-2">
+        <ButtonGroup variant="tertiary">
+          <Button>Previous</Button>
+          <Button>Next</Button>
+        </ButtonGroup>
+      </div>
     </div>
   );
 }

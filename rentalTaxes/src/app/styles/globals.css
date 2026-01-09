@@ -2,8 +2,10 @@
 @import "@heroui/styles";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #008080;
+  --foreground: #e0f0f0;
+
+  /* --accent */
 }
 
 @theme inline {

@@ -125,7 +125,10 @@ export function AddListingForm() {
         </select>
       </label>
 
-      <button className="border p-2" type="submit">
+      <button
+        className="ml-3 border py-2 px-4 rounded-lg hover:bg-gray-600 hover:text-white cursor-pointer"
+        type="submit"
+      >
         Submit
       </button>
       {status && (

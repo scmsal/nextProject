@@ -18,7 +18,7 @@ const formatCurrency = (val: number) =>
     style: "currency",
     currency: "USD",
   }).format(val);
-
+import { Button } from "@heroui/react";
 export default function RevenueAggregatesTable({
   data,
 }: {
@@ -184,7 +184,7 @@ export default function RevenueAggregatesTable({
       {/* <button onClick={() => rerender()} className="border p-2">
         Rerender
       </button> */}
-      <button
+      <Button
         className="border p-2"
         onClick={() => {
           const csvData = revenueAggregatesData.map((item) => {
@@ -204,7 +204,7 @@ export default function RevenueAggregatesTable({
         }}
       >
         Download data
-      </button>
+      </Button>
     </div>
   );
 }
