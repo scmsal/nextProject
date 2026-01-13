@@ -6,6 +6,7 @@ import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/dbContext";
 import { existsInDb } from "@/lib/db/queries";
 import { Listing } from "@/types";
+import { Card, Form, Button } from "@heroui/react";
 
 export default function UploadListingsForm() {
   const { db, listingsData, loadListings } = useDb();
@@ -57,12 +58,17 @@ export default function UploadListingsForm() {
   );
 
   return (
-    <div>
-      <h1 className="pb-3 font-bold text-2xl">Upload Listings CSV</h1>
-      <p>
-        Note: Make sure the listing names match the ones in your transactions
-        files.
-      </p>
+    <Card className="bg-surface text-surface-foreground min-h-[312px]!">
+      <h1 className="pb-3 font-bold text-2xl text-background">
+        Upload Listings CSV
+      </h1>
+      <ul>
+        <li>
+          {" "}
+          Make sure the listing names match the ones in your transactions files.
+        </li>
+        <li>Headings: listing_name, property_id </li>
+      </ul>
       <form onSubmit={handleUpload}>
         <input
           type="file"
@@ -70,14 +76,14 @@ export default function UploadListingsForm() {
           className="text-gray-700 text-sm file:bg-gray-400 hover:file:bg-gray-600 file:text-white file:py-2 file:px-4 file:rounded-lg file:cursor-pointer"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
         />
-        <button
+        <Button
+          className="border border-gray py-2 px-4 rounded-lg cursor-pointer bg-background"
           type="submit"
-          className="ml-3 border py-2 px-4 rounded-lg hover:bg-gray-600 hover:text-white cursor-pointer"
         >
           Upload
-        </button>
+        </Button>
       </form>
       <p className="mt-3 text-sm text-gray-700">{status}</p>
-    </div>
+    </Card>
   );
 }

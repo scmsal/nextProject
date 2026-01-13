@@ -6,6 +6,7 @@ import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/dbContext";
 import { existsInDb } from "@/lib/db/queries";
 import { Property } from "@/types";
+import { Card, Button, Form } from "@heroui/react";
 
 export default function UploadPropertiesForm() {
   const { db, loadProperties } = useDb();
@@ -61,23 +62,26 @@ export default function UploadPropertiesForm() {
   );
 
   return (
-    <div>
-      <h1 className="pb-3 font-bold text-2xl">Upload Properties CSV</h1>
-      <form onSubmit={handleUpload}>
+    <Card className="min-h-[312px]!">
+      <h1 className="pb-3 font-bold text-2xl text-background">
+        Upload Properties CSV
+      </h1>
+      <p className="text-black">Headings: name, address, town, county</p>
+      <Form onSubmit={handleUpload}>
         <input
           type="file"
           accept=".csv"
           className="text-gray-700 text-sm file:bg-gray-400 hover:file:bg-gray-600 file:text-white file:py-2 file:px-4 file:rounded-lg file:cursor-pointer"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
         />
-        <button
+        <Button
+          className="border border-gray py-2 px-4 rounded-lg cursor-pointer bg-background"
           type="submit"
-          className="ml-3 border py-2 px-4 rounded-lg hover:bg-gray-600 hover:text-white cursor-pointer"
         >
           Upload
-        </button>
-      </form>
+        </Button>
+      </Form>
       <p className="mt-3 text-sm text-gray-700">{status}</p>
-    </div>
+    </Card>
   );
 }

@@ -4,6 +4,7 @@ import { propertiesDbTable } from "@/lib/db/schema";
 import { Property, PropertyInsert } from "@/types";
 import { createPropertyId } from "@/lib/data/normalization";
 import { existsInDb } from "@/lib/db/queries";
+import { Card, Button, Form } from "@heroui/react";
 
 //Use typed status to make conditional styling possible
 //TO DO: see if I need the same for UploadForm.tsx
@@ -82,48 +83,64 @@ export function AddPropertyForm() {
   }
 
   return (
-    <form className="flex flex-col" onSubmit={handleSubmit}>
-      <h1 className="pb-3 font-bold text-2xl"> Add Property</h1>
-      <label className="my-2">
-        Property name:
-        <input
-          type="text"
-          name="propertyName"
-          className="bg-gray-100 mx-4"
-          required
-        />
-      </label>
-      <label className="my-2">
-        County:
-        <select name="county" className="mx-4 bg-gray-100" required>
-          <option value="Suffolk">Suffolk</option>
-          <option value="Nassau">Nassau</option>
-        </select>
-      </label>
-      <label className="my-2">
-        Street address
-        <input type="text" name="address" className="bg-gray-100 mx-4" />
-      </label>
-      <label className="my-2">
-        City/Town
-        <input type="text" name="town" className="bg-gray-100 mx-4" required />
-      </label>
-      <label className="my-2">
-        Zip code <input type="text" name="zip" className="bg-gray-100 mx-4" />
-      </label>
-      <button className="border p-2" type="submit">
-        Submit
-      </button>
-      {status && (
-        <p
-          id="status"
-          className={
-            status.type === "success" ? "text-green-600" : "text-red-600"
-          }
+    <Card className="mt-0 min-h-[300px]!">
+      <Form
+        className="flex flex-col bg-surface text-surface-foreground"
+        onSubmit={handleSubmit}
+      >
+        <h1 className="pb-3 font-bold text-2xl text-background">
+          {" "}
+          Add Property
+        </h1>
+        <label className="my-2">
+          Property name:
+          <input
+            type="text"
+            name="propertyName"
+            className="bg-gray-100 mx-4"
+            required
+          />
+        </label>
+        <label className="my-2">
+          County:
+          <select name="county" className="mx-4 bg-gray-100" required>
+            <option value="Suffolk">Suffolk</option>
+            <option value="Nassau">Nassau</option>
+          </select>
+        </label>
+        <label className="my-2">
+          Street address
+          <input type="text" name="address" className="bg-gray-100 mx-4" />
+        </label>
+        <label className="my-2">
+          City/Town
+          <input
+            type="text"
+            name="town"
+            className="bg-gray-100 mx-4"
+            required
+          />
+        </label>
+        <label className="my-2">
+          Zip code <input type="text" name="zip" className="bg-gray-100 mx-4" />
+        </label>
+        <Button
+          className="border border-gray py-2 px-4 rounded-lg cursor-pointer bg-background"
+          type="submit"
         >
-          {status.message}
-        </p>
-      )}
-    </form>
+          Submit
+        </Button>
+        {status && (
+          <p
+            id="status"
+            className={
+              status.type === "success" ? "text-green-600" : "text-red-600"
+            }
+          >
+            {status.message}
+          </p>
+        )}
+      </Form>
+    </Card>
   );
 }

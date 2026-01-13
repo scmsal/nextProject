@@ -15,7 +15,7 @@ interface Status {
   message: string;
   type: "success" | "error" | "";
 }
-export function AddListingForm() {
+export default function AddListingForm() {
   const { db, propertiesData, loadListings } = useDb();
   const [status, setStatus] = useState<Status>({
     message: "",
@@ -86,7 +86,7 @@ export function AddListingForm() {
   }
 
   return (
-    <Card>
+    <Card className="min-h-[312px]! ">
       <Form
         className="flex flex-col bg-surface text-surface-foreground"
         onSubmit={handleSubmit}
@@ -134,7 +134,7 @@ export function AddListingForm() {
         </label>
 
         <Button
-          className="ml-3 border py-2 px-4 rounded-lg cursor-pointer bg-background"
+          className="border border-gray py-2 px-4 rounded-lg cursor-pointer bg-background"
           type="submit"
         >
           Submit

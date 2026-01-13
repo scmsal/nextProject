@@ -291,7 +291,7 @@ export function DbProvider({ children }: { children: ReactNode }) {
           loadRevenueAggregates,
         }}
       >
-        <ReplWithButtons />
+        {/* <ReplWithButtons /> */}
         {children}
       </DbContext.Provider>
     </PGliteProvider>

@@ -79,9 +79,10 @@ export default function ListingsTable({ data }: { data: PropertyListing[] }) {
   });
 
   return (
-    <div className="p-2">
-      <table className="min-w-full divide-y divide-gray-300 text-sm overflow-x-scroll">
-        <thead className="bg-gray-100">
+    <div className="flex flex-col overflow-x-scroll">
+      <h2>View properties & listings</h2>
+      <table className="min-w-full divide-y divide-gray-300 text-sm  p">
+        <thead className="bg-gray-100 text-cyan-700">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (

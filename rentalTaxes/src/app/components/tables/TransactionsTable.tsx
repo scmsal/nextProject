@@ -22,7 +22,7 @@ export default function TransactionsTable({
   const { loadTransactions } = useDb();
   const [pagination, setPagination] = useState({
     pageIndex: 0, //initial page index
-    pageSize: 3, //default page size
+    pageSize: 10, //default page size
   });
 
   const formatCurrency = (val: number) =>
@@ -43,16 +43,16 @@ export default function TransactionsTable({
     // { accessorKey: "arrivalDate", header: "Arrival Date" },
     { accessorKey: "type", header: "Type" },
     { accessorKey: "confirmationCode", header: "Confirmation Code" },
-    {
-      accessorKey: "bookingDate",
-      header: "Booking Date",
-      cell: ({ row }) => {
-        const bookingDate = row.original.bookingDate
-          ? new Date(row.original.bookingDate)
-          : null;
-        return bookingDate?.toLocaleDateString();
-      },
-    },
+    // {
+    //   accessorKey: "bookingDate",
+    //   header: "Booking Date",
+    //   cell: ({ row }) => {
+    //     const bookingDate = row.original.bookingDate
+    //       ? new Date(row.original.bookingDate)
+    //       : null;
+    //     return bookingDate?.toLocaleDateString();
+    //   },
+    // },
     {
       accessorKey: "startDate",
       header: "Start Date",
@@ -92,20 +92,20 @@ export default function TransactionsTable({
       cell: ({ getValue }) => formatCurrency(getValue() as number),
       enableSorting: true,
     },
-    {
-      accessorKey: "paidOut",
-      header: "Paid Out",
-      cell: ({ getValue }) => formatCurrency(getValue() as number),
-      enableSorting: true,
-    },
+    // {
+    //   accessorKey: "paidOut",
+    //   header: "Paid Out",
+    //   cell: ({ getValue }) => formatCurrency(getValue() as number),
+    //   enableSorting: true,
+    // },
     // { accessorKey: "serviceFee", header: "Service Fee" },
     // { accessorKey: "fastPayFee", header: "Fast Pay Fee" },
-    {
-      accessorKey: "cleaningFee",
-      header: "Cleaning Fee",
-      cell: ({ getValue }) => formatCurrency(getValue() as number),
-      enableSorting: true,
-    },
+    // {
+    //   accessorKey: "cleaningFee",
+    //   header: "Cleaning Fee",
+    //   cell: ({ getValue }) => formatCurrency(getValue() as number),
+    //   enableSorting: true,
+    // },
     {
       accessorKey: "grossEarnings",
       header: "Gross Earnings",
@@ -118,17 +118,17 @@ export default function TransactionsTable({
       cell: ({ getValue }) => formatCurrency(getValue() as number),
       enableSorting: true,
     },
-    {
-      accessorKey: "quarter",
-      header: "Quarter",
-      cell: ({ row }) => {
-        const date = new Date(row.original.date);
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
-        const quarter = Math.ceil(month / 3);
-        return `Q${quarter}-${year}`;
-      },
-    },
+    // {
+    //   accessorKey: "quarter",
+    //   header: "Quarter",
+    //   cell: ({ row }) => {
+    //     const date = new Date(row.original.date);
+    //     const month = date.getMonth() + 1;
+    //     const year = date.getFullYear();
+    //     const quarter = Math.ceil(month / 3);
+    //     return `Q${quarter}-${year}`;
+    //   },
+    // },
     // { accessorKey: "earningsYear", header: "Earnings Year" },
     // {
     //   accessorKey: "countyTax",
@@ -141,9 +141,9 @@ export default function TransactionsTable({
     //   header: "State Tax",
     //   cell: ({ getValue }) => formatCurrency(getValue() as number),
     //   enableSorting: true,
-    // },
-    { accessorKey: "sourceFile", header: "Source File" },
-    { accessorKey: "uploadedAt", header: "Uploaded At" },
+    // // },
+    // { accessorKey: "sourceFile", header: "Source File" },
+    // { accessorKey: "uploadedAt", header: "Uploaded At" },
   ];
 
   const table = useReactTable<Transaction>({
@@ -159,83 +159,85 @@ export default function TransactionsTable({
   });
 
   return (
-    <div className="p-2">
-      <Button
-        variant="tertiary"
-        onClick={() => {
-          clearTransactions(db);
-          loadTransactions();
-        }}
-        className=" ml-2 hover:bg-gray-50 cursor-pointer border"
-      >
-        Delete Transactions
-      </Button>
-      <table className="min-w-full divide-y divide-gray-300 text-sm overflow-x-scroll">
-        <thead className="bg-gray-100">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} className="px-2">
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody className="divide-y divide-gray-200 bg-white">
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-4 py-2 text-gray-800">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          {table.getFooterGroups().map((footerGroup) => (
-            <tr key={footerGroup.id}>
-              {footerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.footer,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </tfoot>
-      </table>
-      <div className="h-4" />
-      <button
-        onClick={() => table.previousPage()}
-        disabled={!table.getCanPreviousPage()}
-        className="mr-6 shadow"
-      >
-        {"Previous page"}
-      </button>
-      <button
-        onClick={() => table.nextPage()}
-        disabled={!table.getCanNextPage()}
-        className="shadow"
-      >
-        {"Next page"}
-      </button>
+    <div>
+      <div className="p-2">
+        <Button
+          variant="tertiary"
+          onClick={() => {
+            clearTransactions(db);
+            loadTransactions();
+          }}
+          className=" ml-2 hover:bg-gray-50 cursor-pointer border"
+        >
+          Delete Transactions
+        </Button>
+        <table className="min-w-full divide-y divide-gray-300 text-sm overflow-x-scroll">
+          <thead className="bg-gray-100 text-cyan-700">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody className="divide-y divide-gray-200 bg-white">
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2 text-gray-800">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            {table.getFooterGroups().map((footerGroup) => (
+              <tr key={footerGroup.id}>
+                {footerGroup.headers.map((header) => (
+                  <th key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.footer,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </tfoot>
+        </table>
+        <div className="h-4" />
+        <button
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+          className="mr-6 shadow"
+        >
+          {"Previous page"}
+        </button>
+        <button
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+          className="shadow"
+        >
+          {"Next page"}
+        </button>
 
-      <div className="flex flex-col gap-2">
-        <ButtonGroup variant="tertiary">
-          <Button>Previous</Button>
-          <Button>Next</Button>
-        </ButtonGroup>
+        <div className="flex flex-col gap-2">
+          <ButtonGroup variant="tertiary">
+            <Button>Previous</Button>
+            <Button>Next</Button>
+          </ButtonGroup>
+        </div>
       </div>
     </div>
   );

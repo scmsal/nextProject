@@ -2,13 +2,13 @@
 @import "@heroui/styles";
 
 :root {
-  --background: #008080;
+  --background: #08626f;
   --foreground: #e0f0f0;
 
   --accent: #73bab7;
   --accent-foreground: #e0f0f0;
 
-  --surface: #e0f0f0;
+  --surface: #fcfcfc;
   --surface-foreground: #5c5c5c;
 }
 
@@ -30,4 +30,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+h2 {
+  @apply text-2xl font-bold tracking-tight pb-2;
 }
