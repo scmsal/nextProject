@@ -91,10 +91,7 @@ export default function AddListingForm() {
         className="flex flex-col bg-surface text-surface-foreground"
         onSubmit={handleSubmit}
       >
-        <h1 className="pb-3 font-bold text-2xl text-background">
-          {" "}
-          Add Listing
-        </h1>
+        <h3>Add Listing</h3>
         <label className="my-2">
           Listing name:
           <input

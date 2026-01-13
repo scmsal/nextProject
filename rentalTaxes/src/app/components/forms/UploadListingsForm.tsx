@@ -59,9 +59,7 @@ export default function UploadListingsForm() {
 
   return (
     <Card className="bg-surface text-surface-foreground min-h-[312px]!">
-      <h1 className="pb-3 font-bold text-2xl text-background">
-        Upload Listings CSV
-      </h1>
+      <h3>Upload Listings CSV</h3>
       <ul>
         <li>
           {" "}

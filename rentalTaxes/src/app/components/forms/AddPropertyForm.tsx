@@ -88,10 +88,7 @@ export function AddPropertyForm() {
         className="flex flex-col bg-surface text-surface-foreground"
         onSubmit={handleSubmit}
       >
-        <h1 className="pb-3 font-bold text-2xl text-background">
-          {" "}
-          Add Property
-        </h1>
+        <h3>Add Property</h3>
         <label className="my-2">
           Property name:
           <input

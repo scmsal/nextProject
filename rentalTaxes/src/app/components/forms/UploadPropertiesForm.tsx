@@ -63,9 +63,7 @@ export default function UploadPropertiesForm() {
 
   return (
     <Card className="min-h-[312px]!">
-      <h1 className="pb-3 font-bold text-2xl text-background">
-        Upload Properties CSV
-      </h1>
+      <h3>Upload Properties CSV</h3>
       <p className="text-black">Headings: name, address, town, county</p>
       <Form onSubmit={handleUpload}>
         <input

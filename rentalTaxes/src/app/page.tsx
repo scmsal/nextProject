@@ -10,8 +10,8 @@ import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { useDb } from "@/lib/db/dbContext";
 import { groupProperties } from "@/lib/db/queries";
-import PropertiesTabs from "./components/forms/tabsProperties";
-import { ListingsTabs } from "./components/forms/tabsListings";
+import PropertiesTabs from "./components/forms/PropertiesTabs";
+import { ListingsTabs } from "./components/forms/ListingsTabs";
 
 export default function Home() {
   const {
