@@ -8,7 +8,7 @@ import {
 import { Button, ButtonGroup } from "@heroui/react";
 import { sampleTransactions } from "@/lib/db/sampleData";
 import { Db, Transaction } from "@/types";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { clearTransactions } from "@/lib/db/queries";
 import { useDb } from "@/lib/db/dbContext";
 
@@ -25,6 +25,10 @@ export default function TransactionsTable({
     pageSize: 10, //default page size
   });
 
+  const filteredData = useMemo(
+    () => data.filter((row) => row.type !== "Payout"),
+    [data]
+  );
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -147,7 +151,7 @@ export default function TransactionsTable({
   ];
 
   const table = useReactTable<Transaction>({
-    data,
+    data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
