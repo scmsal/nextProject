@@ -12,7 +12,7 @@ import { useDb } from "@/lib/db/dbContext";
 import { groupProperties } from "@/lib/db/queries";
 import PropertiesTabs from "./components/forms/PropertiesTabs";
 import { ListingsTabs } from "./components/forms/ListingsTabs";
-import ToggleSidebar from "./components/sidebar";
+import ToggleSidebar from "./components/ToggleSidebar";
 
 export default function Home() {
   const {

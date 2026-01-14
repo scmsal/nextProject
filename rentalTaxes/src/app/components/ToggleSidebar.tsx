@@ -8,6 +8,8 @@ import {
   House,
   BadgeDollarSign,
   Sheet,
+  PanelLeft,
+  PanelLeftClose,
 } from "lucide-react";
 import { Button } from "@heroui/react";
 
@@ -32,12 +34,29 @@ const ToggleSidebar = () => {
         }`}
       >
         {/* Top Toggle Button */}
-        <div className="p-4 mb-4">
+        <div
+          className={`flex p-4 mb-4 ${
+            isExpanded ? "justify-between" : "justify-center"
+          }`}
+        >
+          {isExpanded && (
+            <div className="flex items-center gap-2 animate-in fade-in duration-300 p-1.5 rounded-lg">
+              <img
+                src="/Gemini_Generated_Logo_no_bg.png"
+                alt="logo of house with dollar bill"
+                className="h-12 w-12 object-contain"
+              />
+            </div>
+          )}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="p-3 text-foreground hover:bg-color-muted hover:text-accent-foreground rounded-full transition-colors"
           >
-            <Menu size={24} />
+            {isExpanded ? (
+              <PanelLeftClose size={24} />
+            ) : (
+              <PanelLeft size={24} />
+            )}
           </button>
         </div>
 
