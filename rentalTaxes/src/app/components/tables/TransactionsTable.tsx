@@ -171,12 +171,11 @@ export default function TransactionsTable({
             clearTransactions(db);
             loadTransactions();
           }}
-          className=" ml-2 hover:bg-gray-50 cursor-pointer border"
         >
           Delete Transactions
         </Button>
         <table className="min-w-full divide-y divide-gray-300 text-sm overflow-x-scroll">
-          <thead className="bg-gray-100 text-cyan-700">
+          <thead className="bg-gray-100 text-foreground">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -221,25 +220,17 @@ export default function TransactionsTable({
           </tfoot>
         </table>
         <div className="h-4" />
-        <button
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-          className="mr-6 shadow"
-        >
-          {"Previous page"}
-        </button>
-        <button
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-          className="shadow"
-        >
-          {"Next page"}
-        </button>
 
         <div className="flex flex-col gap-2">
           <ButtonGroup variant="tertiary">
-            <Button>Previous</Button>
-            <Button>Next</Button>
+            <Button
+              onClick={() => table.previousPage()}
+              isDisabled={!table.getCanPreviousPage()}
+            >{`< Previous`}</Button>
+            <Button
+              onClick={() => table.nextPage()}
+              isDisabled={!table.getCanNextPage()}
+            >{`Next >`}</Button>
           </ButtonGroup>
         </div>
       </div>

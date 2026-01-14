@@ -8,18 +8,14 @@ export function ListingsTabs() {
       <h2>Manage listings</h2>
       <Tabs className="w-full max-w-md">
         <Tabs.ListContainer className="mb-0">
-          <Tabs.List
-            aria-label="Options"
-            className=" *:data-[selected=true]:bg-cyan-700
-        *:data-[selected=true]:text-white"
-          >
+          <Tabs.List aria-label="Options" className="text-accent">
             <Tabs.Tab id="form">
               Add Single
-              <Tabs.Indicator className="bg-background" />
+              <Tabs.Indicator />
             </Tabs.Tab>
             <Tabs.Tab id="upload-csv">
               Upload Bulk
-              <Tabs.Indicator className="bg-background m-0" />
+              <Tabs.Indicator className=" m-0" />
             </Tabs.Tab>
           </Tabs.List>
         </Tabs.ListContainer>

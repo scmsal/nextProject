@@ -54,9 +54,7 @@ export default function AggregateSummaries() {
           setToExclNxtMth={setToExclNxtMth}
         />
 
-        <Button type="submit" className="border py-2 px-4 w-2/5 mb-4">
-          Calculate aggregates
-        </Button>
+        <Button type="submit">Calculate aggregates</Button>
 
         <FilterButtons
           data={transactionsData}

@@ -74,12 +74,7 @@ export default function UploadListingsForm() {
           className="text-gray-700 text-sm file:bg-gray-400 hover:file:bg-gray-600 file:text-white file:py-2 file:px-4 file:rounded-lg file:cursor-pointer"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
         />
-        <Button
-          className="border border-gray py-2 px-4 rounded-lg cursor-pointer bg-background"
-          type="submit"
-        >
-          Upload
-        </Button>
+        <Button type="submit">Upload</Button>
       </form>
       <p className="mt-3 text-sm text-gray-700">{status}</p>
     </Card>

@@ -9,18 +9,14 @@ export default function PropertiesTabs() {
 
       <Tabs className="w-full max-w-md">
         <Tabs.ListContainer>
-          <Tabs.List
-            aria-label="Options"
-            className=" *:data-[selected=true]:bg-cyan-700
-        *:data-[selected=true]:text-white"
-          >
+          <Tabs.List aria-label="Options" className="text-accent">
             <Tabs.Tab id="form">
               Add Single
-              <Tabs.Indicator className="bg-background" />
+              <Tabs.Indicator />
             </Tabs.Tab>
             <Tabs.Tab id="upload-csv">
               Upload Bulk
-              <Tabs.Indicator className="bg-background" />
+              <Tabs.Indicator />
             </Tabs.Tab>
           </Tabs.List>
         </Tabs.ListContainer>

@@ -12,6 +12,7 @@ import { useDb } from "@/lib/db/dbContext";
 import { groupProperties } from "@/lib/db/queries";
 import PropertiesTabs from "./components/forms/PropertiesTabs";
 import { ListingsTabs } from "./components/forms/ListingsTabs";
+import ToggleSidebar from "./components/sidebar";
 
 export default function Home() {
   const {
@@ -28,6 +29,7 @@ export default function Home() {
   );
   return (
     <main className="flex flex-col row-start-2 gap-8 sm:items-start">
+      <ToggleSidebar />
       <h1 className="text-3xl">Rental Income Manager</h1>
       <h3 className="underline">Step 1</h3>
       <div className="flex flex-col md:flex-row gap-10 w-full justify-center">

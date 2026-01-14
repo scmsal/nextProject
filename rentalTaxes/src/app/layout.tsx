@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import "./styles/globals.css";
+import "./styles/theme.css";
 import { DbProvider } from "@/lib/db/dbContext";
 //Added with installation of Roboto font for Material UI
 import "@fontsource/roboto/300.css";

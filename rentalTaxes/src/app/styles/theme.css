@@ -1,0 +1,40 @@
+@import "tailwindcss";
+@import "@heroui/styles";
+
+h2 {
+  @apply text-2xl font-bold tracking-tight pb-2;
+}
+
+h3 {
+  @apply text-xl font-bold tracking-tight pb-2;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface-muted: var(--surface-muted);
+}
+
+@layer base {
+  :root {
+    --background: #f8fafc;
+    --foreground: #0f172a;
+    --accent: #6ea0e8;
+    --accent-foreground: #f1f6f6;
+    --surface-muted: color-mix(
+      in oklab,
+      var(--background) 95%,
+      var(--foreground) 5%
+    );
+  }
+
+  .dark {
+    --background: #0f172a;
+    --foreground: #f1f5f9;
+    --surface-muted: color-mix(
+      in oklab,
+      var(--background) 92%,
+      var(--foreground) 8%
+    );
+  }
+}
