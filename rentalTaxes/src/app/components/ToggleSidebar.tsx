@@ -10,6 +10,7 @@ import {
   Sheet,
   PanelLeft,
   PanelLeftClose,
+  SquarePen,
 } from "lucide-react";
 import { Button } from "@heroui/react";
 
@@ -60,16 +61,16 @@ const ToggleSidebar = () => {
           </button>
         </div>
 
-        {/* "New Chat" Button */}
+        {/* "Wizard" Button */}
         <div className="px-3 mb-6">
           <button
             className={`flex items-center gap-3 p-3 rounded-full bg-[#333537] hover:bg-[#3f4144] transition-all ${
               !isExpanded ? "w-12 justify-center" : "w-fit pr-6"
             }`}
           >
-            <Plus size={24} />
+            <SquarePen size={24} />
             {isExpanded && (
-              <span className="whitespace-nowrap font-medium">Wizard</span>
+              <span className="whitespace-nowrap font-medium">Start here</span>
             )}
           </button>
         </div>
@@ -95,7 +96,7 @@ const ToggleSidebar = () => {
 
         {/* Bottom Section */}
         <div className="p-3 border-t border-[#333537]">
-          <div className="flex items-center gap-3 p-3 rounded-full hover:bg-[#333537] cursor-pointer">
+          <div className="flex items-center gap-3 p-3 rounded-full  bg-[#333537] hover:bg-[#3f4144]  cursor-pointer">
             <Settings size={20} />
             {isExpanded && <span className="text-sm">Settings</span>}
           </div>
