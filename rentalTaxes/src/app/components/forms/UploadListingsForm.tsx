@@ -67,14 +67,16 @@ export default function UploadListingsForm() {
         </li>
         <li>Headings: listing_name, property_id </li>
       </ul>
-      <form onSubmit={handleUpload}>
+      <form onSubmit={handleUpload} className="flex">
         <input
           type="file"
           accept=".csv"
           className="text-gray-700 text-sm file:bg-gray-400 hover:file:bg-gray-600 file:text-white file:py-2 file:px-4 file:rounded-lg file:cursor-pointer"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
         />
-        <Button type="submit">Upload</Button>
+        <Button type="submit" className="button-bold">
+          Upload
+        </Button>
       </form>
       <p className="mt-3 text-sm text-gray-700">{status}</p>
     </Card>

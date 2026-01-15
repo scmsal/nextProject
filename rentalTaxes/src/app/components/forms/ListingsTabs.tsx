@@ -6,7 +6,7 @@ export function ListingsTabs() {
   return (
     <div className="flex flex-col ">
       <h2>Manage listings</h2>
-      <Tabs className="w-full max-w-md">
+      <Tabs className="w-full md:w-5xl max-w-md">
         <Tabs.ListContainer className="mb-0">
           <Tabs.List aria-label="Options" className="text-accent">
             <Tabs.Tab id="form">

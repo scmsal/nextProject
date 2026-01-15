@@ -7,7 +7,7 @@ export default function PropertiesTabs() {
     <div className="flex flex-col ">
       <h2>Manage properties</h2>
 
-      <Tabs className="w-full max-w-md">
+      <Tabs className="w-full md:w-5xl max-w-md">
         <Tabs.ListContainer>
           <Tabs.List aria-label="Options" className="text-accent">
             <Tabs.Tab id="form">
@@ -20,10 +20,10 @@ export default function PropertiesTabs() {
             </Tabs.Tab>
           </Tabs.List>
         </Tabs.ListContainer>
-        <Tabs.Panel className="mt-0 pt-0 " id="form">
+        <Tabs.Panel className="mt-0 pt-0" id="form">
           <AddPropertyForm />
         </Tabs.Panel>
-        <Tabs.Panel className="mt-0 pt-0  " id="upload-csv">
+        <Tabs.Panel className="mt-0 pt-0" id="upload-csv">
           <UploadPropertiesForm />
         </Tabs.Panel>
       </Tabs>

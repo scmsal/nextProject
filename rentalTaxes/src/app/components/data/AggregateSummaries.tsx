@@ -54,7 +54,9 @@ export default function AggregateSummaries() {
           setToExclNxtMth={setToExclNxtMth}
         />
 
-        <Button type="submit">Calculate aggregates</Button>
+        <Button type="submit" className="button-bold">
+          Calculate aggregates
+        </Button>
 
         <FilterButtons
           data={transactionsData}

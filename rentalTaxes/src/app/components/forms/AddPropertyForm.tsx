@@ -121,10 +121,7 @@ export function AddPropertyForm() {
         <label className="my-2">
           Zip code <input type="text" name="zip" className="bg-gray-100 mx-4" />
         </label>
-        <Button
-          className="border border-gray py-2 px-4 rounded-lg cursor-pointer bg-background"
-          type="submit"
-        >
+        <Button className="button-bold" type="submit">
           Submit
         </Button>
         {status && (

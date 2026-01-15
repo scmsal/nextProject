@@ -13,12 +13,13 @@ declare module "@tanstack/react-table" {
 }
 import { useDb } from "@/lib/db/dbContext";
 import Papa from "papaparse";
+import { Button } from "@heroui/react";
+
 const formatCurrency = (val: number) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
   }).format(val);
-import { Button } from "@heroui/react";
 export default function RevenueAggregatesTable({
   data,
 }: {
@@ -185,7 +186,7 @@ export default function RevenueAggregatesTable({
         Rerender
       </button> */}
       <Button
-        className="border p-2"
+        className="border p-2 button-bold"
         onClick={() => {
           const csvData = revenueAggregatesData.map((item) => {
             const { excludedTransactions, inclTransactions, ...rest } = item;

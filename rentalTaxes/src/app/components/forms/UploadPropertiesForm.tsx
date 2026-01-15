@@ -65,17 +65,14 @@ export default function UploadPropertiesForm() {
     <Card className="min-h-[312px]!">
       <h3>Upload Properties CSV</h3>
       <p className="text-black">Headings: name, address, town, county</p>
-      <Form onSubmit={handleUpload}>
+      <Form onSubmit={handleUpload} className="flex">
         <input
           type="file"
           accept=".csv"
-          className="text-gray-700 text-sm file:bg-gray-400 hover:file:bg-gray-600 file:text-white file:py-2 file:px-4 file:rounded-lg file:cursor-pointer"
+          className="mb-2 text-gray-700 text-sm file:bg-gray-400 hover:file:bg-gray-600 file:text-white file:py-2 file:px-4 file:rounded-lg file:cursor-pointer"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
         />
-        <Button
-          className="border border-gray py-2 px-4 rounded-lg cursor-pointer bg-background"
-          type="submit"
-        >
+        <Button className="button-bold" type="submit">
           Upload
         </Button>
       </Form>

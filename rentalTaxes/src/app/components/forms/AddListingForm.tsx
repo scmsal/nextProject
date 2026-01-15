@@ -130,10 +130,7 @@ export default function AddListingForm() {
           </select>
         </label>
 
-        <Button
-          className="border border-gray py-2 px-4 rounded-lg cursor-pointer bg-background"
-          type="submit"
-        >
+        <Button className="button-bold" type="submit">
           Submit
         </Button>
         {status && (

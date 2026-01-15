@@ -167,7 +167,7 @@ export default function TransactionsTable({
     <div>
       <div className="p-2">
         <Button
-          variant="tertiary"
+          variant="danger"
           onClick={() => {
             clearTransactions(db);
             loadTransactions();

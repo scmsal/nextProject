@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { normalizeText } from "@/lib/data/normalization";
 import { transactionExists } from "@/lib/db/queries";
 import { transactionsDbTable } from "@/lib/db/schema";
+import { Button, Card } from "@heroui/react";
 
 export default function UploadTransactionsForm() {
   const { db, loadTransactions, listingsData } = useDb();
@@ -118,23 +119,20 @@ export default function UploadTransactionsForm() {
   );
 
   return (
-    <div>
+    <Card className="w-full md:w-5xl max-w-md">
       <h1 className="pb-3 font-bold text-2xl">Upload Transactions CSV</h1>
-      <form onSubmit={handleUpload}>
+      <form onSubmit={handleUpload} className="flex">
         <input
           type="file"
           accept=".csv"
           className="text-gray-700 text-sm file:bg-gray-400 hover:file:bg-gray-600 file:text-white file:py-2 file:px-4 file:rounded-lg file:cursor-pointer"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
         />
-        <button
-          type="submit"
-          className="ml-3 border py-2 px-4 rounded-lg hover:bg-gray-600 hover:text-white cursor-pointer"
-        >
+        <Button type="submit" className="button-bold">
           Upload
-        </button>
+        </Button>
       </form>
       <p className="mt-3 text-sm text-gray-700">{status}</p>
-    </div>
+    </Card>
   );
 }
