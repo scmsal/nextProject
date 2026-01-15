@@ -20,15 +20,16 @@ export default function TransactionsTable({
   db: Db;
 }) {
   const { loadTransactions } = useDb();
-  const [pagination, setPagination] = useState({
-    pageIndex: 0, //initial page index
-    pageSize: 10, //default page size
-  });
 
   const filteredData = useMemo(
     () => data.filter((row) => row.type !== "Payout"),
     [data]
   );
+  const [pagination, setPagination] = useState({
+    pageIndex: 0, //initial page index
+    pageSize: 10, //default page size
+  });
+
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -221,7 +222,14 @@ export default function TransactionsTable({
         </table>
         <div className="h-4" />
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-row justify-center gap-8">
+          <span className="flex items-center gap-1">
+            <div>Page</div>
+            <strong>
+              {table.getState().pagination.pageIndex + 1}{" "}
+            </strong> of{" "}
+            <strong>{table.getPageCount().toLocaleString()}</strong>
+          </span>
           <ButtonGroup variant="tertiary">
             <Button
               onClick={() => table.previousPage()}

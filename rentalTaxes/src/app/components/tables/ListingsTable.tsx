@@ -81,12 +81,12 @@ export default function ListingsTable({ data }: { data: PropertyListing[] }) {
   return (
     <div className="flex flex-col overflow-x-scroll">
       <h2>View properties & listings</h2>
-      <table className="min-w-full divide-y divide-gray-300 text-sm  p">
+      <table className="min-w-full divide-y divide-gray-300 text-medium">
         <thead className="bg-gray-100 text-foreground">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="px-2">
+                <th key={header.id} className="p-2">
                   {header.isPlaceholder
                     ? null
                     : flexRender(
