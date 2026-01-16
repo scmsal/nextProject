@@ -120,7 +120,7 @@ export default function UploadTransactionsForm() {
 
   return (
     <Card className="w-full md:w-5xl max-w-md">
-      <h1 className="pb-3 font-bold text-2xl">Upload Transactions CSV</h1>
+      <h2>Upload Transactions CSV</h2>
       <form onSubmit={handleUpload} className="flex">
         <input
           type="file"

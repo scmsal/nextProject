@@ -11,6 +11,7 @@ import {
   PanelLeft,
   PanelLeftClose,
   SquarePen,
+  NotebookTabs,
 } from "lucide-react";
 import { Button } from "@heroui/react";
 
@@ -32,21 +33,22 @@ const ToggleSidebar = () =>
     ];
 
     return (
-      <div className="flex h-screen bg-[#131314] text-[#e3e3e3] overflow-hidden">
+      <div className="flex h-screen overflow-hidden">
         {/* Sidebar Container */}
         <aside
-          className={`relative flex flex-col bg-field-on-background transition-all duration-300 ease-in-out ${
+          className={`relative flex flex-col bg-gray-50 transition-all duration-300 ease-in-out ${
             isExpanded ? "w-72" : "w-20"
           }`}
         >
-          {/* Top Toggle Button */}
+          {/* Sidebar Header */}
           <div
-            className={`flex p-4 mb-4 ${
+            className={`flex p-3 pb-0 mb-0 ${
               isExpanded ? "justify-between" : "justify-center"
             }`}
           >
+            {/* Logo */}
             {isExpanded && (
-              <div className="flex items-center gap-2 animate-in fade-in duration-300 p-1.5 rounded-lg">
+              <div className="flex items-center gap-2 animate-in fade-in duration-300 p-0 rounded-lg">
                 <img
                   src="/Gemini_Generated_Logo_no_bg.png"
                   alt="logo of house with dollar bill"
@@ -54,6 +56,7 @@ const ToggleSidebar = () =>
                 />
               </div>
             )}
+            {/* Top Toggle Button */}
             <button
               onClick={() => setIsExpanded(!isExpanded)}
               className="p-3 text-foreground hover:bg-color-muted hover:text-accent-foreground rounded-full transition-colors"
@@ -66,14 +69,27 @@ const ToggleSidebar = () =>
             </button>
           </div>
 
+          {isExpanded && (
+            <div className="p-3">
+              <h1 className="text-surface-foreground font-bold text-3xl mb-1.5 ">
+                Rental finances calculator
+              </h1>
+              <p className="text-foreground">
+                View your earnings by property and length of stay
+              </p>
+              <p className="text-secondary mt-2">
+                Simplify your county hotel/motel occupancy tax reporting
+              </p>
+            </div>
+          )}
           {/* "Wizard" Button */}
           <div className="px-3 mb-6">
             <button
-              className={`flex items-center gap-3 p-3 rounded-full bg-[#333537] hover:bg-[#3f4144] transition-all ${
+              className={`flex items-center gap-3 p-3 rounded-full text-background bg-black hover:bg-gray-800 transition-all cursor-pointer ${
                 !isExpanded ? "w-12 justify-center" : "w-fit pr-6"
               }`}
             >
-              <SquarePen size={24} />
+              <NotebookTabs size={24} />
               {isExpanded && (
                 <span className="whitespace-nowrap font-medium">
                   Start here
@@ -90,7 +106,7 @@ const ToggleSidebar = () =>
               return (
                 <button
                   key={item.title}
-                  className="flex items-center gap-3 p-3 rounded-full hover:bg-[var(--surface-muted)] text-surface-foreground cursor-pointer"
+                  className="flex items-center w-full gap-3 p-3 rounded-lg hover:bg-[var(--surface-muted)] text-surface-foreground cursor-pointer"
                 >
                   <Icon />
                   {isExpanded && (
@@ -103,7 +119,7 @@ const ToggleSidebar = () =>
 
           {/* Bottom Section */}
           <div className="p-3 border-t border-[#333537]">
-            <div className="flex items-center gap-3 p-3 rounded-full  bg-[#333537] hover:bg-[#3f4144]  cursor-pointer">
+            <div className="flex items-center gap-3 p-3 rounded-full  text-background bg-black hover:bg-gray-800  cursor-pointer">
               <Settings size={20} />
               {isExpanded && <span className="text-sm">Settings</span>}
             </div>

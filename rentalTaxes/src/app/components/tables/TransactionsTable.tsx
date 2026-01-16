@@ -165,16 +165,21 @@ export default function TransactionsTable({
 
   return (
     <div>
-      <div className="p-2">
-        <Button
-          variant="danger"
-          onClick={() => {
-            clearTransactions(db);
-            loadTransactions();
-          }}
-        >
-          Delete Transactions
-        </Button>
+      <div className="mt-4 p-2">
+        <div className="flex sm:flex-row justify-between w-full mb-2 align-middle">
+          <h2 className="ps-2 pb-0 align-middle">View Transactions</h2>
+          <Button
+            variant="danger"
+            onClick={() => {
+              clearTransactions(db);
+              loadTransactions();
+            }}
+            className=""
+          >
+            Clear Transactions
+          </Button>
+        </div>
+
         <table className="min-w-full divide-y divide-gray-300 text-sm overflow-x-scroll">
           <thead className="bg-gray-100 text-foreground">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -221,26 +226,28 @@ export default function TransactionsTable({
           </tfoot>
         </table>
         <div className="h-4" />
-
-        <div className="flex flex-row justify-center gap-8">
-          <span className="flex items-center gap-1">
-            <div>Page</div>
-            <strong>
-              {table.getState().pagination.pageIndex + 1}{" "}
-            </strong> of{" "}
-            <strong>{table.getPageCount().toLocaleString()}</strong>
-          </span>
-          <ButtonGroup variant="tertiary">
-            <Button
-              onClick={() => table.previousPage()}
-              isDisabled={!table.getCanPreviousPage()}
-            >{`< Previous`}</Button>
-            <Button
-              onClick={() => table.nextPage()}
-              isDisabled={!table.getCanNextPage()}
-            >{`Next >`}</Button>
-          </ButtonGroup>
-        </div>
+        {data.length === 0 && <p className="ps-2">No transactions to show</p>}
+        {data.length > 0 && (
+          <div className="flex flex-row justify-center gap-8">
+            <span className="flex items-center gap-1">
+              <div>Page</div>
+              <strong>
+                {table.getState().pagination.pageIndex + 1}{" "}
+              </strong> of{" "}
+              <strong>{table.getPageCount().toLocaleString()}</strong>
+            </span>
+            <ButtonGroup variant="tertiary">
+              <Button
+                onClick={() => table.previousPage()}
+                isDisabled={!table.getCanPreviousPage()}
+              >{`< Previous`}</Button>
+              <Button
+                onClick={() => table.nextPage()}
+                isDisabled={!table.getCanNextPage()}
+              >{`Next >`}</Button>
+            </ButtonGroup>
+          </div>
+        )}
       </div>
     </div>
   );

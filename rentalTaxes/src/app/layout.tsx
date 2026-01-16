@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ClientShell from "./components/structure/ClientShell";
 
 import "./styles/theme.css";
 import { DbProvider } from "@/lib/db/dbContext";
@@ -16,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <DbProvider>{children}</DbProvider>
+        <DbProvider>
+          <ClientShell>{children}</ClientShell>
+        </DbProvider>
       </body>
     </html>
   );

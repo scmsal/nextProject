@@ -165,6 +165,7 @@ export default function FilterButtons({
           // setSelectedYear(val === "" ? null : Number(val));
           console.log("Selected year:", selectedYear);
         }}
+        className="bg-field-on-background"
       >
         <option value="">All years</option>
         {years.map((y) => {
