@@ -12,11 +12,11 @@ export default function PropertiesPage() {
 
   const propertiesWithListings = useMemo(
     () => groupProperties(propertiesData, listingsData),
-    [propertiesData, listingsData]
+    [propertiesData, listingsData],
   );
   return (
     <div>
-      <h3 className="underline ms-4 mb-0 pb-0 text-secondary">
+      <h3 className="underline ms-4 mb-4 pb-0 text-secondary">
         Step 1: Manage properties and listings
       </h3>
       <div className="flex flex-col md:flex-row gap-10 w-full justify-center">

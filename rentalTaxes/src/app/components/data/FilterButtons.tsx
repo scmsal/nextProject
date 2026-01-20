@@ -52,7 +52,7 @@ export default function FilterButtons({
           //Learning note: The reduce callback returns the new accumulator, no explicit assignment.
         };
       },
-      { minYear: Infinity, maxYear: -Infinity }
+      { minYear: Infinity, maxYear: -Infinity },
     );
 
     minYear = result.minYear;
@@ -64,7 +64,7 @@ export default function FilterButtons({
       ? [currentYear]
       : Array.from(
           { length: currentYear - minYear + 1 },
-          (_, i) => minYear + i
+          (_, i) => minYear + i,
         );
 
   interface QuarterRange {
@@ -93,8 +93,8 @@ export default function FilterButtons({
     return { quarter: 4, quarterYear: y }; // Sep–Nov
   }
   function getCalendarYearRange(year: number) {
-    const startMonth = 0;
-    const startYear = year;
+    const start = new Date(year, 0, 1);
+    const endExcl = new Date(year + 1, 0, 1);
   }
 
   function getQuarterRange(quarter: Quarter, year: number) {
@@ -165,7 +165,7 @@ export default function FilterButtons({
           // setSelectedYear(val === "" ? null : Number(val));
           console.log("Selected year:", selectedYear);
         }}
-        className="bg-field-on-background"
+        className="ml-2 border border-solid border-gray-200"
       >
         <option value="">All years</option>
         {years.map((y) => {
@@ -173,7 +173,7 @@ export default function FilterButtons({
             <option
               key={y}
               value={y}
-              className={isActiveY({ year: y }) ? "font-bold" : ""}
+              // className={isActiveY({ year: y }) ? "font-bold" : ""}
             >
               {y}
             </option>

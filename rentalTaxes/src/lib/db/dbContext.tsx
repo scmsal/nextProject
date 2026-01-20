@@ -109,7 +109,6 @@ export function DbProvider({ children }: { children: ReactNode }) {
 
     return aggregate;
   }
-  //FIX: grossEarnings showing 0
   function aggregateGross(arrTransactions: Transaction[]) {
     const aggregate = arrTransactions.reduce((acc, transaction) => {
       const gross = transaction.grossEarnings
@@ -166,7 +165,7 @@ export function DbProvider({ children }: { children: ReactNode }) {
               "to:",
               to,
               " toExclNextMnt",
-              toExclNxtMth
+              toExclNxtMth,
             );
             to.setDate(to.getDate() + 1);
 
@@ -193,16 +192,16 @@ export function DbProvider({ children }: { children: ReactNode }) {
             listing: transaction.listingName,
           });
           return true;
-        }
+        },
       );
 
       const netRevenue = aggregateAmounts(propertyDateTransactions);
       const shortTransactions = propertyDateTransactions.filter(
-        (transaction) => transaction.shortTerm
+        (transaction) => transaction.shortTerm,
       );
       const shortTermRevenue = aggregateAmounts(shortTransactions);
       const longTransactions = propertyDateTransactions.filter(
-        (transaction) => !transaction.shortTerm
+        (transaction) => !transaction.shortTerm,
       );
       const longTermRevenue = aggregateAmounts(longTransactions);
       const totalGross = aggregateGross(propertyDateTransactions);
@@ -223,7 +222,7 @@ export function DbProvider({ children }: { children: ReactNode }) {
       };
       console.log(
         revenueAggregate.propertyName,
-        revenueAggregate.inclTransactions
+        revenueAggregate.inclTransactions,
       );
       return revenueAggregate;
     });

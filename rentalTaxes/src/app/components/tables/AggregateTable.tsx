@@ -128,7 +128,7 @@ export default function RevenueAggregatesTable({
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
-                        header.getContext()
+                        header.getContext(),
                       )}
                 </th>
               ))}
@@ -169,7 +169,7 @@ export default function RevenueAggregatesTable({
                     ? null
                     : flexRender(
                         header.column.columnDef.footer,
-                        header.getContext()
+                        header.getContext(),
                       )}
                 </td>
               ))}
@@ -178,8 +178,8 @@ export default function RevenueAggregatesTable({
         </tfoot>
       </table>
       <p>
-        <sup>1</sup>Total gross earnings including all reservations, fees,
-        adjustments, and resolutions included in the CSV file data.
+        <sup>1</sup>Total gross revenue including all reservations, fees, and
+        adjustments included in the CSV file data.
       </p>
       <div className="h-4" />
       {/* <button onClick={() => rerender()} className="border p-2">

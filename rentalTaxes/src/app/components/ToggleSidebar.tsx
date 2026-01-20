@@ -14,6 +14,7 @@ import {
   NotebookTabs,
 } from "lucide-react";
 import { Button } from "@heroui/react";
+import Link from "next/link";
 
 interface SidebarProps {
   isExpanded: boolean;
@@ -27,9 +28,10 @@ const ToggleSidebar = () =>
       {
         title: "Properties & Listings",
         icon: House,
+        slug: "/properties",
       },
-      { title: "Transactions", icon: BadgeDollarSign },
-      { title: "Summaries", icon: Sheet },
+      { title: "Transactions", icon: BadgeDollarSign, slug: "/transactions" },
+      { title: "Summaries", icon: Sheet, slug: "/summaries" },
     ];
 
     return (
@@ -104,15 +106,14 @@ const ToggleSidebar = () =>
             {sideTabs.map((item) => {
               const Icon = item.icon;
               return (
-                <button
-                  key={item.title}
-                  className="flex items-center w-full gap-3 p-3 rounded-lg hover:bg-[var(--surface-muted)] text-surface-foreground cursor-pointer"
-                >
-                  <Icon />
-                  {isExpanded && (
-                    <span className="truncate text-sm">{item.title}</span>
-                  )}
-                </button>
+                <Link href={item.slug} key={item.title}>
+                  <button className="flex items-center w-full gap-3 p-3 rounded-lg hover:bg-(--surface-muted) text-surface-foreground cursor-pointer">
+                    <Icon />
+                    {isExpanded && (
+                      <span className="truncate text-sm">{item.title}</span>
+                    )}
+                  </button>
+                </Link>
               );
             })}
           </nav>

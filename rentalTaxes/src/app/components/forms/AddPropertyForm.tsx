@@ -21,6 +21,71 @@ export function AddPropertyForm() {
     type: "",
   });
 
+  const nyCounties = [
+    "Albany",
+    "Allegany",
+    "Bronx",
+    "Broome",
+    "Cattaraugus",
+    "Cayuga",
+    "Chautauqua",
+    "Chemung",
+    "Chenango",
+    "Clinton",
+    "Columbia",
+    "Cortland",
+    "Delaware",
+    "Dutchess",
+    "Erie",
+    "Essex",
+    "Franklin",
+    "Fulton",
+    "Genesee",
+    "Greene",
+    "Hamilton",
+    "Herkimer",
+    "Jefferson",
+    "Kings",
+    "Lewis",
+    "Livingston",
+    "Madison",
+    "Monroe",
+    "Montgomery",
+    "Nassau",
+    "New York",
+    "Niagara",
+    "Oneida",
+    "Onondaga",
+    "Ontario",
+    "Orange",
+    "Orleans",
+    "Oswego",
+    "Otsego",
+    "Putnam",
+    "Queens",
+    "Rensselaer",
+    "Richmond",
+    "Rockland",
+    "Saratoga",
+    "Schenectady",
+    "Schoharie",
+    "Schuyler",
+    "Seneca",
+    "St. Lawrence",
+    "Steuben",
+    "Suffolk",
+    "Sullivan",
+    "Tioga",
+    "Tompkins",
+    "Ulster",
+    "Warren",
+    "Washington",
+    "Wayne",
+    "Westchester",
+    "Wyoming",
+    "Yates",
+  ];
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
@@ -45,7 +110,7 @@ export function AddPropertyForm() {
       db,
       propertiesDbTable,
       "propertyId",
-      cleaned.propertyId
+      cleaned.propertyId,
     );
 
     const uniqueCleaned = exists ? null : (cleaned as Property);
@@ -83,7 +148,7 @@ export function AddPropertyForm() {
   }
 
   return (
-    <Card className="mt-0 min-h-[300px]!">
+    <Card className="mt-0 min-h-75!">
       <Form
         className="flex flex-col bg-surface text-surface-foreground"
         onSubmit={handleSubmit}
@@ -101,8 +166,16 @@ export function AddPropertyForm() {
         <label className="my-2">
           County:
           <select name="county" className="mx-4 bg-gray-100" required>
-            <option value="Suffolk">Suffolk</option>
-            <option value="Nassau">Nassau</option>
+            <option value="" hidden>
+              Select county
+            </option>
+            {nyCounties.map((county) => {
+              return (
+                <option key={county} value={county}>
+                  {county}
+                </option>
+              );
+            })}
           </select>
         </label>
         <label className="my-2">

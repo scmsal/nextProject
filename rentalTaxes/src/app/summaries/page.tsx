@@ -9,7 +9,7 @@ export default function SummariesPage() {
 
   return (
     <div>
-      <h3 className="underline">Step 3: Calculate summaries</h3>
+      <h3 className="underline text-secondary">Step 3: Calculate summaries</h3>
       <div className="flex flex-col">
         <AggregateSummaries />
         <RevenueAggregatesTable data={revenueAggregatesData} />

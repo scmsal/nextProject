@@ -21,10 +21,10 @@ export default function TransactionsTable({
 }) {
   const { loadTransactions } = useDb();
 
-  const filteredData = useMemo(
-    () => data.filter((row) => row.type !== "Payout"),
-    [data]
-  );
+  // const filteredData = useMemo(
+  //   () => data.filter((row) => row.type !== "Payout"),
+  //   [data],
+  // );
   const [pagination, setPagination] = useState({
     pageIndex: 0, //initial page index
     pageSize: 10, //default page size
@@ -93,7 +93,7 @@ export default function TransactionsTable({
     // { accessorKey: "details", header: "Details" },
     {
       accessorKey: "amount",
-      header: "Amount",
+      header: "Net Earnings",
       cell: ({ getValue }) => formatCurrency(getValue() as number),
       enableSorting: true,
     },
@@ -119,7 +119,7 @@ export default function TransactionsTable({
     },
     {
       accessorKey: "totalOccupancyTaxes",
-      header: "Total Occupancy Taxes",
+      header: "Taxes Remitted",
       cell: ({ getValue }) => formatCurrency(getValue() as number),
       enableSorting: true,
     },
@@ -152,7 +152,7 @@ export default function TransactionsTable({
   ];
 
   const table = useReactTable<Transaction>({
-    data: filteredData,
+    data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -166,8 +166,8 @@ export default function TransactionsTable({
   return (
     <div>
       <div className="mt-4 p-2">
-        <div className="flex sm:flex-row justify-between w-full mb-2 align-middle">
-          <h2 className="ps-2 pb-0 align-middle">View Transactions</h2>
+        <div className="flex sm:flex-row justify-between w-full mb-2 align-baseline">
+          <h2 className="ps-2 pb-0 ">View Transactions</h2>
           <Button
             variant="danger"
             onClick={() => {
@@ -185,12 +185,12 @@ export default function TransactionsTable({
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="px-2">
+                  <th key={header.id} className="px-1.5">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </th>
                 ))}
@@ -201,7 +201,12 @@ export default function TransactionsTable({
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-2 text-gray-800">
+                  <td
+                    key={cell.id}
+                    className={`p-2 text-gray-800 ${
+                      cell.column.id === "listingName" && "w-full"
+                    }`}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -217,7 +222,7 @@ export default function TransactionsTable({
                       ? null
                       : flexRender(
                           header.column.columnDef.footer,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </th>
                 ))}

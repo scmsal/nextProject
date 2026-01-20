@@ -117,7 +117,6 @@ export async function parseTransactionsCsvFile(file: File) {
       stateTax: null,
     };
   });
-  console.log("SNAPSHOT:", JSON.stringify(cleaned[0], null, 2));
 
   return cleaned;
 }

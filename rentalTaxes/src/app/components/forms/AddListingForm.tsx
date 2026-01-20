@@ -47,7 +47,7 @@ export default function AddListingForm() {
       db,
       listingsDbTable,
       "listingId",
-      cleaned.listingId
+      cleaned.listingId,
     );
 
     const uniqueCleaned = exists ? null : (cleaned as Listing);
@@ -114,7 +114,9 @@ export default function AddListingForm() {
               setSelectedPropertyId(val === "" ? "" : val);
             }}
           >
-            <option value="">Select property</option>
+            <option value="" hidden>
+              Select property
+            </option>
 
             {propertiesData.length === 0
               ? null

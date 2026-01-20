@@ -43,7 +43,7 @@ export default function UploadTransactionsForm() {
             cleaned.map(async (row) => {
               const exists = await transactionExists(db, row);
               return exists.length > 0 ? null : row;
-            })
+            }),
           )
         ).filter(Boolean); //only include unique rows
 
@@ -54,16 +54,14 @@ export default function UploadTransactionsForm() {
           listingsData.map((row) => [
             normalizeText(row.listingName),
             { listingId: row.listingId, propertyId: row.propertyId },
-          ])
+          ]),
         );
 
         console.log("listingMap:", listingMap);
         //TO DO: also enrich with source file
-
+        //
         const enriched = cleaned
-          // .filter((row) => {
-          //   row.type !== "Payout";
-          // })
+          .filter((row) => !["Payout", "Resolution Payout"].includes(row.type))
           .map((row) => {
             console.log("inside enriched", row);
             const listingName =
@@ -76,7 +74,7 @@ export default function UploadTransactionsForm() {
               "match:",
               match,
               "type:",
-              row.type
+              row.type,
             );
 
             return {
@@ -101,13 +99,13 @@ export default function UploadTransactionsForm() {
         //warn about unmatched listings. TO DO: make it appear in UI too.
 
         const unmatched = enriched.filter(
-          (row) => row.confirmationCode && row.listingId === null
+          (row) => row.confirmationCode && row.listingId === null,
         );
 
         if (unmatched.length > 0) {
           console.warn(
             "Unmatched listings: ",
-            unmatched.map((r) => r.listingName)
+            unmatched.map((r) => r.listingName),
           );
         }
       } catch (err) {
@@ -115,7 +113,7 @@ export default function UploadTransactionsForm() {
         setStatus("Error importing file.");
       }
     },
-    [file, db]
+    [file, db],
   );
 
   return (
