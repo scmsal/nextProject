@@ -11,6 +11,12 @@ import {
 } from "./schema";
 import * as schema from "./schema";
 
+export async function clearPropAndListings(db: Db) {
+  await db.delete(listingsDbTable);
+  await db.delete(propertiesDbTable);
+  console.log("All properties and listings deleted.");
+}
+
 export async function clearTransactions(db: Db) {
   await db.delete(transactionsDbTable);
   console.log("All transactions deleted.");
@@ -19,7 +25,7 @@ export async function clearTransactions(db: Db) {
 
 export async function transactionExists(
   db: Db,
-  row: { confirmationCode: string; date: string; amount: number }
+  row: { confirmationCode: string; date: string; amount: number },
 ) {
   return await db
     .select()
@@ -28,8 +34,8 @@ export async function transactionExists(
       and(
         eq(transactionsDbTable.confirmationCode, row.confirmationCode),
         eq(transactionsDbTable.date, row.date),
-        eq(transactionsDbTable.amount, row.amount)
-      )
+        eq(transactionsDbTable.amount, row.amount),
+      ),
     )
     .limit(1);
 }
@@ -43,7 +49,7 @@ export async function existsInDb(
   db: Db,
   table: any,
   keyName: string,
-  value: string
+  value: string,
 ): Promise<boolean> {
   const column = table[keyName];
   if (!column) throw new Error(`Column ${String(keyName)} not found in table`);
@@ -117,7 +123,7 @@ export async function handlePropertyLog(db: Db) {
 
 export function groupProperties(
   properties: Property[],
-  listings: Listing[]
+  listings: Listing[],
 ): PropertyListing[] {
   const map = new Map<string, PropertyListing>();
 
@@ -146,7 +152,7 @@ export function groupProperties(
 function dateWindow(
   dateColumn: typeof transactionsDbTable.date,
   startFilterDate?: string,
-  endFilterDate?: string
+  endFilterDate?: string,
 ) {
   if (!startFilterDate && !endFilterDate) return sql`TRUE`; //no filter
 
@@ -158,7 +164,7 @@ function dateWindow(
 export async function getRevenueAggregates(
   db: Db,
   fromDate?: string,
-  toDate?: string
+  toDate?: string,
 ) {
   console.log("getPropertyAggregates ran");
   //base query
@@ -207,11 +213,11 @@ Get all transactions
     .from(propertiesDbTable)
     .leftJoin(
       listingsDbTable,
-      eq(listingsDbTable.propertyId, propertiesDbTable.propertyId)
+      eq(listingsDbTable.propertyId, propertiesDbTable.propertyId),
     )
     .leftJoin(
       transactionsDbTable,
-      eq(transactionsDbTable.listingId, listingsDbTable.listingId)
+      eq(transactionsDbTable.listingId, listingsDbTable.listingId),
     )
     .groupBy(propertiesDbTable.propertyId, propertiesDbTable.propertyName);
 

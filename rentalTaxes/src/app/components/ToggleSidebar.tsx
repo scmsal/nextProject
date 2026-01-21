@@ -52,7 +52,7 @@ const ToggleSidebar = () =>
             {isExpanded && (
               <div className="flex items-center gap-2 animate-in fade-in duration-300 p-0 rounded-lg">
                 <img
-                  src="/Gemini_Generated_Logo_no_bg.png"
+                  src="../icon.png"
                   alt="logo of house with dollar bill"
                   className="h-12 w-12 object-contain"
                 />
@@ -74,13 +74,16 @@ const ToggleSidebar = () =>
           {isExpanded && (
             <div className="p-3">
               <h1 className="text-surface-foreground font-bold text-3xl mb-1.5 ">
-                Rental finances calculator
+                Rental revenue calculator
               </h1>
               <p className="text-foreground">
-                View your earnings by property and length of stay
+                <strong>Simplify </strong> county hotel/motel occupancy{" "}
+                <strong>tax reporting</strong>
               </p>
-              <p className="text-secondary mt-2">
-                Simplify your county hotel/motel occupancy tax reporting
+              <p>
+                {" "}
+                – view your earnings by <strong>property</strong> and{" "}
+                <strong>length of stay</strong>{" "}
               </p>
             </div>
           )}

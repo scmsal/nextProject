@@ -24,7 +24,7 @@ export default function ClientShell({
         // toggle={() => setIsExpanded(!isExpanded)}
         />
       </aside>
-      <main className="flex flex-1 flex-col ow-start-2 gap-2 overflow-y-auto ">
+      <main className="flex flex-1 flex-col ow-start-2 gap-2 overflow-y-auto mt-6 px-3">
         {children}
       </main>
     </div>

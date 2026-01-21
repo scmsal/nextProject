@@ -12,6 +12,8 @@ import { Listing, RevenueAggregate, PropertyListing } from "@/types";
 import Editable from "../forms/Editable";
 import { useDb } from "@/lib/db/dbContext";
 import { eq } from "drizzle-orm";
+import { clearPropAndListings } from "@/lib/db/queries";
+import { Button } from "@heroui/react";
 
 export default function ListingsTable({ data }: { data: PropertyListing[] }) {
   const { db, loadProperties, loadListings } = useDb();
@@ -31,13 +33,13 @@ export default function ListingsTable({ data }: { data: PropertyListing[] }) {
               const originalPropId = row.original.propertyId;
               const newPropId = createPropertyId(
                 inputVal,
-                row.original.address
+                row.original.address,
               );
               await db
                 .update(propertiesDbTable)
                 .set({ propertyName: inputVal, propertyId: newPropId })
                 .where(
-                  eq(propertiesDbTable.propertyId, row.original.propertyId)
+                  eq(propertiesDbTable.propertyId, row.original.propertyId),
                 );
 
               await db
@@ -51,14 +53,18 @@ export default function ListingsTable({ data }: { data: PropertyListing[] }) {
         );
       },
     },
+    { header: "Property ID", accessorKey: "propertyId" },
 
+    { accessorKey: "address", header: "Address" },
+    { accessorKey: "town", header: "Town" },
+    { accessorKey: "county", header: "County" },
     {
       header: "Listings",
       cell: ({ row }) => {
         const listings = row.original.listings;
         if (!listings.length) return "-"; //TO DO: make element and add ml-4
         return (
-          <ul className="list-none ml-4">
+          <ul className="list-disc ml-4">
             {listings.map((l) => (
               <li key={l.listingId}>{l.listingName}</li>
             ))}
@@ -66,9 +72,6 @@ export default function ListingsTable({ data }: { data: PropertyListing[] }) {
         );
       },
     },
-    { accessorKey: "address", header: "Address" },
-    { accessorKey: "town", header: "Town" },
-    { accessorKey: "county", header: "County" },
   ];
 
   const table = useReactTable<PropertyListing>({
@@ -79,8 +82,22 @@ export default function ListingsTable({ data }: { data: PropertyListing[] }) {
   });
 
   return (
-    <div className="flex flex-col overflow-x-scroll">
-      <h2>View properties & listings</h2>
+    <div className="flex flex-col overflow-x-scroll w-full px-4">
+      <div className="flex sm:flex-row justify-between w-full mb-2 align-baseline">
+        <h2>View properties & listings</h2>
+        <Button
+          variant="danger"
+          onClick={async () => {
+            await clearPropAndListings(db);
+            await loadProperties();
+            await loadListings();
+          }}
+          className=""
+        >
+          Clear Properties and Listings
+        </Button>
+      </div>
+
       <table className="min-w-full divide-y divide-gray-300 text-medium">
         <thead className="bg-gray-100 text-foreground">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -91,7 +108,7 @@ export default function ListingsTable({ data }: { data: PropertyListing[] }) {
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
-                        header.getContext()
+                        header.getContext(),
                       )}
                 </th>
               ))}
