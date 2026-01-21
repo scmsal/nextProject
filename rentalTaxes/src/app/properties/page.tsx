@@ -14,6 +14,7 @@ export default function PropertiesPage() {
     () => groupProperties(propertiesData, listingsData),
     [propertiesData, listingsData],
   );
+
   return (
     <div>
       <h3 className="underline ms-4 mb-4 pb-0 text-secondary">

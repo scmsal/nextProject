@@ -16,7 +16,7 @@ import { clearPropAndListings } from "@/lib/db/queries";
 import { Button } from "@heroui/react";
 
 export default function ListingsTable({ data }: { data: PropertyListing[] }) {
-  const { db, loadProperties, loadListings } = useDb();
+  const { db, loadProperties, loadListings, reloadAllPropListings } = useDb();
 
   const columns: ColumnDef<PropertyListing>[] = [
     // { accessorKey: "propertyId", header: "Property ID" },
@@ -89,8 +89,7 @@ export default function ListingsTable({ data }: { data: PropertyListing[] }) {
           variant="danger"
           onClick={async () => {
             await clearPropAndListings(db);
-            await loadProperties();
-            await loadListings();
+            await reloadAllPropListings();
           }}
           className=""
         >

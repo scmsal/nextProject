@@ -12,8 +12,11 @@ import {
 import * as schema from "./schema";
 
 export async function clearPropAndListings(db: Db) {
-  await db.delete(listingsDbTable);
-  await db.delete(propertiesDbTable);
+  await db.transaction(async (tx) => {
+    await tx.delete(listingsDbTable);
+    await tx.delete(propertiesDbTable);
+  });
+
   console.log("All properties and listings deleted.");
 }
 

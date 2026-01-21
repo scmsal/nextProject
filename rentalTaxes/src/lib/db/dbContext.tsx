@@ -40,6 +40,7 @@ interface DbContextType {
   loadTransactions: () => Promise<void>;
   loadProperties: () => Promise<void>;
   loadListings: () => Promise<void>;
+  reloadAllPropListings: () => Promise<void>;
   loadRevenueAggregates: (params: {
     fromDate: string;
     fromDateInclusive: string; //TO DO: REMOVE ALL REFERENCES
@@ -67,6 +68,18 @@ export function DbProvider({ children }: { children: ReactNode }) {
   const [revenueAggregatesData, setRevenueAggregatesData] = useState<
     RevenueAggregate[]
   >([]);
+  async function reloadAllPropListings() {
+    if (!db) return;
+
+    const [properties, listings] = await Promise.all([
+      db.query.propertiesDbTable.findMany(),
+      db.query.listingsDbTable.findMany(),
+    ]);
+
+    // batch updates in one tick
+    setPropertiesData(properties);
+    setListingsData(listings);
+  }
 
   async function loadTransactions() {
     if (!db) return;
@@ -288,6 +301,7 @@ export function DbProvider({ children }: { children: ReactNode }) {
           loadProperties,
           loadListings,
           loadRevenueAggregates,
+          reloadAllPropListings,
         }}
       >
         {/* <ReplWithButtons /> */}
