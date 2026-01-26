@@ -38,6 +38,7 @@ export type RevenueAggregate = {
   totalGross: number;
   shortTermGross: number;
   longTermGross: number;
+  transactions: number;
 };
 
 export type PropertyListing = {

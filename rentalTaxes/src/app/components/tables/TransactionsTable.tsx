@@ -10,7 +10,7 @@ import { sampleTransactions } from "@/lib/db/sampleData";
 import { Db, Transaction } from "@/types";
 import { useState, useMemo } from "react";
 import { clearTransactions } from "@/lib/db/queries";
-import { useDb } from "@/lib/db/dbContext";
+import { useDb, localDateFromYMD } from "@/lib/db/dbContext";
 
 export default function TransactionsTable({
   data,
@@ -27,7 +27,7 @@ export default function TransactionsTable({
   // );
   const [pagination, setPagination] = useState({
     pageIndex: 0, //initial page index
-    pageSize: 10, //default page size
+    pageSize: 31, //default page size
   });
 
   const formatCurrency = (val: number) =>
@@ -41,11 +41,10 @@ export default function TransactionsTable({
       accessorKey: "date",
       header: "Date",
       cell: ({ row }) => {
-        const date = new Date(row.original.date);
-        return date.toLocaleDateString();
+        const date = localDateFromYMD(row.original.date);
+        return date.toLocaleDateString("en-US");
       },
     },
-    // { accessorKey: "arrivalDate", header: "Arrival Date" },
     { accessorKey: "type", header: "Type" },
     { accessorKey: "confirmationCode", header: "Confirmation Code" },
     // {
@@ -53,9 +52,9 @@ export default function TransactionsTable({
     //   header: "Booking Date",
     //   cell: ({ row }) => {
     //     const bookingDate = row.original.bookingDate
-    //       ? new Date(row.original.bookingDate)
+    //       ? localDateFromYMD(row.original.bookingDate)
     //       : null;
-    //     return bookingDate?.toLocaleDateString();
+    //     return bookingDate?.toLocaleDateString("en-US");
     //   },
     // },
     {
@@ -63,9 +62,9 @@ export default function TransactionsTable({
       header: "Start Date",
       cell: ({ row }) => {
         const startDate = row.original.startDate
-          ? new Date(row.original.startDate)
+          ? localDateFromYMD(row.original.startDate)
           : null;
-        return startDate?.toLocaleDateString();
+        return startDate?.toLocaleDateString("en-US");
       },
     },
     {
@@ -73,9 +72,9 @@ export default function TransactionsTable({
       header: "End Date",
       cell: ({ row }) => {
         const endDate = row.original.endDate
-          ? new Date(row.original.endDate)
+          ? localDateFromYMD(row.original.endDate)
           : null;
-        return endDate?.toLocaleDateString();
+        return endDate?.toLocaleDateString("en-US");
       },
     },
     { accessorKey: "nights", header: "Nights" },
@@ -97,20 +96,7 @@ export default function TransactionsTable({
       cell: ({ getValue }) => formatCurrency(getValue() as number),
       enableSorting: true,
     },
-    // {
-    //   accessorKey: "paidOut",
-    //   header: "Paid Out",
-    //   cell: ({ getValue }) => formatCurrency(getValue() as number),
-    //   enableSorting: true,
-    // },
-    // { accessorKey: "serviceFee", header: "Service Fee" },
-    // { accessorKey: "fastPayFee", header: "Fast Pay Fee" },
-    // {
-    //   accessorKey: "cleaningFee",
-    //   header: "Cleaning Fee",
-    //   cell: ({ getValue }) => formatCurrency(getValue() as number),
-    //   enableSorting: true,
-    // },
+
     {
       accessorKey: "grossEarnings",
       header: "Gross Earnings",

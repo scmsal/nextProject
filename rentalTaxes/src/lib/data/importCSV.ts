@@ -47,15 +47,6 @@ export function parseDate(timestamp: string): Date {
   const dayNumber = Number(parts[1]);
   const yearNumber =
     Number(parts[2]) < 100 ? Number(parts[2]) + 2000 : Number(parts[2]);
-  /*
-See alternative:
-function parseDateString(s: string): Date {
-  // parse M/D/YY or M/D/YYYY safely
-  const [m, d, y] = s.split("/").map(Number);
-  const fullYear = y < 100 ? 2000 + y : y;
-  return new Date(fullYear, m - 1, d);
-}
-*/
 
   const parsedDate = new Date(yearNumber, monthIndex, dayNumber);
 
@@ -83,22 +74,39 @@ export async function parseTransactionsCsvFile(file: File) {
     const endDateRaw = row["End date"];
     const arrivalDateRaw = row["Arriving by date"];
     const bookingDateRaw = row["Booking date"];
+    //for debugging date format and date shift
+    if (dateRaw) {
+      console.log(
+        "dateRaw: " + dateRaw + "parseDate(dateRaw)",
+        parseDate(dateRaw).toLocaleDateString("en-CA"),
+      );
+    }
 
     if (!dateRaw) {
       throw new Error("Missing required Date field in CSV row.");
     } // TO DO: UI alert
+
+    /* NOTE DATE FORMATS:
+    en-US → MM/DD/YYYY (month first)
+    en-GB → DD/MM/YYYY (day first)
+    en-CA → YYYY-MM-DD (ISO-style, year first)
+    */
     return {
-      date: parseDate(dateRaw).toISOString(),
+      date: parseDate(dateRaw).toLocaleDateString("en-CA"),
       arrivalDate: arrivalDateRaw
-        ? parseDate(arrivalDateRaw).toISOString()
+        ? parseDate(arrivalDateRaw).toLocaleDateString("en-CA")
         : null,
       type: row["Type"] ?? "",
       confirmationCode: row["Confirmation code"] ?? "",
       bookingDate: bookingDateRaw
-        ? parseDate(bookingDateRaw).toISOString()
+        ? parseDate(bookingDateRaw).toLocaleDateString("en-CA")
         : null,
-      startDate: startDateRaw ? parseDate(startDateRaw).toISOString() : null,
-      endDate: endDateRaw ? parseDate(endDateRaw).toISOString() : null,
+      startDate: startDateRaw
+        ? parseDate(startDateRaw).toLocaleDateString("en-CA")
+        : null,
+      endDate: endDateRaw
+        ? parseDate(endDateRaw).toLocaleDateString("en-CA")
+        : null,
       shortTerm: row["Short Term"] ?? "",
       nights: parseInt(row["Nights"] || "0"),
       guest: row["Guest"] ?? "",

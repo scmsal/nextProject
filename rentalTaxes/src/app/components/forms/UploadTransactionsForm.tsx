@@ -3,7 +3,6 @@
 import { parseTransactionsCsvFile } from "@/lib/data/importCSV";
 import { useCallback, useState } from "react";
 import { useDb } from "@/lib/db/dbContext";
-import { useEffect } from "react";
 import { normalizeText } from "@/lib/data/normalization";
 import { transactionExists } from "@/lib/db/queries";
 import { transactionsDbTable } from "@/lib/db/schema";
@@ -63,19 +62,9 @@ export default function UploadTransactionsForm() {
         const enriched = cleaned
           .filter((row) => !["Payout", "Resolution Payout"].includes(row.type))
           .map((row) => {
-            console.log("inside enriched", row);
             const listingName =
               row.listingName === "" ? "" : normalizeText(row.listingName);
             const match = listingMap[listingName] ?? undefined;
-
-            console.log(
-              "listingName:",
-              listingName,
-              "match:",
-              match,
-              "type:",
-              row.type,
-            );
 
             return {
               ...row,

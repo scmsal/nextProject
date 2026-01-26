@@ -12,8 +12,6 @@ export default function AggregateSummaries() {
 
   const [fromDate, setFromDate] = useState(""); //inclusive when set as new Date inside function
   const [toDate, setToDate] = useState(""); //default for input form and display
-  const [fromDateInclusive, setFromDateInclusive] = useState(""); //REMOVE, SOLVED BY NEW DATE
-  const [toExclNxtMth, setToExclNxtMth] = useState("");
   // const [toDateInclusive, setToDateInclusive] = useState("");
 
   const handleAggregate = async (e: FormEvent<HTMLFormElement>) => {
@@ -21,33 +19,30 @@ export default function AggregateSummaries() {
 
     await loadRevenueAggregates({
       fromDate,
-      fromDateInclusive,
       toDate,
-      toExclNxtMth,
-      setToExclNxtMth,
     });
-    // setFromDate("");
-    // setToDate("");
-    // setFromDateInclusive("");
-    // setToExclNxtMth("");
   };
-
   return (
     <div>
       <Card>
         <ul className="mb-4">
           <li>
-            Quarterly filing: Filing for Suffolk County hotel and motel
-            occupancy taxes must be postmarked by the 20th day of March, June,
-            September and December.
+            <strong> Quarterly filing:</strong> Filing for Suffolk County hotel
+            and motel occupancy taxes must be postmarked by the 20th day of
+            March, June, September and December.
           </li>
           <li>
-            {`Short term (ST) stays`}: less than 30 nights; taxable revenue for
-            county occupancy taxes
+            <strong>{`Short term (ST) stays`}:</strong> less than 30 nights;
+            taxable revenue for county occupancy taxes
           </li>
           <li>
-            {`Long term (LT) stays`}:{" "}
+            <strong>{`Long term (LT) stays`}: </strong>{" "}
             {`30+ nights (part of "Allowable deductions)"`}
+          </li>
+          <li>
+            <strong>Total gross revenue:</strong> includes all reservations,
+            fees, and adjustments included in the CSV file data. Payouts and
+            resolution payouts are excluded.
           </li>
         </ul>
       </Card>
@@ -58,8 +53,6 @@ export default function AggregateSummaries() {
             toDate={toDate}
             setFrom={setFromDate}
             setTo={setToDate}
-            setFromInclusive={setFromDateInclusive} //REMOVE
-            setToExclNxtMth={setToExclNxtMth}
           />
 
           <Button type="submit" className="button-bold">
@@ -73,7 +66,6 @@ export default function AggregateSummaries() {
           setFrom={setFromDate}
           setTo={setToDate}
           loadAggregate={loadRevenueAggregates}
-          setToExclNxtMth={setToExclNxtMth}
         />
       </form>
     </div>

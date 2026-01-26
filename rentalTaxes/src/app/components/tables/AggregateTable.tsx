@@ -38,6 +38,7 @@ export default function RevenueAggregatesTable({
       totalGross: data.reduce((sum, r) => sum + r.totalGross, 0),
       longTermGross: data.reduce((sum, r) => sum + r.longTermGross, 0),
       shortTermGross: data.reduce((sum, r) => sum + r.shortTermGross, 0),
+      transactions: data.reduce((sum, r) => sum + r.inclTransactions.length, 0),
     };
   }, [data]);
 
@@ -48,6 +49,12 @@ export default function RevenueAggregatesTable({
       footer: "Total",
       meta: { align: "left" },
     },
+    {
+      accessorKey: "inclTransactions.length",
+      header: "Transactions",
+      footer: () => totalsRow.transactions,
+    },
+
     {
       accessorKey: "totalGross",
       header: () => (
@@ -80,13 +87,13 @@ export default function RevenueAggregatesTable({
       meta: { align: "right" },
       footer: () => formatCurrency(totalsRow.shortTermRevenue),
     },
-    {
-      accessorKey: "shortTermStays",
-      header: "ST Stays",
-      cell: ({ getValue }) => getValue() as number,
-      meta: { align: "right" },
-      footer: () => totalsRow.shortTermStays,
-    },
+    // {
+    //   accessorKey: "shortTermStays",
+    //   header: "ST Stays",
+    //   cell: ({ getValue }) => getValue() as number,
+    //   meta: { align: "right" },
+    //   footer: () => totalsRow.shortTermStays,
+    // },
     {
       accessorKey: "longTermGross",
       header: "LT Gross",
@@ -101,13 +108,13 @@ export default function RevenueAggregatesTable({
       meta: { align: "right" },
       footer: () => formatCurrency(totalsRow.longTermRevenue),
     },
-    {
-      accessorKey: "longTermStays",
-      header: "LT Stays",
-      cell: ({ getValue }) => getValue() as number,
-      meta: { align: "right" },
-      footer: () => totalsRow.longTermStays,
-    },
+    // {
+    //   accessorKey: "longTermStays",
+    //   header: "LT Stays",
+    //   cell: ({ getValue }) => getValue() as number,
+    //   meta: { align: "right" },
+    //   footer: () => totalsRow.longTermStays,
+    // },
   ];
 
   const table = useReactTable<RevenueAggregate>({
@@ -177,10 +184,10 @@ export default function RevenueAggregatesTable({
           ))}
         </tfoot>
       </table>
-      <p>
+      {/* <p>
         <sup>1</sup>Total gross revenue including all reservations, fees, and
         adjustments included in the CSV file data.
-      </p>
+      </p> */}
       <div className="h-4" />
       {/* <button onClick={() => rerender()} className="border p-2">
         Rerender

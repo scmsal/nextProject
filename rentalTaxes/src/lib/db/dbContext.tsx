@@ -18,15 +18,13 @@ import {
 
 import ReplWithButtons from "@/app/components/data/ReplWithButtons";
 
-import { getRevenueAggregates, groupProperties } from "@/lib/db/queries";
 import * as schema from "./schema";
-// import { properties, transactions, listings, quarterlyFile } from "./schema";
+
 import {
   Property,
   Transaction,
   Listing,
   RevenueAggregate,
-  PropertyListing,
   PropertyTransaction,
 } from "@/types";
 
@@ -43,10 +41,7 @@ interface DbContextType {
   reloadAllPropListings: () => Promise<void>;
   loadRevenueAggregates: (params: {
     fromDate: string;
-    fromDateInclusive: string; //TO DO: REMOVE ALL REFERENCES
     toDate: string;
-    toExclNxtMth: string;
-    setToExclNxtMth: (val: string) => void;
   }) => Promise<void>;
 }
 
@@ -57,6 +52,13 @@ export function useDb() {
   const context = useContext(DbContext);
   if (!context) throw new Error("useDb must be used within <Providers>");
   return context;
+}
+
+/*IMPORTANT helper function to keep dates from converting to UTC with date shift*/
+//TO DO: check other files to make sure there's no duplication of similar functions
+export function localDateFromYMD(ymd: string) {
+  const [y, m, d] = ymd.split("-").map(Number);
+  return new Date(y, m - 1, d); // local midnight, no timezone shift
 }
 
 export function DbProvider({ children }: { children: ReactNode }) {
@@ -103,13 +105,6 @@ export function DbProvider({ children }: { children: ReactNode }) {
     setListingsData(result);
   }
 
-  //helper function to keep dates from converting to UTC with date shift
-  //TO DO: check other files to make sure there's no duplication of similar functions
-  function localDateFromISO(iso: string) {
-    const [y, m, d] = iso.split("-").map(Number);
-    return new Date(y, m - 1, d); // local midnight, no timezone shift
-  }
-
   //helper function for loadRevenueAggregates
   function aggregateAmounts(arrTransactions: Transaction[], debug?: boolean) {
     const aggregate = arrTransactions.reduce((acc, transaction) => {
@@ -136,66 +131,41 @@ export function DbProvider({ children }: { children: ReactNode }) {
   async function loadRevenueAggregates({
     fromDate,
     toDate,
-    toExclNxtMth,
-    setToExclNxtMth,
   }: {
     fromDate: string;
-    fromDateInclusive: string;
     toDate: string;
-    toExclNxtMth: string;
-    setToExclNxtMth: (val: string) => void;
   }) {
     const rows: RevenueAggregate[] = propertiesData.map((prop) => {
       const inclTransactions: PropertyTransaction[] = [];
       const excludedTransactions: PropertyTransaction[] = [];
       const propertyDateTransactions = transactionsData.filter(
         (transaction) => {
-          const transactionDate = localDateFromISO(transaction.date);
-
-          const toExcl = new Date(toExclNxtMth);
-          const txTypesToSum = ["Reservation", "Adjustment"]; //**This may not be necessary if total revenue is supposed to include resolution center figures */
+          const transactionDate = localDateFromYMD(transaction.date);
+          console.log(
+            "inside loadRevenue aggregates. transaction.date: " +
+              transaction.date +
+              " localDateFromISO(transaction.date: ",
+            transactionDate,
+          );
 
           if (transaction.propertyId !== prop.propertyId) return false;
 
           if (fromDate) {
-            const from = localDateFromISO(fromDate); //this makes from date in filter inclusive
+            const from = localDateFromYMD(fromDate); //this makes from date in filter inclusive BUT CHECK TIME ZONES
             if (transactionDate < from) return false;
           }
 
-          //this will apply in FilterButtons with quarters, to set start of next month as end date
-
-          if (toExcl && transactionDate >= toExcl) {
-            setToExclNxtMth("");
-            return false;
-          }
+          //this will apply in FilterButtons with quarters
 
           if (toDate) {
-            const to = localDateFromISO(toDate);
-            //make inclusive
-            console.log(
-              "toDate",
-              toDate,
-              "to:",
-              to,
-              " toExclNextMnt",
-              toExclNxtMth,
-            );
+            const to = localDateFromYMD(toDate);
+            //make inclusive TO DO: CHECK
+            console.log("toDate", toDate, "to:", to);
             to.setDate(to.getDate() + 1);
 
-            if (transactionDate >= to) return false;
+            if (transactionDate > to) return false;
           }
-          // if (
-          //   transaction.type === null ||
-          //   !txTypesToSum.includes(transaction.type)
-          // ) {
-          //   excludedTransactions.push({
-          //     type: transaction.type,
-          //     date: transaction.date,
-          //     amount: transaction.amount,
-          //     listing: transaction.listingName,
-          //   });
-          //   return false;
-          // }
+
           inclTransactions.push({
             type: transaction.type,
             date: transaction.date,
@@ -232,6 +202,7 @@ export function DbProvider({ children }: { children: ReactNode }) {
         totalGross,
         shortTermGross,
         longTermGross,
+        transactions: inclTransactions.length, //TO DO: check against other references
       };
       console.log(
         revenueAggregate.propertyName,
