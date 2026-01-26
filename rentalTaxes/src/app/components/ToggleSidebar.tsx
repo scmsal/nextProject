@@ -12,9 +12,11 @@ import {
   PanelLeftClose,
   SquarePen,
   NotebookTabs,
+  LinkIcon,
 } from "lucide-react";
 import { Button } from "@heroui/react";
 import Link from "next/link";
+import Links from "../links/page";
 
 interface SidebarProps {
   isExpanded: boolean;
@@ -123,6 +125,12 @@ const ToggleSidebar = () =>
 
           {/* Bottom Section */}
           <div className="p-3 border-t border-[#333537]">
+            <Link href="/links">
+              <button className="flex items-center w-full gap-3 p-3 rounded-lg hover:bg-(--surface-muted) text-surface-foreground cursor-pointer">
+                <LinkIcon size={20} />
+                {isExpanded && <span className="text-sm">Helpful Links</span>}
+              </button>
+            </Link>
             <div className="flex items-center gap-3 p-3 rounded-full  text-background bg-black hover:bg-gray-800  cursor-pointer">
               <Settings size={20} />
               {isExpanded && <span className="text-sm">Settings</span>}
