@@ -87,20 +87,11 @@ export default function FilterButtons({
     return { quarter: 4, quarterYear: y }; // Sep–Nov
   }
 
-  function lastDateOfMonth(year: number, monthIndex: number) {
-    return new Date(year, monthIndex + 1, 0);
-  }
-
   function getQuarterRange(quarter: Quarter, year: number) {
     const { startMonth, endMonth } = quarterRanges[quarter];
     const startYear = startMonth === 11 ? year - 1 : year;
-    const endYear = year;
-    // const endDay = new Date(endYear, endMonth).getDate();
+    const endYear = endMonth === 1 ? year + 1 : year;
 
-    //const start = new Date(startYear, startMonth, 1, 0, 0, 0, 0).toISOString();
-    // const end   = new Date(endYear, endMonth + 1, 1, 0, 0, 0, 0).toISOString(); // first day of next month
-
-    /*TO FIX: start and end are returning the date in the wrong format. The specified value "Sun Dec 01 2024 00:00:00 GMT-0500 (Eastern Standard Time)" does not conform to the required format, "yyyy-MM-dd".*/
     const start = new Date(startYear, startMonth, 1);
     //TO DO: I changed this from the first day of the next month to the last day of the last month of the quarter. I need to fix the filter logic next.
     const end = new Date(endYear, endMonth + 1, 0); //last day of the quarter
@@ -112,7 +103,7 @@ export default function FilterButtons({
     setFrom(formattedStart);
     setTo(formattedEnd);
 
-    //TO DO: see if I really need to return these or if it's appropriate to just set the state instead. Evaluate whether this function will be reused to just reurn the dates without changing state. Also double check the desired type for the returned variables.
+    //TO DO: see if I really need to return these or if it's appropriate to just set the state instead. Evaluate whether this function will be reused to just return the dates without changing state. Also double check the desired type for the returned variables.
     return { formattedStart, formattedEnd };
   }
 
@@ -121,18 +112,11 @@ export default function FilterButtons({
     return quarter ? quarter === String(selectedQuarter) : undefined;
   };
 
-  let isActiveY = ({ year }: { year: number }) => {
-    return year ? year === selectedYear : undefined;
-  };
-
   useEffect(() => {}, [selectedQuarter, selectedYear]);
 
   //TO DO: make a clear filters button
   return (
     <div>
-      {/* <label htmlFor="year" className="mr-4">
-        Filing year
-      </label> */}
       <select
         name="year"
         value={selectedYear ?? ""}
@@ -142,17 +126,12 @@ export default function FilterButtons({
           console.log("Selected val:", val, typeof val);
           setSelectedYear(Number(val));
           // setSelectedYear(val === "" ? null : Number(val));
-          console.log("Selected year:", selectedYear);
         }}
         className="ml-2 border border-solid border-gray-200"
       >
         {years.map((y) => {
           return (
-            <option
-              key={y}
-              value={y}
-              // className={isActiveY({ year: y }) ? "font-bold" : ""}
-            >
+            <option key={y} value={y}>
               {y}
             </option>
           );

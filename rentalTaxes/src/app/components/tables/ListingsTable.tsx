@@ -82,7 +82,7 @@ export default function ListingsTable({ data }: { data: PropertyListing[] }) {
   });
 
   return (
-    <div className="flex flex-col overflow-x-scroll w-full px-4">
+    <div className="flex flex-col overflow-x-scroll w-full p-4">
       <div className="flex sm:flex-row justify-between w-full mb-2 align-baseline">
         <h2>View properties & listings</h2>
         <Button
