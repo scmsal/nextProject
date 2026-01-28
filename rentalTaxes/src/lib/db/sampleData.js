@@ -1,6 +1,6 @@
 import { sourceMapsEnabled } from "process";
 
-const { db } = require("./providers");
+const { db } = require("./dbContext");
 export const sampleTransactions = [
   {
     date: "2022-01-01",
