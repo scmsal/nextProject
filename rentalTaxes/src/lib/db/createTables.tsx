@@ -5,17 +5,19 @@ import { PGlite } from "@electric-sql/pglite";
 export const CREATE_TRANSACTIONS_TABLE = `
      CREATE TABLE IF NOT EXISTS transactions(
       id SERIAL PRIMARY KEY,
-        date VARCHAR(50),
+        date DATE,
         arrival_date VARCHAR(50),
         type VARCHAR(50),
         confirmation_code VARCHAR(50),
         booking_date VARCHAR(50),
         start_date VARCHAR(50),
         end_date VARCHAR(50),
-        short_term VARCHAR(50),
+        short_term BOOLEAN,
         nights INTEGER,
         guest VARCHAR(255),
-        listing VARCHAR(255),
+        listing_name VARCHAR(255),
+        listing_id VARCHAR(50),
+        property_id VARCHAR(50),
         details TEXT,
         amount NUMERIC,
         paid_out NUMERIC,
@@ -34,23 +36,19 @@ export const CREATE_TRANSACTIONS_TABLE = `
 
 export const CREATE_PROPERTIES_TABLE = `
    CREATE TABLE IF NOT EXISTS properties(
-   id SERIAL PRIMARY KEY,
-     address varchar(255),
-     town varchar(100),
-     listings varchar(255)
+   property_name varchar(150),
+   property_id varchar(50) PRIMARY KEY,
+   address varchar(255),
+   town varchar(100),
+   county varchar(100)
    );
   `;
 
-export const CREATE_QUARTERLY_TABLE = `
-   CREATE TABLE IF NOT EXISTS quarterly(
-   id SERIAL PRIMARY KEY,
-       monthYear varchar(20),
-       totalRevenue numeric,
-       qCleaningExternal numeric,
-       qCleaningInternal numeric,
-       qRefund numeric,
-       qReimburse numeric,
-       total30Plus numeric,
-       totalShortTerm numeric
+export const CREATE_LISTINGS_TABLE = `
+   CREATE TABLE IF NOT EXISTS listings(
+   listing_id varchar(50) PRIMARY KEY,
+   listing_name varchar(150),
+   property_id varchar(50),
+   platform varchar(100)
    );
   `;

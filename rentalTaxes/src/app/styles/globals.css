@@ -1,8 +1,15 @@
 @import "tailwindcss";
+@import "@heroui/styles";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #08626f;
+  --foreground: #e0f0f0;
+
+  --accent: darkcyan;
+  --accent-foreground: #e0f0f0;
+
+  --surface: #fcfcfc;
+  --surface-foreground: #5c5c5c;
 }
 
 @theme inline {
@@ -23,4 +30,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+h2 {
+  @apply text-2xl font-bold tracking-tight pb-2;
 }
