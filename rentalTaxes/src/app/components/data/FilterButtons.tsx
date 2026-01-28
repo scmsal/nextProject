@@ -1,5 +1,5 @@
 import { Transaction } from "@/types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface FilterButtonsProps {
   data: Transaction[];
@@ -15,6 +15,8 @@ interface FilterButtonsProps {
 
 export default function FilterButtons({
   data,
+  from,
+  to,
   setFrom,
   setTo,
   loadAggregate,
@@ -79,41 +81,38 @@ export default function FilterButtons({
     const m = date.getMonth(); // 0–11
     const y = date.getFullYear();
 
-    if (m === 11) return { quarter: 1, quarterYear: y + 1 }; // Dec → next year's Q1
-    if (m === 0 || m === 1) return { quarter: 1, quarterYear: y }; // Jan–Feb
+    if (m === 0 || m === 1) return { quarter: 1, quarterYear: y }; // Mar - May
 
-    if (m >= 2 && m <= 4) return { quarter: 2, quarterYear: y }; // Mar–May
-    if (m >= 5 && m <= 7) return { quarter: 3, quarterYear: y }; // Jun–Aug
-    return { quarter: 4, quarterYear: y }; // Sep–Nov
+    if (m >= 2 && m <= 4) return { quarter: 2, quarterYear: y }; // Jun - Aug
+    if (m >= 5 && m <= 7) return { quarter: 3, quarterYear: y }; // Sept - Nov
+
+    if (m === 11) return { quarter: 4, quarterYear: y }; // Q4 Dec → Feb of next year
+    return { quarter: 4, quarterYear: y };
   }
 
   function getQuarterRange(quarter: Quarter, year: number) {
     const { startMonth, endMonth } = quarterRanges[quarter];
-    const startYear = startMonth === 11 ? year - 1 : year;
+    const startYear = year;
     const endYear = endMonth === 1 ? year + 1 : year;
 
     const start = new Date(startYear, startMonth, 1);
     //TO DO: I changed this from the first day of the next month to the last day of the last month of the quarter. I need to fix the filter logic next.
     const end = new Date(endYear, endMonth + 1, 0); //last day of the quarter
-
+    console.log("start:", start, "end:", end);
     //Change start and end dates from "Sun Dec 01 2024 00:00:00 GMT-0500 (Eastern Standard Time)" format to "yyyy-MM-dd".
     const formattedStart = start.toISOString().slice(0, 10);
     const formattedEnd = end.toISOString().slice(0, 10);
-    console.log("start: " + formattedStart + " end:", formattedEnd);
     setFrom(formattedStart);
     setTo(formattedEnd);
-
-    //TO DO: see if I really need to return these or if it's appropriate to just set the state instead. Evaluate whether this function will be reused to just return the dates without changing state. Also double check the desired type for the returned variables.
-    return { formattedStart, formattedEnd };
+    loadAggregate({ fromDate: formattedStart, toDate: formattedEnd });
+    console.log("getQuarterRange ran");
   }
 
   //quarters buttons
   let isActiveQ = ({ quarter }: { quarter: string }) => {
     return quarter ? quarter === String(selectedQuarter) : undefined;
   };
-
-  useEffect(() => {}, [selectedQuarter, selectedYear]);
-
+  console.log("Selected year:", selectedYear);
   //TO DO: make a clear filters button
   return (
     <div>
@@ -122,10 +121,10 @@ export default function FilterButtons({
         value={selectedYear ?? ""}
         onChange={(e) => {
           const val = e.target.value;
-          console.log("Selected year:", selectedYear);
-          console.log("Selected val:", val, typeof val);
           setSelectedYear(Number(val));
-          // setSelectedYear(val === "" ? null : Number(val));
+          getQuarterRange(selectedQuarter as Quarter, Number(val));
+          console.log("Year clicked:", val);
+          console.log("SelectedQuarter:", selectedQuarter);
         }}
         className="ml-2 border border-solid border-gray-200"
       >
@@ -148,7 +147,6 @@ export default function FilterButtons({
           onClick={() => {
             const q = Number(quarter);
             setSelectedQuarter(q);
-            console.log();
             getQuarterRange(q as Quarter, selectedYear);
           }}
         >
