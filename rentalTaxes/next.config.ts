@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     "@electric-sql/pglite-repl",
     "@electric-sql/pglite",
   ],
+  devIndicators: false,
 };
 
 export default nextConfig;
