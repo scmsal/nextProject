@@ -135,18 +135,19 @@ export function DbProvider({ children }: { children: ReactNode }) {
     fromDate: string;
     toDate: string;
   }) {
+    console.trace();
     const rows: RevenueAggregate[] = propertiesData.map((prop) => {
       const inclTransactions: PropertyTransaction[] = [];
       const excludedTransactions: PropertyTransaction[] = [];
       const propertyDateTransactions = transactionsData.filter(
         (transaction) => {
           const transactionDate = localDateFromYMD(transaction.date);
-          console.log(
-            "inside loadRevenue aggregates. transaction.date: " +
-              transaction.date +
-              " localDateFromISO(transaction.date: ",
-            transactionDate,
-          );
+          // console.log(
+          //   "inside loadRevenue aggregates. transaction.date: " +
+          //     transaction.date +
+          //     " localDateFromISO(transaction.date: ",
+          //   transactionDate,
+          // );
 
           if (transaction.propertyId !== prop.propertyId) return false;
 

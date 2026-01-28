@@ -3,8 +3,6 @@ import { FormEvent, useState } from "react";
 import { Button, Card } from "@heroui/react";
 import DateFilterForm from "../forms/DateFilterForm";
 import FilterButtons from "./FilterButtons";
-import RevenueAggregatesTable from "../tables/AggregateTable";
-import Papa from "papaparse";
 
 export default function AggregateSummaries() {
   const { loadRevenueAggregates, transactionsData, revenueAggregatesData } =
@@ -12,7 +10,6 @@ export default function AggregateSummaries() {
 
   const [fromDate, setFromDate] = useState(""); //inclusive when set as new Date inside function
   const [toDate, setToDate] = useState(""); //default for input form and display
-  // const [toDateInclusive, setToDateInclusive] = useState("");
 
   const handleAggregate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
