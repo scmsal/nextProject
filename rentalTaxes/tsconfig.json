@@ -27,13 +27,12 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/lib/data/importCSV.ts",
+    "src/lib/importCsv.ts",
     "next.config.ts",
     "src/lib/db/pglite.js",
     "src/lib/auth.js",
     ".next/dev/types/**/*.ts",
-    "src/lib/db/sampleData.js",
-    "webpack.config.cjs"
+    "src/lib/db/sampleData.js"
   ],
   "exclude": ["node_modules"]
 }
