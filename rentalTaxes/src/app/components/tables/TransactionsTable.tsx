@@ -155,12 +155,11 @@ export default function TransactionsTable({
         <div className="flex sm:flex-row justify-between w-full mb-2 align-baseline">
           <h2 className="ps-2 pb-0 ">View Transactions</h2>
           <Button
-            variant="danger"
             onClick={() => {
               clearTransactions(db);
               loadTransactions();
             }}
-            className=""
+            className="button-bold-danger"
           >
             Clear Transactions
           </Button>

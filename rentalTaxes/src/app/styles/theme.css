@@ -1,33 +1,29 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --accent: #6ea0e8;
+  --color-secondary: var(--color-pink-600) --accent-foreground: #f1f6f6;
+  /* --background-tertiary: #f3f3f3; */
+  /* --surface: #f9fafb; */
+  --surface-muted: color-mix(
+    in oklab,
+    var(--background) 95%,
+    var(--foreground) 5%
+  );
+}
 
-  :root {
-    --background: #f8fafc; 
-    --foreground: #0f172a;
-    --accent: #6ea0e8;
-    --color-secondary: var(--color-pink-600)
-
-    --accent-foreground: #f1f6f6;
-    /* --background-tertiary: #f3f3f3; */
-    /* --surface: #f9fafb; */
-    --surface-muted: color-mix(
-      in oklab,
-      var(--background) 95%,
-      var(--foreground) 5%
-    );
-  }
-
-  .dark {
-    --background: #0f172a;
-    --foreground: #f1f5f9;
-    --surface-muted: color-mix(
-      in oklab,
-      var(--background) 92%,
-      var(--foreground) 8%
-    );
-  }
-
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --surface-muted: color-mix(
+    in oklab,
+    var(--background) 92%,
+    var(--foreground) 8%
+  );
+}
 
 h2 {
   @apply text-2xl font-bold tracking-tight;
@@ -41,7 +37,7 @@ h3 {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface-muted: var(--surface-muted);
-  --color-secondary: var(--color-gray-600)
+  --color-secondary: var(--color-gray-600);
 }
 
 @layer components {
@@ -78,10 +74,13 @@ h3 {
   }
 
   .button-bold {
-   @apply flex items-center gap-3 p-3 rounded-lg text-background bg-black hover:bg-gray-800 transition-all cursor-pointer
+    @apply flex items-center gap-3 p-3 rounded-lg text-background  bg-black transition-all cursor-pointer hover:bg-gray-800;
+  }
+  .button-bold-danger {
+    @apply flex items-center gap-3 p-3 rounded-lg text-background  bg-black transition-all cursor-pointer hover:bg-red-700;
   }
   /* Fix this for dark theme */
-  .button-bold dark{
-    @apply  hover:bg-gray-600 hover:text-white cursor-pointer flex items-center gap-3 p-3 rounded-lg text-background
+  .button-bold dark {
+    @apply hover:bg-gray-600 hover:text-white cursor-pointer flex items-center gap-3 p-3 rounded-lg text-background;
   }
 }

@@ -7,7 +7,7 @@ import {
   ColumnDef,
 } from "@tanstack/react-table";
 import { createPropertyId } from "@/lib/data/normalization";
-import { groupProperties, getRevenueAggregates } from "@/lib/db/queries";
+import { groupProperties } from "@/lib/db/queries";
 import { Listing, RevenueAggregate, PropertyListing } from "@/types";
 import Editable from "../forms/Editable";
 import { useDb } from "@/lib/db/dbContext";
@@ -86,12 +86,11 @@ export default function ListingsTable({ data }: { data: PropertyListing[] }) {
       <div className="flex sm:flex-row justify-between w-full mb-2 align-baseline">
         <h2>View properties & listings</h2>
         <Button
-          variant="danger"
           onClick={async () => {
             await clearPropAndListings(db);
             await reloadAllPropListings();
           }}
-          className=""
+          className="button-bold-danger"
         >
           Clear Properties and Listings
         </Button>
