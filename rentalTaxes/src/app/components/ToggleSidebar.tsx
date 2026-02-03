@@ -90,7 +90,7 @@ const ToggleSidebar = () =>
             </div>
           )}
           {/* "Wizard" Button */}
-          <div className="px-3 mb-6">
+          <Link href="/start" className="px-3 mb-6">
             <button
               className={`flex items-center gap-3 p-3 rounded-full text-background bg-black hover:bg-gray-800 transition-all cursor-pointer ${
                 !isExpanded ? "w-12 justify-center" : "w-fit pr-6"
@@ -103,7 +103,7 @@ const ToggleSidebar = () =>
                 </span>
               )}
             </button>
-          </div>
+          </Link>
 
           {/* Navigation Items */}
 

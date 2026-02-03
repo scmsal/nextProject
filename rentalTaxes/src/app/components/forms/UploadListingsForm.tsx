@@ -39,10 +39,10 @@ export default function UploadListingsForm() {
                 db,
                 listingsDbTable,
                 "listingId",
-                row.listingId
+                row.listingId,
               );
               return exists ? null : row; //only include unique rows
-            })
+            }),
           )
         ).filter(Boolean) as Listing[]; //remove nulls;
 
@@ -54,11 +54,11 @@ export default function UploadListingsForm() {
         setStatus("Error importing file.");
       }
     },
-    [file, db]
+    [file, db],
   );
 
   return (
-    <Card className="bg-surface text-surface-foreground min-h-[312px]!">
+    <Card className="bg-surface text-surface-foreground min-h-78!">
       <h3>Upload Listings CSV</h3>
       <ul>
         <li>
