@@ -1,4 +1,5 @@
 import { Transaction } from "@/types";
+import { Button } from "@heroui/react";
 import { useState } from "react";
 
 interface FilterButtonsProps {
@@ -21,10 +22,10 @@ export default function FilterButtons({
   setTo,
   loadAggregate,
 }: FilterButtonsProps) {
-  type Quarter = 0 | 1 | 2 | 3 | 4;
+  type Quarter = "0" | "1" | "2" | "3" | "4";
   const currentYear = new Date().getFullYear();
 
-  const [selectedQuarter, setSelectedQuarter] = useState<number>(0);
+  const [selectedQuarter, setSelectedQuarter] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
 
   //TO DO: maybe abstract this function so it can be reused for the transactions table
@@ -113,46 +114,98 @@ export default function FilterButtons({
     return quarter ? quarter === String(selectedQuarter) : undefined;
   };
   console.log("Selected year:", selectedYear);
-  //TO DO: make a clear filters button
   return (
-    <div>
-      <select
-        name="year"
-        value={selectedYear ?? ""}
-        onChange={(e) => {
-          const val = e.target.value;
-          setSelectedYear(Number(val));
-          getQuarterRange(selectedQuarter as Quarter, Number(val));
-          console.log("Year clicked:", val);
-          console.log("SelectedQuarter:", selectedQuarter);
+    <div className="mb-4 ml-2 ">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          loadAggregate({ fromDate: "", toDate: "" }); //TO DO: check this
         }}
-        className="ml-2 border border-solid border-gray-200"
+        className="flex gap-4"
       >
-        {years.map((y) => {
-          return (
-            <option key={y} value={y}>
-              {y}
-            </option>
-          );
-        })}
-      </select>
-      {Object.entries(quarterRanges).map(([quarter, info]) => (
-        <button
-          key={quarter}
-          className={`py-1 px-2 mb-4 ${
-            isActiveQ({ quarter })
-              ? "font-bold hover:text-gray-700 border-b "
-              : " text-gray-600 hover:text-gray-900 "
-          }`}
+        <label htmlFor="startFilter">
+          From
+          <input
+            type="date"
+            id="startFilter"
+            name="startFilter"
+            className="ml-2 border border-solid border-gray-200"
+            value={from}
+            onChange={(e) => {
+              setFrom(e.target.value); //this is what will appear in the input
+            }}
+          />
+        </label>
+        <label htmlFor="endFilter" className="ml-4">
+          To
+          <input
+            type="date"
+            id="endFilter"
+            name="endFilter"
+            className="ml-2 border border-solid border-gray-200"
+            value={to}
+            onChange={(e) => {
+              setTo(e.target.value);
+            }}
+          />
+        </label>
+
+        <Button
+          className="bg-gray-500 hover:bg-gray-400 text-white rounded-lg"
           onClick={() => {
-            const q = Number(quarter);
-            setSelectedQuarter(q);
-            getQuarterRange(q as Quarter, selectedYear);
+            setFrom("");
+            setTo("");
+            setSelectedQuarter("");
+            loadAggregate({ fromDate: "", toDate: "" });
           }}
         >
-          {info.text}
-        </button>
-      ))}
+          Clear filters
+        </Button>
+        <Button type="submit" className="button-bold">
+          Calculate aggregates
+        </Button>
+      </form>
+      <div className=" flex mt-4">
+        <select
+          name="year"
+          value={selectedYear ?? ""}
+          onChange={(e) => {
+            const val = e.target.value;
+            setSelectedYear(Number(val));
+            getQuarterRange(selectedQuarter as Quarter, Number(val));
+            console.log("Year clicked:", val);
+            console.log("SelectedQuarter:", selectedQuarter);
+          }}
+          className=" border border-solid border-gray-200"
+        >
+          {years.map((y) => {
+            return (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            );
+          })}
+        </select>
+        <div className="divide-x divide-gray-300">
+          {Object.entries(quarterRanges).map(([quarter, info]) => (
+            <button
+              key={quarter}
+              className={`py-1 px-2 ${
+                isActiveQ({ quarter })
+                  ? "font-bold hover:text-gray-700 border-b "
+                  : " text-gray-600 hover:text-gray-900 "
+              }`}
+              onClick={() => {
+                const q = quarter;
+                setSelectedQuarter(q);
+                getQuarterRange(q as Quarter, selectedYear);
+              }}
+            >
+              {info.text}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

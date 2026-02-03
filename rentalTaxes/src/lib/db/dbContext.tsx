@@ -136,6 +136,11 @@ export function DbProvider({ children }: { children: ReactNode }) {
     toDate: string;
   }) {
     console.trace();
+    if (fromDate === "" && toDate === "") {
+      setRevenueAggregatesData([]);
+      return;
+    }
+
     const rows: RevenueAggregate[] = propertiesData.map((prop) => {
       const inclTransactions: PropertyTransaction[] = [];
       const excludedTransactions: PropertyTransaction[] = [];
