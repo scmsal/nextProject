@@ -13,18 +13,14 @@ export default function ClientShell({
 
   return (
     <div className="flex h-screen w-screen overflow-hidden">
-      <aside
-        className={`transition-all duration-300 ${
-          isExpanded ? "w-72" : "w-20"
-        }`}
-      >
+      <aside>
         <ToggleSidebar
         //raise the state from inside the component to here
         // isExpanded={isExpanded}
         // toggle={() => setIsExpanded(!isExpanded)}
         />
       </aside>
-      <main className="flex flex-1 flex-col ow-start-2 gap-2 overflow-y-auto mt-6 px-3">
+      <main className="flex flex-1 flex-col gap-2 overflow-y-auto mt-6 px-3">
         {children}
       </main>
     </div>
