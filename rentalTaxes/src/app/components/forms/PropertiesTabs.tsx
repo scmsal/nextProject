@@ -5,6 +5,7 @@ import UploadPropertiesForm from "./UploadPropertiesForm";
 export default function PropertiesTabs() {
   return (
     <div className="flex flex-col ">
+      <span>1st</span>
       <h2>Manage properties</h2>
 
       <Tabs className="w-full md:w-5xl max-w-md">

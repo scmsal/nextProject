@@ -82,7 +82,7 @@ export default function TransactionsTable({
       accessorKey: "shortTerm",
       header: "Short Term",
       cell: ({ row }) => {
-        const symbol = row.original.shortTerm ? "✅" : "❌";
+        const symbol = row.original.shortTerm ? "✅" : "✖️";
         return symbol;
       },
     },
@@ -218,19 +218,19 @@ export default function TransactionsTable({
         <div className="h-4" />
         {data.length === 0 && <p className="ps-2">No transactions to show</p>}
         {data.length > 0 && (
-          <div className="flex flex-row justify-center gap-8">
-            <span className="flex items-center gap-1">
-              <div>Page</div>
-              <strong>
-                {table.getState().pagination.pageIndex + 1}{" "}
-              </strong> of{" "}
-              <strong>{table.getPageCount().toLocaleString()}</strong>
-            </span>
+          <div className="flex flex-row items-center gap-8">
             <ButtonGroup variant="tertiary">
               <Button
                 onClick={() => table.previousPage()}
                 isDisabled={!table.getCanPreviousPage()}
               >{`< Previous`}</Button>
+              <span className="flex items-center gap-1 mx-2">
+                <div className="">Page</div>
+                <strong>
+                  {table.getState().pagination.pageIndex + 1}{" "}
+                </strong> of{" "}
+                <strong>{table.getPageCount().toLocaleString()}</strong>
+              </span>
               <Button
                 onClick={() => table.nextPage()}
                 isDisabled={!table.getCanNextPage()}

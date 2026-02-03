@@ -41,10 +41,10 @@ export default function UploadPropertiesForm() {
                 db,
                 propertiesDbTable,
                 "propertyId",
-                row.propertyId
+                row.propertyId,
               );
               return exists ? null : row; //only include unique rows
-            })
+            }),
           )
         ).filter(Boolean) as Property[]; //remove nulls;
 
@@ -58,7 +58,7 @@ export default function UploadPropertiesForm() {
         setStatus("Error importing file.");
       }
     },
-    [file, db]
+    [file, db],
   );
 
   return (
