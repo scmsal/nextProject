@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ToggleSidebar from "../ToggleSidebar";
+import { DbProvider } from "@/lib/db/dbContext";
 
 export default function ClientShell({
   children,
@@ -20,9 +21,11 @@ export default function ClientShell({
         // toggle={() => setIsExpanded(!isExpanded)}
         />
       </aside>
-      <main className="flex flex-1 flex-col gap-2 overflow-y-auto mt-6 px-3">
-        {children}
-      </main>
+      <DbProvider>
+        <main className="flex flex-1 flex-col gap-2 overflow-y-auto mt-6 px-3">
+          {children}
+        </main>
+      </DbProvider>
     </div>
   );
 }

@@ -27,6 +27,7 @@ import {
   RevenueAggregate,
   PropertyTransaction,
 } from "@/types";
+import { Spinner } from "@heroui/react";
 
 interface DbContextType {
   pgLite: PGliteWithLive | undefined;
@@ -259,7 +260,12 @@ export function DbProvider({ children }: { children: ReactNode }) {
   }, [db]);
 
   if (!pgLite || !db) {
-    return <div>Initializing database...</div>;
+    return (
+      <div>
+        <Spinner color="current" />
+        <p>Loading data</p>
+      </div>
+    );
   }
 
   return (
