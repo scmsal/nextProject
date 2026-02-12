@@ -11,6 +11,7 @@ Active development. This project is evolving with ongoing refinements to data mo
 Current limitations:
 - Not all listing fields are editable
 - Some workflows are iterative and subject to change
+- The Settings button is not yet functional
 - Additional compliance calculations (e.g., 90+ day NY State threshold logic) are in progress
 
 The repository reflects incremental improvements and architectural adjustments as requirements become more defined.
