@@ -4,6 +4,17 @@ A privacy-first rental income tracking app built with **Next.js** that ingests C
 
 Designed to demonstrate frontend architecture, data modeling, and workflow clarity, as well as UI rendering.
 
+## Status
+
+Active development. This project is evolving with ongoing refinements to data modeling, validation logic, and aggregation rules.
+
+Current limitations:
+- Not all listing fields are editable
+- Some workflows are iterative and subject to change
+- Additional compliance calculations (e.g., 90+ day NY State threshold logic) are in progress
+
+The repository reflects incremental improvements and architectural adjustments as requirements become more defined.
+
 ---
 
 ## Why This Project Is Relevant
