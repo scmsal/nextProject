@@ -1,36 +1,138 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rental Income Aggregation App
 
-## Getting Started
+A privacy-first rental income tracking app built with **Next.js** that ingests CSV transaction data, models it in a relational schema, and generates financial summaries through structured client-side aggregation.
 
-First, run the development server:
+Designed to demonstrate frontend architecture, data modeling, and workflow clarity, as well as UI rendering.
+
+---
+
+## Why This Project Is Relevant
+
+Airbnb export data is structured as **one row per transaction, one listing per row**.
+
+However, Suffolk County and potentially other New York county hotel and motel occupancy tax reporting requires:
+
+- Aggregation by **property** (multiple listings grouped together)
+- Totals segmented by **length of stay** (short-term: ≤29 days, long-term: ≥30 days)
+
+This creates a real-world data modeling problem: transforming flat transactional data into regulatory-compliant summaries.
+
+The application models and aggregates transaction data to support:
+
+- Property-level rollups across multiple listings
+- Stay-length segmentation for county tax reporting
+- Future calculation of the **90+ day long-term stay threshold** required for NY State compliance and refund eligibility
+
+---
+
+## Stack
+
+**Frontend**
+
+- Next.js (App Router)
+- React + TypeScript
+- Context API for data orchestration
+- TanStack Table
+- HeroUI
+- Lucide React
+
+**Data**
+
+- PGlite (in-browser Postgres)
+- Drizzle ORM
+- PapaParse (CSV ingestion)
+
+---
+
+## Core Architecture
+
+### 1. Ingestion → Validation → Persistence
+
+- CSV parsed client-side
+- Records normalized and typed
+- Stored in PGlite using a defined schema (Drizzle)
+
+### 2. Controlled Data Fetching
+
+- Data fetched once via Drizzle ORM
+- Stored in React Context
+- All subsequent aggregations computed client-side
+
+This reduces database calls and simplifies state consistency.
+
+### 3. Client-Side Aggregation Layer
+
+Financial summaries (monthly totals, category breakdowns, net income) are computed using deterministic JavaScript transformations.
+
+Reasoning:
+
+- Minimizes DB round trips
+- Keeps calculations predictable
+- Avoids PGlite limitations around nested queries
+- Maintains separation between persistence and analytics logic
+
+---
+
+## Features
+
+- CSV upload + validation
+- Typed relational schema
+- Income categorization (short term vs long term)
+- Quarterly, annual, and property-level aggregation
+- Tabular financial summaries
+- Local-only data processing
+
+---
+
+## Objectives
+
+This project demonstrates:
+
+- React architecture beyond component rendering
+- Structured data modeling
+- SQL fluency via schema design
+- Workflow-driven UI state transitions
+- Performance-conscious data fetching
+- Privacy-first engineering decisions
+
+---
+
+## Tradeoffs
+
+### Client-Side Aggregation Instead of Complex SQL
+
+**Pros**
+
+- Fewer DB calls
+- Clear separation of concerns
+- Easier debugging of financial logic
+- Avoids nested-query limitations in PGlite
+
+**Cons**
+
+- Memory-bound for very large datasets
+- Not optimized for multi-user scale
+
+---
+
+### Local-Only Database
+
+**Pros**
+
+- No external API dependency
+- Full data ownership
+- Offline-capable
+
+**Cons**
+
+- No cross-device sync
+- Single-user scope
+
+---
+
+## Run Locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
