@@ -12,7 +12,6 @@ Current limitations:
 - Not all listing fields are editable
 - Some workflows are iterative and subject to change
 - The Settings button is not yet functional
-- Additional compliance calculations (e.g., 90+ day NY State threshold logic) are in progress
 
 The repository reflects incremental improvements and architectural adjustments as requirements become more defined.
 
@@ -33,7 +32,6 @@ The application models and aggregates transaction data to support:
 
 - Property-level rollups across multiple listings
 - Stay-length segmentation for county tax reporting
-- Future calculation of the **90+ day long-term stay threshold** required for NY State compliance and refund eligibility
 
 ---
 
