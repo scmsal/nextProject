@@ -136,3 +136,9 @@ This project demonstrates:
 npm install
 npm run dev
 ```
+
+Download the sample data in the sampleCSV folder to test the bulk upload components in the interface:
+
+- sampleProperties.csv
+- sampleListings.csv
+- sampleTransactions.csv

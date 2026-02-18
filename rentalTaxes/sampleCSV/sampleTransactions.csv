@@ -1,0 +1,27 @@
+Date,Arriving by date,Type,Confirmation code,Booking date,Start date,End date,Nights,Listing,Amount,Paid out,Service fee,Cleaning fee,Gross earnings,Occupancy taxes,Earnings year
+11/30/25,12/5/25,Payout,,,,,,,,190.95,,,,,
+11/30/25,,Reservation,C8N5D1R4GF,10/29/25,11/2/25,12/7/25,35,2-bedroom with a view,190.95,,5.91,0,196.86,19.05,2025
+11/4/25,11/11/25,Payout,,,,,,,,2180.07,,,,,
+11/4/25,,Reservation,L8N1V4T7QX,10/26/25,11/3/25,11/30/25,27,Comfortable 2-bd apartment,2180.07,,67.43,110,2247.5,217.54,2025
+10/18/25,10/24/25,Payout,,,,,,,,3359.09,,,,,
+10/18/25,,Reservation,B4R7C1D3NX,9/30/25,10/17/25,12/11/25,55,Lovely 2-bedroom,3359.09,,103.89,62,3462.98,335.18,2025
+10/11/25,10/17/25,Payout,,,,,,,,2581.58,,,,,
+10/11/25,,Adjustment,HMMRT8P9FW,8/29/25,9/24/25,10/8/25,14,New studio,-629.53,,-19.47,-32.14,,-104.29,2025
+10/11/25,,Resolution Payout,HMQHBJCNHZ,,9/17/25,9/27/25,10,Lovely 2-bedroom,95,,,,95,,2025
+10/11/25,,Reservation,HMPFTDY5DX,9/29/25,10/10/25,11/10/25,31,Cozy getaway,3116.11,,96.37,110,3212.48,310.94,2025
+9/20/25,9/26/25,Payout,,,,,,,,2176.63,,,,,
+9/20/25,,Reservation,B6R9C4D7NX,8/18/25,9/19/25,10/20/25,31,Comfortable 2-bd apartment,2176.63,,67.32,106.45,2243.95,217.19,2025
+9/18/25,9/25/25,Payout,,,,,,,,1487.98,,,,,
+9/18/25,,Reservation,K8M5Z1V4HR,7/14/25,9/17/25,9/27/25,10,Lovely 2-bedroom,1487.98,,46.02,110,1534,237.54,2025
+9/1/25,9/8/25,Payout,,,,,,,,2172,,,,,
+9/1/25,,Reservation,K3M6Z9V1HT,7/3/25,7/31/25,9/30/25,61,Modern one-bedroom apartment,2172,,67.18,49.18,2239.18,216.73,2025
+8/23/25,8/29/25,Payout,,,,,,,,2668.55,,,,,
+8/23/25,,Adjustment,B5R7T1G9DN,7/15/25,8/4/25,8/27/25,23,Lovely 2-bedroom,-299.69,,-9.27,-11.96,,-49,2025
+8/23/25,,Reservation,M3H6V8Z2KP,8/5/25,8/22/25,9/21/25,30,New studio,2968.24,,91.8,100,3060.04,296.18,2025
+8/2/25,8/8/25,Payout,,,,,,,,1246.05,,,,,
+8/2/25,,Reservation,S1K4J7W9PV,4/10/25,6/1/25,8/15/25,75,Cozy getaway,1246.05,,38.54,18.67,1284.59,124.34,2025
+8/1/25,8/8/25,Payout,H8D1G4B7MX,,,,,,,2244.41,,,,,
+8/1/25,,Reservation,L6N9V2T5QS,7/3/25,7/31/25,9/30/25,61,Modern one-bedroom apartment,2244.41,,69.41,50.82,2313.82,223.96,2025
+7/2/25,7/9/25,Payout,,,,,,,,6073.24,,,,,
+7/2/25,,Reservation,L1N4V7T2QR,5/23/25,6/1/25,8/1/25,61,2-bedroom with a view,3063.63,,94.75,55.9,3158.38,305.7,2025
+7/2/25,,Reservation,F5W8M1Z4KS,4/10/25,6/1/25,8/15/25,75,New studio,3009.61,,93.08,31.33,3102.69,300.31,2025
