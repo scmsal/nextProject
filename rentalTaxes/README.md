@@ -146,3 +146,94 @@ This project demonstrates:
 npm install
 npm run dev
 ```
+
+Download the sample data in the sampleCSV folder to test the bulk upload components in the interface:
+
+- sampleProperties.csv
+- sampleListings.csv
+- sampleTransactions.csv
+
+### 2. Controlled Data Fetching
+
+- Data fetched once via Drizzle ORM
+- Stored in React Context
+- All subsequent aggregations computed client-side
+
+This reduces database calls and simplifies state consistency.
+
+### 3. Client-Side Aggregation Layer
+
+Financial summaries (monthly totals, category breakdowns, net income) are computed using deterministic JavaScript transformations.
+
+Reasoning:
+
+- Minimizes DB round trips
+- Keeps calculations predictable
+- Avoids PGlite limitations around nested queries
+- Maintains separation between persistence and analytics logic
+
+---
+
+## Features
+
+- CSV upload + validation
+- Typed relational schema
+- Income categorization (short term vs long term)
+- Quarterly, annual, and property-level aggregation
+- Tabular financial summaries
+- Local-only data processing
+
+---
+
+## Objectives
+
+This project demonstrates:
+
+- React architecture beyond component rendering
+- Structured data modeling
+- SQL fluency via schema design
+- Workflow-driven UI state transitions
+- Performance-conscious data fetching
+- Privacy-first engineering decisions
+
+---
+
+## Tradeoffs
+
+### Client-Side Aggregation Instead of Complex SQL
+
+**Pros**
+
+- Fewer DB calls
+- Clear separation of concerns
+- Easier debugging of financial logic
+- Avoids nested-query limitations in PGlite
+
+**Cons**
+
+- Memory-bound for very large datasets
+- Not optimized for multi-user scale
+
+---
+
+### Local-Only Database
+
+**Pros**
+
+- No external API dependency
+- Full data ownership
+- Offline-capable
+
+**Cons**
+
+- No cross-device sync
+- Single-user scope
+
+---
+
+## Run Locally
+
+```bash
+npm install
+npm run dev
+```
