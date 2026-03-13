@@ -166,26 +166,6 @@ export default function FilterButtons({
         </Button>
       </form>
       <div className=" flex mt-4">
-        <select
-          name="year"
-          value={selectedYear ?? ""}
-          onChange={(e) => {
-            const val = e.target.value;
-            setSelectedYear(Number(val));
-            getQuarterRange(selectedQuarter as Quarter, Number(val));
-            console.log("Year clicked:", val);
-            console.log("SelectedQuarter:", selectedQuarter);
-          }}
-          className=" border border-solid border-gray-200"
-        >
-          {years.map((y) => {
-            return (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            );
-          })}
-        </select>
         <div className="divide-x divide-gray-300">
           {Object.entries(quarterRanges).map(([quarter, info]) => (
             <button
@@ -205,6 +185,31 @@ export default function FilterButtons({
             </button>
           ))}
         </div>
+        <select
+          name="year"
+          value={selectedYear ?? ""}
+          onChange={(e) => {
+            const val = e.target.value;
+            setSelectedYear(Number(val));
+            if (!selectedQuarter) {
+              setSelectedQuarter("0");
+              getQuarterRange("0" as Quarter, Number(val));
+            } else {
+              getQuarterRange(selectedQuarter as Quarter, Number(val));
+            }
+            console.log("Year clicked:", val);
+            console.log("SelectedQuarter:", selectedQuarter);
+          }}
+          className=" border border-solid border-gray-200"
+        >
+          {years.map((y) => {
+            return (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            );
+          })}
+        </select>
       </div>
     </div>
   );
