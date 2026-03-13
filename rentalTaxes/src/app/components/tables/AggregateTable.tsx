@@ -39,6 +39,7 @@ export default function RevenueAggregatesTable({
       longTermGross: data.reduce((sum, r) => sum + r.longTermGross, 0),
       shortTermGross: data.reduce((sum, r) => sum + r.shortTermGross, 0),
       transactions: data.reduce((sum, r) => sum + r.inclTransactions.length, 0),
+      totalTax: data.reduce((sum, r) => sum + r.totalTaxes, 0),
     };
   }, [data]);
 
@@ -115,6 +116,13 @@ export default function RevenueAggregatesTable({
     //   meta: { align: "right" },
     //   footer: () => totalsRow.longTermStays,
     // },
+    {
+      accessorKey: "totalTaxes",
+      header: "Taxes",
+      cell: ({ getValue }) => formatCurrency(getValue() as number),
+      meta: { align: "right" },
+      footer: () => formatCurrency(totalsRow.totalTax),
+    },
   ];
 
   const table = useReactTable<RevenueAggregate>({
