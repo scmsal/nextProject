@@ -1,6 +1,6 @@
 # Rental Income Aggregation App
 
-A privacy-first rental income tracking app built with **Next.js** that ingests CSV transaction data, models it in a relational schema, and generates financial summaries through structured client-side aggregation.
+A privacy-first rental income calculation app built with **Next.js** that ingests CSV transaction data, models it in a relational schema, and generates financial summaries through structured client-side aggregation to simplify tax reporting.
 
 Designed to demonstrate frontend architecture, data modeling, and workflow clarity, as well as UI rendering.
 
