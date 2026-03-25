@@ -34,53 +34,35 @@ export default function TransactionsTable({
   const [tableDateFrom, setTableDateFrom] = useState("");
   const [tableDateTo, setTableDateTo] = useState("");
   const [selectedListingIDs, setSelectedListingIDs] = useState<Set<string>>(
-    new Set(),
+    new Set(["all"]),
   );
   const [selectedPropertyIDs, setSelectedPropertyIDs] = useState<Set<string>>(
-    new Set(),
+    new Set(["all"]),
   );
 
-  const selectedListingID = useMemo(() => {
-    const array = [...selectedListingIDs];
-    const first = array[0];
-    return first;
-  }, [selectedListingIDs]);
-
-  console.log("selectedListingID:", selectedListingID);
-  const selectedListing = useMemo(() => {
-    if (!selectedListingID) return undefined;
-    const listing = listingsData.find(
-      (listing) => listing.listingId === selectedListingID,
-    );
-    if (!listing) throw new Error("Listing not found");
-    return listing;
-  }, [selectedListingID]);
-
-  console.log("selected listing:", selectedListingIDs);
+  console.log("selectedListingIDs:", selectedListingIDs);
 
   const filteredData = useMemo(() => {
+    if (selectedListingIDs.has("all")) return data;
     return data.filter((row) => {
       const rowDate = localDateFromYMD(row.date);
       const from = tableDateFrom ? localDateFromYMD(tableDateFrom) : null;
       const to = tableDateTo ? localDateFromYMD(tableDateTo) : null;
       if (from && rowDate < from) return false;
       if (to && rowDate > to) return false;
-
-      if (selectedListingID && selectedListingID !== row.listingId)
-        return false; //To Do: selected listing should also updated selected property
-      if (
-        selectedPropertyIDs.size > 0 &&
-        row.propertyId !== Array.from(selectedPropertyIDs)[0]
-      )
-        return false;
-
-      return true;
+      if (!row.listingId) throw new Error("Row has no listingId");
+      if (selectedListingIDs.has(row.listingId)) return true; //To Do: selected listing should also updated selected property
+      // if (
+      //   !selectedPropertyIDs.has("all") &&
+      //   !selectedPropertyIDs.has(row.propertyId)
+      // )
+      // return false;
     });
   }, [
     data,
     tableDateFrom,
     tableDateTo,
-    selectedListingID,
+    selectedListingIDs,
     selectedPropertyIDs,
   ]);
 
@@ -229,6 +211,17 @@ export default function TransactionsTable({
     columnResizeMode: "onChange", // Ensure this is set
   });
 
+  const buttonLabel = useMemo(() => {
+    if (selectedListingIDs.has("all")) return "All";
+    const listings = listingsData.filter((listing) =>
+      selectedListingIDs.has(listing.listingId),
+    );
+    if (listings.length !== selectedListingIDs.size)
+      throw new Error("Listings not found");
+    if (listings.length > 1) return "Multiple selected";
+    return listings[0].listingName;
+  }, [selectedListingIDs]);
+
   return (
     <div>
       <div className="mt-4 p-2">
@@ -236,27 +229,34 @@ export default function TransactionsTable({
         <div className="flex sm:flex-row justify-between w-full mb-2 align-baseline">
           <div className="flex items-baseline gap-2">
             <span className="whitespace-nowrap">Filter by</span>
-
+            <span>Listing</span>
             <Dropdown>
               <Button aria-label="Menu" variant="secondary">
-                {selectedListing?.listingName || "All Listings"}
+                {buttonLabel}
               </Button>
 
               <Dropdown.Popover>
                 <Dropdown.Menu
                   selectedKeys={selectedListingIDs}
-                  selectionMode="single"
+                  selectionMode="multiple"
                   onSelectionChange={(keys) => {
                     console.log("keys:", keys);
-                    const array = [...keys];
-                    const first = array[0];
-                    if (first === "all") setSelectedListingIDs(new Set());
-                    else setSelectedListingIDs(keys as Set<string>);
+                    const set = keys as Set<string>;
+                    if (
+                      (!selectedListingIDs.has("all") && set.has("all")) ||
+                      set.size === 0
+                    )
+                      setSelectedListingIDs(new Set(["all"]));
+                    else {
+                      set.delete("all");
+                      setSelectedListingIDs(set);
+                    }
                     setSelectedPropertyIDs(new Set());
                   }}
                 >
-                  <Dropdown.Item key="" id="all">
+                  <Dropdown.Item key="all" id="all">
                     All listings
+                    <Dropdown.ItemIndicator />
                   </Dropdown.Item>
                   {listingsData.map((l) => (
                     <Dropdown.Item
@@ -264,6 +264,7 @@ export default function TransactionsTable({
                       id={l.listingId}
                       textValue={l.listingName}
                     >
+                      <Dropdown.ItemIndicator />
                       <Label> {l.listingName}</Label>
                     </Dropdown.Item>
                   ))}
