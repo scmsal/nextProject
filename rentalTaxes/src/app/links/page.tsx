@@ -1,8 +1,8 @@
 import { Link } from "@heroui/react";
 export default function Links() {
   return (
-    <div>
-      <h3>Helpful Links</h3>
+    <div className="flex flex-col h-full">
+      <h3 className="underline">Helpful Links</h3>
       <ul className="text-lg ps-4 pt-4">
         <li>
           <strong> Airbnb:</strong>{" "}
@@ -39,6 +39,14 @@ export default function Links() {
           </Link>
         </li>
       </ul>
+      <p className="mt-auto mb-6">
+        <strong>Disclaimer:</strong> Links to third-party websites are provided
+        for convenience only. We do not endorse nor support the content of
+        third-party links and are not responsible for the content of a
+        third-party website. Tax regulations are subject to change; please
+        verify all information with the official source or a tax professional
+        before filing.
+      </p>
     </div>
   );
 }

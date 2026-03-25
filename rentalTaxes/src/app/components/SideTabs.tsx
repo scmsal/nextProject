@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Tabs, Tab, Button, TabIndicator } from "@heroui/react";
 import { usePathname, useRouter } from "next/navigation";
-import { House, BadgeDollarSign, Sheet } from "lucide-react";
+import { House, BadgeDollarSign, Sheet, ScrollText } from "lucide-react";
 
 export default function SideTabs() {
   //   {
@@ -22,6 +22,7 @@ export default function SideTabs() {
     },
     { title: "Transactions", icon: BadgeDollarSign, route: "/transactions" },
     { title: "Summaries", icon: Sheet, route: "/summaries" },
+    { title: "Single Page View", icon: ScrollText, route: "/allinone" },
   ];
 
   return (

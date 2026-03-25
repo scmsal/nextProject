@@ -129,6 +129,16 @@ export function DbProvider({ children }: { children: ReactNode }) {
     return aggregate;
   }
 
+  function aggregateTaxes(arrTransactions: Transaction[]) {
+    const aggregate = arrTransactions.reduce((acc, transaction) => {
+      const taxes = transaction.totalOccupancyTaxes
+        ? Number(transaction.totalOccupancyTaxes)
+        : 0;
+      return acc + taxes;
+    }, 0);
+    return aggregate;
+  }
+
   async function loadRevenueAggregates({
     fromDate,
     toDate,
@@ -197,6 +207,7 @@ export function DbProvider({ children }: { children: ReactNode }) {
       const totalGross = aggregateGross(propertyDateTransactions);
       const longTermGross = aggregateGross(longTransactions);
       const shortTermGross = aggregateGross(shortTransactions);
+      const totalTaxes = aggregateTaxes(propertyDateTransactions);
       const revenueAggregate: RevenueAggregate = {
         propertyName: prop.propertyName,
         netRevenue: netRevenue,
@@ -210,6 +221,7 @@ export function DbProvider({ children }: { children: ReactNode }) {
         shortTermGross,
         longTermGross,
         transactions: inclTransactions.length, //TO DO: check against other references
+        totalTaxes,
       };
       console.log(
         revenueAggregate.propertyName,

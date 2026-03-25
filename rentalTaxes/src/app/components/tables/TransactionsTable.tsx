@@ -4,9 +4,12 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
+  getSortedRowModel,
+  getFilteredRowModel,
+  SortingState,
 } from "@tanstack/react-table";
-import { Button, ButtonGroup } from "@heroui/react";
-import { sampleTransactions } from "@/lib/db/sampleData";
+import type { Selection } from "@heroui/react";
+import { Button, ButtonGroup, Dropdown, Header, Label } from "@heroui/react";
 import { Db, Transaction } from "@/types";
 import { useState, useMemo } from "react";
 import { clearTransactions } from "@/lib/db/queries";
@@ -19,16 +22,49 @@ export default function TransactionsTable({
   data: Transaction[];
   db: Db;
 }) {
-  const { loadTransactions } = useDb();
+  const { loadTransactions, listingsData, propertiesData } = useDb();
 
-  // const filteredData = useMemo(
-  //   () => data.filter((row) => row.type !== "Payout"),
-  //   [data],
-  // );
   const [pagination, setPagination] = useState({
     pageIndex: 0, //initial page index
     pageSize: 31, //default page size
   });
+
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobaFilter] = useState([]);
+  const [tableDateFrom, setTableDateFrom] = useState("");
+  const [tableDateTo, setTableDateTo] = useState("");
+  const [selectedListingIDs, setSelectedListingIDs] = useState<Set<string>>(
+    new Set(["all"]),
+  );
+  const [selectedPropertyIDs, setSelectedPropertyIDs] = useState<Set<string>>(
+    new Set(["all"]),
+  );
+
+  console.log("selectedListingIDs:", selectedListingIDs);
+
+  const filteredData = useMemo(() => {
+    if (selectedListingIDs.has("all")) return data;
+    return data.filter((row) => {
+      const rowDate = localDateFromYMD(row.date);
+      const from = tableDateFrom ? localDateFromYMD(tableDateFrom) : null;
+      const to = tableDateTo ? localDateFromYMD(tableDateTo) : null;
+      if (from && rowDate < from) return false;
+      if (to && rowDate > to) return false;
+      if (!row.listingId) throw new Error("Row has no listingId");
+      if (selectedListingIDs.has(row.listingId)) return true; //To Do: selected listing should also updated selected property
+      // if (
+      //   !selectedPropertyIDs.has("all") &&
+      //   !selectedPropertyIDs.has(row.propertyId)
+      // )
+      // return false;
+    });
+  }, [
+    data,
+    tableDateFrom,
+    tableDateTo,
+    selectedListingIDs,
+    selectedPropertyIDs,
+  ]);
 
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat("en-US", {
@@ -40,13 +76,20 @@ export default function TransactionsTable({
     {
       accessorKey: "date",
       header: "Date",
+      enableSorting: true,
+      enableResizing: true,
+      size: 50,
       cell: ({ row }) => {
         const date = localDateFromYMD(row.original.date);
         return date.toLocaleDateString("en-US");
       },
     },
-    { accessorKey: "type", header: "Type" },
-    { accessorKey: "confirmationCode", header: "Confirmation Code" },
+    { accessorKey: "type", header: "Type", enableResizing: true },
+    {
+      accessorKey: "confirmationCode",
+      header: "Confirmation Code",
+      enableResizing: true,
+    },
     // {
     //   accessorKey: "bookingDate",
     //   header: "Booking Date",
@@ -81,13 +124,20 @@ export default function TransactionsTable({
     {
       accessorKey: "shortTerm",
       header: "Short Term",
+      enableResizing: true,
       cell: ({ row }) => {
         const symbol = row.original.shortTerm ? "✅" : "✖️";
         return symbol;
       },
     },
     // { accessorKey: "guest", header: "Guest" },
-    { accessorKey: "listingName", header: "Listing" },
+    {
+      accessorKey: "listingName",
+      header: "Listing",
+      size: 75,
+      enableSorting: true,
+      enableResizing: true,
+    },
     // { accessorKey: "listingId", header: "Listing ID" },
     // { accessorKey: "details", header: "Details" },
     {
@@ -95,6 +145,7 @@ export default function TransactionsTable({
       header: "Net Earnings",
       cell: ({ getValue }) => formatCurrency(getValue() as number),
       enableSorting: true,
+      enableResizing: true,
     },
 
     {
@@ -108,6 +159,7 @@ export default function TransactionsTable({
       header: "Taxes Remitted",
       cell: ({ getValue }) => formatCurrency(getValue() as number),
       enableSorting: true,
+      enableResizing: true,
     },
     // {
     //   accessorKey: "quarter",
@@ -138,22 +190,104 @@ export default function TransactionsTable({
   ];
 
   const table = useReactTable<Transaction>({
-    data,
+    data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination, //update the pagination state when internal APIs mutate the pagination state
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     state: {
-      //...
       pagination,
+      sorting,
+      globalFilter,
     },
+    onSortingChange: setSorting,
+    defaultColumn: {
+      size: 75, // Default size for columns without explicit size
+      minSize: 50,
+      maxSize: 300, // Increased maxSize to allow more expansion
+    },
+    columnResizeMode: "onChange", // Ensure this is set
   });
+
+  const buttonLabel = useMemo(() => {
+    if (selectedListingIDs.has("all")) return "All";
+    const listings = listingsData.filter((listing) =>
+      selectedListingIDs.has(listing.listingId),
+    );
+    if (listings.length !== selectedListingIDs.size)
+      throw new Error("Listings not found");
+    if (listings.length > 1) return "Multiple selected";
+    return listings[0].listingName;
+  }, [selectedListingIDs]);
 
   return (
     <div>
       <div className="mt-4 p-2">
+        <h2 className="ps-2 pb-0 ">View Transactions</h2>
         <div className="flex sm:flex-row justify-between w-full mb-2 align-baseline">
-          <h2 className="ps-2 pb-0 ">View Transactions</h2>
+          <div className="flex items-baseline gap-2">
+            <span className="whitespace-nowrap">Filter by</span>
+            <span>Listing</span>
+            <Dropdown>
+              <Button aria-label="Menu" variant="secondary">
+                {buttonLabel}
+              </Button>
+
+              <Dropdown.Popover>
+                <Dropdown.Menu
+                  selectedKeys={selectedListingIDs}
+                  selectionMode="multiple"
+                  onSelectionChange={(keys) => {
+                    console.log("keys:", keys);
+                    const set = keys as Set<string>;
+                    if (
+                      (!selectedListingIDs.has("all") && set.has("all")) ||
+                      set.size === 0
+                    )
+                      setSelectedListingIDs(new Set(["all"]));
+                    else {
+                      set.delete("all");
+                      setSelectedListingIDs(set);
+                    }
+                    setSelectedPropertyIDs(new Set());
+                  }}
+                >
+                  <Dropdown.Item key="all" id="all">
+                    All listings
+                    <Dropdown.ItemIndicator />
+                  </Dropdown.Item>
+                  {listingsData.map((l) => (
+                    <Dropdown.Item
+                      key={l.listingId}
+                      id={l.listingId}
+                      textValue={l.listingName}
+                    >
+                      <Dropdown.ItemIndicator />
+                      <Label> {l.listingName}</Label>
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown.Popover>
+            </Dropdown>
+
+            {/* <select
+              value={selectedProperty}
+              onChange={(e) => {
+                setSelectedProperty(e.target.value);
+                setSelectedListing("");
+              }}
+              className="bg-gray-100"
+            >
+              <option value="">All properties</option>
+              {propertiesData.map((p) => (
+                <option key={p.propertyId} value={p.propertyId}>
+                  {p.propertyName}
+                </option>
+              ))}
+            </select> */}
+          </div>
           <Button
             onClick={() => {
               clearTransactions(db);
@@ -170,13 +304,32 @@ export default function TransactionsTable({
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="px-1.5">
+                  <th
+                    key={header.id}
+                    className="px-1.5 cursor-pointer select-none relative"
+                    style={{ width: header.getSize() }} // Apply dynamic widthclassName="px-1.5"
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
+                    {header.column.getCanSort() &&
+                      (header.column.getIsSorted()
+                        ? {
+                            asc: " 🔼",
+                            desc: " 🔽",
+                          }[header.column.getIsSorted() as "asc" | "desc"]
+                        : " ⇅")}
+                    {header.column.getCanResize() && ( // Add resize handle only if resizable
+                      <div
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        className="absolute right-0 top-0 h-full w-1 bg-gray-300 cursor-col-resize select-none touch-none hover:bg-gray-500"
+                      />
+                    )}
                   </th>
                 ))}
               </tr>
@@ -189,7 +342,7 @@ export default function TransactionsTable({
                   <td
                     key={cell.id}
                     className={`p-2 text-gray-800 ${
-                      cell.column.id === "listingName" && "w-full"
+                      cell.column.id === "listingName" && "w-75"
                     }`}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

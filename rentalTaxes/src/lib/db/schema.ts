@@ -74,7 +74,7 @@ export const propertiesDbTable = pgTable(
   (table) => [
     uniqueIndex("unique_property_name").on(table.propertyName),
     uniqueIndex("unique_address").on(table.address),
-  ]
+  ],
 );
 
 // ----------------------
@@ -91,7 +91,7 @@ export const listingsDbTable = pgTable(
     // platform: varchar("platform", { length: 100 }),
   },
   //PGlite doesn't fully enforce unique constraints, so this would only work in the full PostgreSQL
-  (table) => [uniqueIndex("unique_listing_name").on(table.listingName)]
+  (table) => [uniqueIndex("unique_listing_name").on(table.listingName)],
 );
 
 /*
@@ -114,7 +114,7 @@ export const transactionsRelations = relations(
       fields: [transactionsDbTable.propertyId],
       references: [propertiesDbTable.propertyId],
     }),
-  })
+  }),
 );
 
 export const propertiesRelations = relations(propertiesDbTable, ({ many }) => ({
@@ -130,5 +130,5 @@ export const listingsRelations = relations(
       references: [propertiesDbTable.propertyId],
     }),
     transactions: many(transactionsDbTable),
-  })
+  }),
 );
