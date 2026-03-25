@@ -14,6 +14,7 @@ import {
   SquarePen,
   NotebookTabs,
   LinkIcon,
+  ScrollText,
 } from "lucide-react";
 import { Button } from "@heroui/react";
 import Link from "next/link";
@@ -37,6 +38,7 @@ const ToggleSidebar = () =>
       },
       { title: "Transactions", icon: BadgeDollarSign, slug: "/transactions" },
       { title: "Summaries", icon: Sheet, slug: "/summaries" },
+      { title: "Single Page View", icon: ScrollText, slug: "/allinone" },
     ];
 
     return (
