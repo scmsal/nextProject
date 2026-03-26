@@ -5,7 +5,7 @@ import {
   handlePropertyLog,
   addSampleProperties,
   // addSampleListings,
-  getRevenueAggregates,
+  // getRevenueAggregates,
   clearTransactions,
   // getListingsWithProperties,
 } from "@/lib/db/queries";
@@ -78,8 +78,8 @@ export default function ReplWithButtons() {
       <button
         className="ml-2 hover:bg-gray-50 cursor-pointer border"
         onClick={() => {
-          const results = getRevenueAggregates(db);
-          console.log("aggregates:", results);
+          // const results = getRevenueAggregates(db);
+          // console.log("aggregates:", results);
         }}
       >
         Aggregates
